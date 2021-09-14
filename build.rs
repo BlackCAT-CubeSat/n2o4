@@ -9,7 +9,6 @@ fn main() {
 
     let c_header_file = pb(&[&in_dir,  "cfs-all.h"]).to_string_unwrap();
     let out_file      = pb(&[&out_dir, "cfs-all.rs"]).to_string_unwrap();
-    let deps_file     = pb(&[&out_dir, "cfs-all.d"]);
 
     println!("cargo:rerun-if-changed={}", &c_header_file);
 
@@ -22,7 +21,7 @@ fn main() {
         .clang_args(env_unwrap("RUST_CFS_SYS_COMPILE_OPTIONS").split('@'))
         .allowlist_recursively(true)
         .use_core()
-        .depfile(&out_file, deps_file)
+        .parse_callbacks(Box::new(bindgen::CargoCallbacks))
         .generate().expect("Unable to generate cFS bindings");
 
     bindings.write_to_file(&out_file)
