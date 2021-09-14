@@ -20,7 +20,12 @@ fn main() {
             .split('@').map(|s| { String::from("-I") + s }))
         .clang_args(env_unwrap("RUST_CFS_SYS_COMPILE_OPTIONS").split('@'))
         .allowlist_recursively(true)
+        .allowlist_type("(CFE|OS|OSAL|CFE_PSP)_.*")
+        .allowlist_function("(CFE|OS|OSAL|CFE_PSP)_.*")
+        .allowlist_var("(CFE|OS|OSAL|CFE_PSP)_.*")
         .use_core()
+        .size_t_is_usize(true)
+        .generate_comments(true)
         .parse_callbacks(Box::new(bindgen::CargoCallbacks))
         .generate().expect("Unable to generate cFS bindings");
 
