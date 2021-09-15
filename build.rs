@@ -25,7 +25,7 @@ fn main() {
         .allowlist_var("(CFE|OS|OSAL|CFE_PSP)_.*")
         .use_core()
         .size_t_is_usize(true)
-        .generate_comments(true)
+        .generate_comments(false)
         .parse_callbacks(Box::new(bindgen::CargoCallbacks))
         .generate().expect("Unable to generate cFS bindings");
 
