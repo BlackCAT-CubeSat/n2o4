@@ -1,3 +1,5 @@
+// Copyright (c) 2021 The Pennsylvania State University. All rights reserved.
+
 //! Low-level bindings to the C APIs of [cFE](https://github.com/nasa/cFE)
 //! and [OSAL](https://github.com/nasa/osal).
 //!
