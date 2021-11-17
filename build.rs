@@ -22,9 +22,11 @@ fn main() {
             .split('@').map(|s| { String::from("-I") + s }))
         .clang_args(env_unwrap("RUST_CFS_SYS_COMPILE_OPTIONS").split('@'))
         .allowlist_recursively(true)
-        .allowlist_type("(CFE|OS|OSAL|CFE_PSP)_.*")
+        .allowlist_type("(CFE|OS|OSAL|CFE_PSP|CCSDS)_.*")
         .allowlist_function("(CFE|OS|OSAL|CFE_PSP)_.*")
-        .allowlist_var("(CFE|OS|OSAL|CFE_PSP)_.*")
+        .allowlist_var("(CFE|OS|OSAL|CFE_PSP|S_CFE|X_CFE)_.*")
+        .blocklist_function("CFE_ES_Main") // only to be called by the BSP
+        .blocklist_function("OS_BSP_.*")   // ditto
         .use_core()
         .size_t_is_usize(true)
         .generate_comments(false)
