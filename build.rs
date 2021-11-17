@@ -28,6 +28,7 @@ fn main() {
         .blocklist_function("CFE_ES_Main") // only to be called by the BSP
         .blocklist_function("OS_BSP_.*")   // ditto
         .use_core()
+        .ctypes_prefix("::libc")
         .size_t_is_usize(true)
         .generate_comments(false)
         .parse_callbacks(Box::new(bindgen::CargoCallbacks))
