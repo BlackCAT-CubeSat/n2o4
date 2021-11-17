@@ -26,6 +26,7 @@ fn main() {
         .allowlist_function("(CFE|OS|OSAL|CFE_PSP)_.*")
         .allowlist_var("(CFE|OS|OSAL|CFE_PSP)_.*")
         .use_core()
+        .ctypes_prefix("::libc")
         .size_t_is_usize(true)
         .generate_comments(false)
         .parse_callbacks(Box::new(bindgen::CargoCallbacks))
