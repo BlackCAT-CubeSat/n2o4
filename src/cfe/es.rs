@@ -2,7 +2,7 @@
 
 use cfs_sys::*;
 
-#[derive(Clone,Copy)]
+#[derive(Clone,Copy,Debug)]
 #[repr(u32)]
 pub enum RunStatus {
     AppError = CFE_ES_RunStatus_CFE_ES_RunStatus_APP_ERROR,
