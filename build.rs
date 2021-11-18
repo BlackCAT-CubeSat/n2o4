@@ -9,21 +9,27 @@ fn main() {
     let in_dir = env_unwrap("CARGO_MANIFEST_DIR");
     let out_dir = env_unwrap("OUT_DIR");
 
-    let c_header_file = pb(&[&in_dir,  "cfs-all.h"]).to_string_unwrap();
-    let out_file      = pb(&[&out_dir, "cfs-all.rs"]).to_string_unwrap();
+    let api_header   = pb(&[&in_dir,  "cfs-api.h"]).to_string_unwrap();
+    let shims_header = pb(&[&in_dir,  "cfs-shims.h"]).to_string_unwrap();
+    let out_file     = pb(&[&out_dir, "cfs-all.rs"]).to_string_unwrap();
 
-    println!("cargo:rerun-if-changed={}", &c_header_file);
+    for f in [&api_header, &shims_header, &out_file] {
+        println!("cargo:rerun-if-changed={}", f);
+    }
+
+    let compile_defs = env_unwrap("RUST_CFS_SYS_COMPILE_DEFINITIONS");
+    let include_dirs = env_unwrap("RUST_CFS_SYS_INCLUDE_DIRECTORIES");
+    let compile_opts = env_unwrap("RUST_CFS_SYS_COMPILE_OPTIONS");
 
     let bindings = bindgen::builder()
-        .header(&c_header_file)
-        .clang_args(env_unwrap("RUST_CFS_SYS_COMPILE_DEFINITIONS")
-            .split('@').map(|s| { String::from("-D") + s }))
-        .clang_args(env_unwrap("RUST_CFS_SYS_INCLUDE_DIRECTORIES")
-            .split('@').map(|s| { String::from("-I") + s }))
-        .clang_args(env_unwrap("RUST_CFS_SYS_COMPILE_OPTIONS").split('@'))
+        .header(&api_header)
+        .header(&shims_header)
+        .clang_args(compile_defs.split('@').map(|s| { String::from("-D") + s }))
+        .clang_args(include_dirs.split('@').map(|s| { String::from("-I") + s }))
+        .clang_args(compile_opts.split('@'))
         .allowlist_recursively(true)
         .allowlist_type("(CFE|OS|OSAL|CFE_PSP|CCSDS)_.*")
-        .allowlist_function("(CFE|OS|OSAL|CFE_PSP)_.*")
+        .allowlist_function("(CFE|OS|OSAL|CFE_PSP|SHIM)_.*")
         .allowlist_var("(CFE|OS|OSAL|CFE_PSP|S_CFE|X_CFE)_.*")
         .blocklist_function("CFE_ES_Main") // only to be called by the BSP
         .blocklist_function("OS_BSP_.*")   // ditto
@@ -36,6 +42,20 @@ fn main() {
 
     bindings.write_to_file(&out_file)
         .expect("Unable to write out cFS bindings");
+
+    let mut builder = cc::Build::new();
+    builder.includes(include_dirs.split('@'));
+
+    for def in compile_defs.split('@') {
+        builder.flag(&(String::from("-D") + def));
+    }
+    for opt in compile_opts.split('@') {
+        builder.flag(opt);
+    }
+
+    builder
+        .file("cfs-shims.c")
+        .compile("cfs-shims");
 }
 
 fn env_unwrap(key: &str) -> String {
