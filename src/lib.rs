@@ -9,7 +9,5 @@
 
 extern crate cfs_sys;
 
-use cfs_sys as _;
-
 pub mod osal;
 pub mod cfe;
