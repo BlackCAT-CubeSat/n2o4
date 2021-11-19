@@ -2,7 +2,7 @@
 
 use cfs_sys::*;
 use super::Status;
-use printf_wrap::null_str;
+use printf_wrap::{PrintfFmt, PrintfArgument, null_str};
 use libc::c_char;
 
 #[derive(Clone,Copy,Debug)]
@@ -31,6 +31,42 @@ pub fn perf_log_entry(marker: u32) { perf_log_add(marker, 0); }
 #[inline]
 pub fn perf_log_exit(marker: u32) { perf_log_add(marker, 1); }
 
+macro_rules! wtsl_impl {
+    (@ $doc_end:expr, $name:ident, ( $($t:ident),* ), ( $($var:ident),* )) => {
+        #[doc = concat!("CFE_ES_WriteToSysLog with ", $doc_end)]
+        #[inline]
+        pub fn $name<$($t),*>(fmt: PrintfFmt<($($t,)*)>, $($var: $t),*) -> Result<(), Status>
+            where $($t: PrintfArgument),* {
+
+            let status: Status = unsafe {
+                CFE_ES_WriteToSysLog(fmt.as_ptr() $(, $var.as_c_val())*)
+            }.into();
+            status.as_result(|| { () })
+        }
+    };
+    ($num:expr, $name:ident, ( $($t:ident),* ), ( $($var:ident),* )) => {
+        wtsl_impl!(@ concat!(stringify!($num), " format arguments."),
+            $name, ( $($t),* ), ( $($var),* )
+        );
+    };
+    ($name:ident, ( $($t:ident),* ), ( $($var:ident),* )) => {
+        wtsl_impl!(@ "1 format argument.",
+            $name, ( $($t),* ), ( $($var),* )
+        );
+    };
+}
+
+wtsl_impl!( 0, write_to_syslog0, (), () );
+wtsl_impl!(    write_to_syslog1, (A), (a) );
+wtsl_impl!( 2, write_to_syslog2, (A, B), (a, b) );
+wtsl_impl!( 3, write_to_syslog3, (A, B, C), (a, b, c) );
+wtsl_impl!( 4, write_to_syslog4, (A, B, C, D), (a, b, c, d) );
+wtsl_impl!( 5, write_to_syslog5, (A, B, C, D, E), (a, b, c, d, e) );
+wtsl_impl!( 6, write_to_syslog6, (A, B, C, D, E, F), (a, b, c, d, e, f) );
+wtsl_impl!( 7, write_to_syslog7, (A, B, C, D, E, F, G), (a, b, c, d, e, f, g) );
+wtsl_impl!( 8, write_to_syslog8, (A, B, C, D, E, F, G, H), (a, b, c, d, e, f, g, h) );
+
+/// CFE_ES_WriteToSysLog with a `str` argument.
 #[inline]
 pub fn write_to_syslog_str(msg: &str) -> Result<(), Status> {
     let status: Status = unsafe {
