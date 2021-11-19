@@ -8,6 +8,8 @@
 #![cfg_attr(not(test), no_std)]
 
 extern crate cfs_sys;
+extern crate printf_wrap;
+extern crate libc;
 
 pub mod osal;
 pub mod cfe;
