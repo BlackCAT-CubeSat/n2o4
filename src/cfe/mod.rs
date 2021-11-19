@@ -13,6 +13,8 @@ pub mod time;
 
 mod status_consts;
 
+use printf_wrap::{NullString, null_str};
+
 #[derive(Clone,Copy,Debug)]
 pub struct ResourceId {
     pub id: CFE_ResourceId_t
@@ -145,3 +147,5 @@ impl Status {
         }
     }
 }
+
+const RUST_STR_FMT: NullString = null_str!("%.*s");

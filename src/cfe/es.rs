@@ -2,7 +2,7 @@
 
 use cfs_sys::*;
 use super::Status;
-use printf_wrap::{PrintfFmt, PrintfArgument, null_str};
+use printf_wrap::{PrintfFmt, PrintfArgument};
 use libc::c_char;
 
 #[derive(Clone,Copy,Debug)]
@@ -71,7 +71,7 @@ wtsl_impl!( 8, write_to_syslog8, (A, B, C, D, E, F, G, H), (a, b, c, d, e, f, g,
 pub fn write_to_syslog_str(msg: &str) -> Result<(), Status> {
     let status: Status = unsafe {
         CFE_ES_WriteToSysLog(
-            null_str!("%.*s").as_ptr(),
+            super::RUST_STR_FMT.as_ptr(),
             msg.len(), msg.as_ptr() as *const c_char
         )
     }.into();
