@@ -6,4 +6,5 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-cfs-sys = { git = "https://git.psu.edu/zec0/cfs-sys-rs.git", rev = "aa0197b2bce9ab1405b5ab4c62844a0665f3b1a3" }
+cfs-sys = { git = "https://git.psu.edu/zec0/cfs-sys-rs.git", rev = "a80cb45e22f8cb9f1d213810661b6b17fd9f5894" }
+libc = { version = "^0.2.107", default-features = false }

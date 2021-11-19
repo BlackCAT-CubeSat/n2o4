@@ -13,13 +13,17 @@ pub mod time;
 
 #[derive(Clone,Copy,Debug)]
 pub struct ResourceId {
-    id: CFE_ResourceId_t
+    pub id: CFE_ResourceId_t
 }
 
 impl ResourceId {
+    #[inline]
     pub fn is_defined(&self) -> bool {
         unsafe { SHIM_CFE_ResourceId_IsDefined(self.id) }
     }
+
+    pub const UNDEFINED: Self = ResourceId { id: X_CFE_RESOURCEID_UNDEFINED };
+    pub const RESERVED: Self = ResourceId { id: X_CFE_RESOURCEID_RESERVED };
 }
 
 impl PartialEq<ResourceId> for ResourceId {
