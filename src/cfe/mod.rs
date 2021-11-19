@@ -57,6 +57,13 @@ pub struct Status {
     pub status: CFE_Status_t
 }
 
+impl From<CFE_Status_t> for Status {
+    #[inline]
+    fn from(status: CFE_Status_t) -> Status {
+        Status { status: status }
+    }
+}
+
 #[repr(u32)]
 #[derive(Clone,Copy,PartialEq,Eq,Debug)]
 pub enum StatusSeverity {
@@ -80,7 +87,21 @@ pub enum StatusServiceId {
 
 impl Status {
     #[inline]
-    pub fn severity(&self) -> StatusSeverity {
+    pub const fn new(
+        severity: StatusSeverity,
+        service_id: StatusServiceId,
+        mission_defined: u16,
+        code: u16
+    ) -> Status {
+        let n = (severity as u32) << 30
+              | (service_id as u32) << 25
+              | ((mission_defined as u32) & 0x01ff) << 16
+              | (code as u32);
+        Status { status: n as CFE_Status_t }
+    }
+
+    #[inline]
+    pub const fn severity(&self) -> StatusSeverity {
         use StatusSeverity::*;
 
         match (self.status >> 30) & 0b0011 {
@@ -91,7 +112,7 @@ impl Status {
     }
 
     #[inline]
-    pub fn service_identifier(&self) -> StatusServiceId {
+    pub const fn service_identifier(&self) -> StatusServiceId {
         use StatusServiceId::*;
 
         match (self.status >> 25) & 0b0111 {
@@ -107,12 +128,12 @@ impl Status {
     }
 
     #[inline]
-    pub fn mission_defined(&self) -> u16 {
+    pub const fn mission_defined(&self) -> u16 {
         ((self.status >> 16) & 0x01ff) as u16
     }
 
     #[inline]
-    pub fn code(&self) -> u16 {
+    pub const fn code(&self) -> u16 {
         self.status as u16
     }
 
