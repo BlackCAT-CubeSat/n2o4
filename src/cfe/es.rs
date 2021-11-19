@@ -5,7 +5,7 @@ use super::Status;
 use printf_wrap::{PrintfFmt, PrintfArgument};
 use libc::c_char;
 
-#[derive(Clone,Copy,Debug)]
+#[derive(Clone,Copy,PartialEq,Eq,Debug)]
 #[repr(u32)]
 pub enum RunStatus {
     AppError = CFE_ES_RunStatus_CFE_ES_RunStatus_APP_ERROR,
@@ -76,4 +76,16 @@ pub fn write_to_syslog_str(msg: &str) -> Result<(), Status> {
         )
     }.into();
     status.as_result(|| { () })
+}
+
+#[inline]
+pub fn exit_app(exit_status: RunStatus) {
+    unsafe { CFE_ES_ExitApp(exit_status as u32) };
+}
+
+#[inline]
+pub fn run_loop(run_status: RunStatus) -> bool {
+    let mut rs: u32 = run_status as u32;
+    let result = unsafe { CFE_ES_RunLoop(&mut rs) };
+    result
 }
