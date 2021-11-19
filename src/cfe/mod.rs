@@ -107,7 +107,7 @@ impl Status {
         match (self.status >> 30) & 0b0011 {
             0b00 => Success,
             0b01 => Informational,
-            0b10 | 0b11 => Error,
+            _    => Error,
         }
     }
 
@@ -123,7 +123,7 @@ impl Status {
             0b100 => Generic,
             0b101 => SB,
             0b110 => TBL,
-            0b111 => TIME,
+            _     => TIME,
         }
     }
 
