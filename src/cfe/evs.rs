@@ -124,6 +124,9 @@ impl EventSender {
                (A, B, C, D, E, F, G, H), (a, b, c, d, e, f, g, h));
 
     /// CFE_EVS_SendEvent with a `str` argument.
+    ///
+    /// Note that any embedded null characters and anything past them
+    /// will not get put into the event message.
     #[inline]
     pub fn send_event_str(&self, event_id: u16, event_type: EventType, msg: &str) -> Result<(), Status> {
         let status: Status = unsafe {
@@ -136,6 +139,9 @@ impl EventSender {
     }
 
     /// CFE_EVS_SendEventWithAppID with a `str` argument.
+    ///
+    /// Note that any embedded null characters and anything past them
+    /// will not get put into the event message.
     #[inline]
     pub fn send_event_with_app_id_str(&self, event_id: u16, event_type: EventType, app_id: CFE_ES_AppId_t, msg: &str) -> Result<(), Status> {
         let status: Status = unsafe {
@@ -148,6 +154,9 @@ impl EventSender {
     }
 
     /// CFE_EVS_SendTimedEvent with a `str` argument.
+    ///
+    /// Note that any embedded null characters and anything past them
+    /// will not get put into the event message.
     #[inline]
     pub fn send_timed_event_str(&self, time: CFE_TIME_SysTime_t, event_id: u16, event_type: EventType, msg: &str) -> Result<(), Status> {
         let status: Status = unsafe {

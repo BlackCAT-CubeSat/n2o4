@@ -67,6 +67,9 @@ wtsl_impl!( 7, write_to_syslog7, (A, B, C, D, E, F, G), (a, b, c, d, e, f, g) );
 wtsl_impl!( 8, write_to_syslog8, (A, B, C, D, E, F, G, H), (a, b, c, d, e, f, g, h) );
 
 /// CFE_ES_WriteToSysLog with a `str` argument.
+///
+/// Note that any embedded null characters and anything past them
+/// will not get put into the log message.
 #[inline]
 pub fn write_to_syslog_str(msg: &str) -> Result<(), Status> {
     let status: Status = unsafe {
