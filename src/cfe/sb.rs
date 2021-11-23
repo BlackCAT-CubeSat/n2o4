@@ -3,7 +3,7 @@
 use cfs_sys::*;
 use printf_wrap::NullString;
 use super::Status;
-use super::msg::{Message,MsgType};
+use super::msg::{Message,MsgType,Command,Telemetry};
 
 pub use cfs_sys::CFE_SB_MsgId_Atom_t as MsgId_Atom;
 
@@ -216,16 +216,39 @@ pub struct Buffer<'a> {
 }
 
 impl<'a> Buffer<'a> {
+    #[inline]
+    fn try_cast<T: Sized>(&self, msg_type: MsgType) -> Result<&'a T, Status> {
+        let msg = self.as_message();
+
+        if msg.msgid()?.msg_type()? != msg_type {
+            return Err(Status::MSG_WRONG_MSG_TYPE);
+        }
+
+        if msg.size()? as usize != core::mem::size_of::<T>() {
+            return Err(Status::STATUS_WRONG_MSG_LENGTH);
+        }
+
+        let p = self.b as *const CFE_SB_Buffer_t as usize;
+        if p % core::mem::align_of::<T>() != 0 {
+            return Err(Status::SB_BAD_ARGUMENT);
+        }
+
+        let pkt: &T = unsafe { &*(p as *const T) };
+        Ok(pkt)
+    }
+
+    #[inline]
+    pub fn try_cast_cmd<T: Copy + Sized>(&self) -> Result<&'a Command<T>, Status> {
+        self.try_cast::<Command<T>>(MsgType::Cmd)
+    }
+
+    #[inline]
+    pub fn try_cast_tlm<T: Copy + Sized>(&self) -> Result<&'a Telemetry<T>, Status> {
+        self.try_cast::<Telemetry<T>>(MsgType::Tlm)
+    }
+
     pub fn as_message(&self) -> &'a Message {
         let p: &CFE_MSG_Message_t = unsafe { &self.b.Msg };
         Message::from_cfe(p)
     }
-}
-
-pub fn transmit_message(msg: &mut Message, increment_sequence_count: bool) -> Result<(), Status> {
-    let s: Status = unsafe {
-        CFE_SB_TransmitMsg(&mut msg.msg, increment_sequence_count)
-    }.into();
-
-    s.as_result(|| { () })
 }

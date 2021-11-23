@@ -69,6 +69,7 @@ impl Status {
     pub const FS_INVALID_PATH: Status = mk_status(S_CFE_FS_INVALID_PATH);
     pub const FS_FNAME_TOO_LONG: Status = mk_status(S_CFE_FS_FNAME_TOO_LONG);
     pub const FS_NOT_IMPLEMENTED: Status = mk_status(S_CFE_FS_NOT_IMPLEMENTED);
+    pub const MSG_WRONG_MSG_TYPE: Status = mk_status(S_CFE_MSG_WRONG_MSG_TYPE);
     pub const SB_TIME_OUT: Status = mk_status(S_CFE_SB_TIME_OUT);
     pub const SB_NO_MESSAGE: Status = mk_status(S_CFE_SB_NO_MESSAGE);
     pub const SB_BAD_ARGUMENT: Status = mk_status(S_CFE_SB_BAD_ARGUMENT);
