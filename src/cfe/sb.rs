@@ -201,3 +201,11 @@ impl<'a> Buffer<'a> {
         Message::from_cfe(p)
     }
 }
+
+pub fn transmit_message(msg: &mut Message, increment_sequence_count: bool) -> Result<(), Status> {
+    let s: Status = unsafe {
+        CFE_SB_TransmitMsg(&mut msg.msg, increment_sequence_count)
+    }.into();
+
+    s.as_result(|| { () })
+}
