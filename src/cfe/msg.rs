@@ -4,6 +4,8 @@ use core::default::Default;
 use core::ops::{Deref,DerefMut};
 
 use cfs_sys::*;
+use super::Status;
+use super::sb::MsgId;
 
 #[repr(transparent)]
 pub struct Message {
@@ -21,6 +23,26 @@ impl Message {
     pub(super) fn from_cfe_mut(m: &mut CFE_MSG_Message_t) -> &mut Message {
         let p = m as *mut CFE_MSG_Message_t as *mut Message;
         unsafe { &mut *p }
+    }
+
+    #[inline]
+    pub fn msgid(&self) -> Result<MsgId, Status> {
+        let mut mid: MsgId = MsgId::INVALID;
+
+        let s: Status = unsafe {
+            CFE_MSG_GetMsgId(&self.msg, &mut mid.id)
+        }.into();
+
+        s.as_result(|| { mid })
+    }
+
+    #[inline]
+    pub fn set_msgid(&mut self, msg_id: MsgId) -> Result<(), Status> {
+        let s: Status = unsafe {
+            CFE_MSG_SetMsgId(&mut self.msg, msg_id.id)
+        }.into();
+
+        s.as_result(|| { () })
     }
 }
 

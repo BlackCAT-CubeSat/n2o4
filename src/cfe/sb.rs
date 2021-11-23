@@ -10,6 +10,16 @@ pub use cfs_sys::CFE_SB_MsgId_Atom_t as MsgId_Atom;
 #[derive(Clone,Copy,Debug)]
 pub struct MsgId { pub id: CFE_SB_MsgId_t }
 
+impl MsgId {
+    #[inline]
+    pub fn is_valid(self) -> bool {
+        unsafe { CFE_SB_IsValidMsgId(self.id) }
+    }
+
+    pub const RESERVED: MsgId = MsgId { id: X_CFE_SB_MSGID_RESERVED };
+    pub const INVALID: MsgId = MsgId { id: X_CFE_SB_INVALID_MSG_ID };
+}
+
 impl PartialEq<MsgId> for MsgId {
     #[inline]
     fn eq(&self, other: &Self) -> bool {
