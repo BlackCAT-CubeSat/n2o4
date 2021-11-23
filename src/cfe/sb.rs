@@ -3,6 +3,7 @@
 use cfs_sys::*;
 use printf_wrap::NullString;
 use super::Status;
+use super::msg::Message;
 
 pub use cfs_sys::CFE_SB_MsgId_Atom_t as MsgId_Atom;
 
@@ -187,5 +188,16 @@ impl Pipe {
             None => Err(Status::SB_BUFFER_INVALID),
             Some(b) => closure(b),
         }
+    }
+}
+
+pub struct Buffer<'a> {
+    b: &'a CFE_SB_Buffer_t
+}
+
+impl<'a> Buffer<'a> {
+    pub fn as_message(&self) -> &'a Message {
+        let p: &CFE_MSG_Message_t = unsafe { &self.b.Msg };
+        Message::from_cfe(p)
     }
 }
