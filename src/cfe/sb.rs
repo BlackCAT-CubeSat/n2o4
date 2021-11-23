@@ -172,7 +172,7 @@ impl Pipe {
 
     #[inline]
     pub fn receive_buffer<T, F>(&mut self, time_out: TimeOut, closure: F) -> Result<T, Status>
-        where F: for<'a> FnOnce(&'a CFE_SB_Buffer_t) -> Result<T, Status> {
+        where F: for<'a> FnOnce(Buffer<'a>) -> Result<T, Status> {
 
         let mut buf: *mut CFE_SB_Buffer_t = core::ptr::null_mut();
 
@@ -186,7 +186,7 @@ impl Pipe {
 
         match unsafe { buf.as_ref() } {
             None => Err(Status::SB_BUFFER_INVALID),
-            Some(b) => closure(b),
+            Some(b) => closure(Buffer { b: b }),
         }
     }
 }
