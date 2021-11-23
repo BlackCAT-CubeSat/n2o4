@@ -79,6 +79,25 @@ impl From<Qos> for CFE_SB_Qos_t {
     }
 }
 
+#[derive(Clone,Copy,Debug,PartialEq,Eq)]
+pub enum TimeOut {
+    Millis(u32),
+    Poll,
+    PendForever,
+}
+
+impl From<TimeOut> for i32 {
+    fn from(tmo: TimeOut) -> i32 {
+        use TimeOut::*;
+
+        match tmo {
+            Millis(n) => (n & !0x8000_0000) as i32,
+            Poll => CFE_SB_POLL as i32,
+            PendForever => CFE_SB_PEND_FOREVER as i32,
+        }
+    }
+}
+
 #[derive(Debug)]
 pub struct Pipe { pub id: CFE_SB_PipeId_t }
 
@@ -148,5 +167,25 @@ impl Pipe {
         }.into();
 
         s.as_result(|| { () })
+    }
+
+    #[inline]
+    pub fn receive_buffer<T, F>(&mut self, time_out: TimeOut, closure: F) -> Result<T, Status>
+        where F: for<'a> FnOnce(&'a CFE_SB_Buffer_t) -> Result<T, Status> {
+
+        let mut buf: *mut CFE_SB_Buffer_t = core::ptr::null_mut();
+
+        let s: Status = unsafe {
+            CFE_SB_ReceiveBuffer(&mut buf, self.id, time_out.into())
+        }.into();
+
+        if s.severity() != super::StatusSeverity::Success {
+            return Err(s);
+        }
+
+        match unsafe { buf.as_ref() } {
+            None => Err(Status::SB_BUFFER_INVALID),
+            Some(b) => closure(b),
+        }
     }
 }
