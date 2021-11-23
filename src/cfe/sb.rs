@@ -3,7 +3,7 @@
 use cfs_sys::*;
 use printf_wrap::NullString;
 use super::Status;
-use super::msg::Message;
+use super::msg::{Message,MsgType};
 
 pub use cfs_sys::CFE_SB_MsgId_Atom_t as MsgId_Atom;
 
@@ -14,6 +14,16 @@ impl MsgId {
     #[inline]
     pub fn is_valid(self) -> bool {
         unsafe { CFE_SB_IsValidMsgId(self.id) }
+    }
+
+    #[inline]
+    pub fn msg_type(self) -> Result<MsgType, Status> {
+        let mut t: CFE_MSG_Type_t = CFE_MSG_Type_CFE_MSG_Type_Invalid;
+        let s: Status = unsafe {
+            CFE_MSG_GetTypeFromMsgId(self.id, &mut t)
+        }.into();
+
+        s.as_result(|| { t.into() })
     }
 
     pub const RESERVED: MsgId = MsgId { id: X_CFE_SB_MSGID_RESERVED };

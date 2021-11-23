@@ -87,3 +87,30 @@ impl DerefMut for TelemetryHeader {
         Message::from_cfe_mut(&mut self.hdr.Msg)
     }
 }
+
+#[derive(Clone,Copy,Debug,PartialEq,Eq)]
+#[repr(u32)]
+pub enum MsgType {
+    Cmd = CFE_MSG_Type_CFE_MSG_Type_Cmd,
+    Tlm = CFE_MSG_Type_CFE_MSG_Type_Tlm,
+    Invalid = CFE_MSG_Type_CFE_MSG_Type_Invalid,
+}
+
+impl From<CFE_MSG_Type_t> for MsgType {
+    #[inline]
+    #[allow(non_upper_case_globals)]
+    fn from(ty: CFE_MSG_Type_t) -> MsgType {
+        match ty {
+            CFE_MSG_Type_CFE_MSG_Type_Cmd => Self::Cmd,
+            CFE_MSG_Type_CFE_MSG_Type_Tlm => Self::Tlm,
+            _ => Self::Invalid,
+        }
+    }
+}
+
+impl From<MsgType> for CFE_MSG_Type_t {
+    #[inline]
+    fn from(ty: MsgType) -> CFE_MSG_Type_t {
+        ty as CFE_MSG_Type_t
+    }
+}
