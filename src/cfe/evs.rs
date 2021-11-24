@@ -51,44 +51,41 @@ macro_rules! send_impl {
     (@ $doc_end:expr, $se:ident, $sewai:ident, $ste:ident, ( $($t:ident),* ), ( $($var:ident),* )) => {
         #[doc = concat!("CFE_EVS_SendEvent with ", $doc_end)]
         #[inline]
-        pub fn $se<$($t),*>(&self, event_id: u16, event_type: EventType, fmt: PrintfFmt<($($t,)*)>, $($var: $t),*) -> Result<(), Status>
+        pub fn $se<$($t),*>(&self, event_id: u16, event_type: EventType, fmt: PrintfFmt<($($t,)*)>, $($var: $t),*) -> Status
             where $($t: PrintfArgument),* {
 
-            let status: Status = unsafe {
+            unsafe {
                 CFE_EVS_SendEvent(
                     event_id, event_type as u16, fmt.as_ptr()
                     $(, $var.as_c_val() )*
                 )
-            }.into();
-            status.as_result(|| { () })
+            }.into()
         }
 
         #[doc = concat!("CFE_EVS_SendEventWithAppID with ", $doc_end)]
         #[inline]
-        pub fn $sewai<$($t),*>(&self, event_id: u16, event_type: EventType, app_id: CFE_ES_AppId_t, fmt: PrintfFmt<($($t,)*)>, $($var: $t),*) -> Result<(), Status>
+        pub fn $sewai<$($t),*>(&self, event_id: u16, event_type: EventType, app_id: CFE_ES_AppId_t, fmt: PrintfFmt<($($t,)*)>, $($var: $t),*) -> Status
             where $($t: PrintfArgument),* {
 
-            let status: Status = unsafe {
+            unsafe {
                 CFE_EVS_SendEventWithAppID(
                     event_id, event_type as u16, app_id, fmt.as_ptr()
                     $(, $var.as_c_val() )*
                 )
-            }.into();
-            status.as_result(|| { () })
+            }.into()
         }
 
         #[doc = concat!("CFE_EVS_SendTimedEvent with ", $doc_end)]
         #[inline]
-        pub fn $ste<$($t),*>(&self, time: CFE_TIME_SysTime_t, event_id: u16, event_type: EventType, fmt: PrintfFmt<($($t,)*)>, $($var: $t),*) -> Result<(), Status>
+        pub fn $ste<$($t),*>(&self, time: CFE_TIME_SysTime_t, event_id: u16, event_type: EventType, fmt: PrintfFmt<($($t,)*)>, $($var: $t),*) -> Status
             where $($t: PrintfArgument),* {
 
-            let status: Status = unsafe {
+            unsafe {
                 CFE_EVS_SendTimedEvent(
                     time, event_id, event_type as u16, fmt.as_ptr()
                     $(, $var.as_c_val() )*
                 )
-            }.into();
-            status.as_result(|| { () })
+            }.into()
         }
     };
     ($num:expr, $se:ident, $sewai:ident, $ste:ident, ( $($t:ident),* ), ( $($var:ident),* )) => {
@@ -128,14 +125,13 @@ impl EventSender {
     /// Note that any embedded null characters and anything past them
     /// will not get put into the event message.
     #[inline]
-    pub fn send_event_str(&self, event_id: u16, event_type: EventType, msg: &str) -> Result<(), Status> {
-        let status: Status = unsafe {
+    pub fn send_event_str(&self, event_id: u16, event_type: EventType, msg: &str) -> Status {
+        unsafe {
             CFE_EVS_SendEvent(
                 event_id, event_type as u16, super::RUST_STR_FMT.as_ptr(),
                 msg.len(), msg.as_ptr() as *const c_char
             )
-        }.into();
-        status.as_result(|| { () })
+        }.into()
     }
 
     /// CFE_EVS_SendEventWithAppID with a `str` argument.
@@ -143,14 +139,13 @@ impl EventSender {
     /// Note that any embedded null characters and anything past them
     /// will not get put into the event message.
     #[inline]
-    pub fn send_event_with_app_id_str(&self, event_id: u16, event_type: EventType, app_id: CFE_ES_AppId_t, msg: &str) -> Result<(), Status> {
-        let status: Status = unsafe {
+    pub fn send_event_with_app_id_str(&self, event_id: u16, event_type: EventType, app_id: CFE_ES_AppId_t, msg: &str) -> Status {
+        unsafe {
             CFE_EVS_SendEventWithAppID(
                 event_id, event_type as u16, app_id, super::RUST_STR_FMT.as_ptr(),
                 msg.len(), msg.as_ptr() as *const c_char
             )
-        }.into();
-        status.as_result(|| { () })
+        }.into()
     }
 
     /// CFE_EVS_SendTimedEvent with a `str` argument.
@@ -158,13 +153,12 @@ impl EventSender {
     /// Note that any embedded null characters and anything past them
     /// will not get put into the event message.
     #[inline]
-    pub fn send_timed_event_str(&self, time: CFE_TIME_SysTime_t, event_id: u16, event_type: EventType, msg: &str) -> Result<(), Status> {
-        let status: Status = unsafe {
+    pub fn send_timed_event_str(&self, time: CFE_TIME_SysTime_t, event_id: u16, event_type: EventType, msg: &str) -> Status {
+        unsafe {
             CFE_EVS_SendTimedEvent(
                 time, event_id, event_type as u16, super::RUST_STR_FMT.as_ptr(),
                 msg.len(), msg.as_ptr() as *const c_char
             )
-        }.into();
-        status.as_result(|| { () })
+        }.into()
     }
 }

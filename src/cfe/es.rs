@@ -35,13 +35,12 @@ macro_rules! wtsl_impl {
     (@ $doc_end:expr, $name:ident, ( $($t:ident),* ), ( $($var:ident),* )) => {
         #[doc = concat!("CFE_ES_WriteToSysLog with ", $doc_end)]
         #[inline]
-        pub fn $name<$($t),*>(fmt: PrintfFmt<($($t,)*)>, $($var: $t),*) -> Result<(), Status>
+        pub fn $name<$($t),*>(fmt: PrintfFmt<($($t,)*)>, $($var: $t),*) -> Status
             where $($t: PrintfArgument),* {
 
-            let status: Status = unsafe {
+            unsafe {
                 CFE_ES_WriteToSysLog(fmt.as_ptr() $(, $var.as_c_val())*)
-            }.into();
-            status.as_result(|| { () })
+            }.into()
         }
     };
     ($num:expr, $name:ident, ( $($t:ident),* ), ( $($var:ident),* )) => {
@@ -71,14 +70,13 @@ wtsl_impl!( 8, write_to_syslog8, (A, B, C, D, E, F, G, H), (a, b, c, d, e, f, g,
 /// Note that any embedded null characters and anything past them
 /// will not get put into the log message.
 #[inline]
-pub fn write_to_syslog_str(msg: &str) -> Result<(), Status> {
-    let status: Status = unsafe {
+pub fn write_to_syslog_str(msg: &str) -> Status {
+    unsafe {
         CFE_ES_WriteToSysLog(
             super::RUST_STR_FMT.as_ptr(),
             msg.len(), msg.as_ptr() as *const c_char
         )
-    }.into();
-    status.as_result(|| { () })
+    }.into()
 }
 
 #[inline]
