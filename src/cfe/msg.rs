@@ -20,11 +20,6 @@ impl Message {
     const ZERO_MESSAGE: CFE_MSG_Message_t = CFE_MSG_Message_t { Byte: [0; 6] };
 
     #[inline]
-    pub fn new_zeroed() -> Message {
-        Message { msg: Self::ZERO_MESSAGE }
-    }
-
-    #[inline]
     unsafe fn init(&mut self, msg_id: MsgId, size: Size) -> Result<(), Status> {
         let s: Status = CFE_MSG_Init(&mut self.msg, msg_id.id, size).into();
         s.as_result(|| { () })
@@ -65,9 +60,18 @@ impl Message {
 
     #[inline]
     pub fn set_msgid(&mut self, msg_id: MsgId) -> Result<(), Status> {
-        let s: Status = unsafe {
-            CFE_MSG_SetMsgId(&mut self.msg, msg_id.id)
-        }.into();
+        let old_msg_id = self.msgid()?;
+
+        if msg_id.msg_type()? != old_msg_id.msg_type()? {
+            return Err(Status::SB_BAD_ARGUMENT);
+        }
+
+        unsafe { self.set_msgid_unchecked(msg_id) }
+    }
+
+    #[inline]
+    pub unsafe fn set_msgid_unchecked(&mut self, msg_id: MsgId) -> Result<(), Status> {
+        let s: Status = CFE_MSG_SetMsgId(&mut self.msg, msg_id.id).into();
 
         s.as_result(|| { () })
     }
