@@ -191,13 +191,13 @@ impl TelemetryHeader {
 #[repr(C)]
 pub struct Command<T> {
     header: CommandHeader,
-    payload: T,
+    pub payload: T,
 }
 
 #[repr(C)]
 pub struct Telemetry<T> {
     header: TelemetryHeader,
-    payload: T,
+    pub payload: T,
 }
 
 impl<T: Copy + Sized> Command<T> {
