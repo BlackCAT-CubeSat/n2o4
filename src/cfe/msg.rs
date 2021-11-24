@@ -43,6 +43,16 @@ impl Message {
     }
 
     #[inline]
+    pub fn fcn_code(&self) -> Result<FunctionCode, Status> {
+        let mut fc: FunctionCode = 0;
+        let s: Status = unsafe {
+            CFE_MSG_GetFcnCode(&self.msg, &mut fc)
+        }.into();
+
+        s.as_result(|| { fc })
+    }
+
+    #[inline]
     pub fn msgid(&self) -> Result<MsgId, Status> {
         let mut mid: MsgId = MsgId::INVALID;
 
