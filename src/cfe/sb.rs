@@ -191,8 +191,8 @@ impl Pipe {
     }
 
     #[inline]
-    pub fn receive_buffer<T, F>(&mut self, time_out: TimeOut, closure: F) -> Result<T, Status>
-        where F: for<'a> FnOnce(Buffer<'a>) -> Result<T, Status> {
+    pub fn receive_buffer<T, F>(&mut self, time_out: TimeOut, closure: F) -> T
+        where F: for<'a> FnOnce(Result<Buffer<'a>, Status>) -> T {
 
         let mut buf: *mut CFE_SB_Buffer_t = core::ptr::null_mut();
 
@@ -200,14 +200,17 @@ impl Pipe {
             CFE_SB_ReceiveBuffer(&mut buf, self.id, time_out.into())
         }.into();
 
-        if s.severity() != super::StatusSeverity::Success {
-            return Err(s);
-        }
+        let result: Result<Buffer, Status>;
+        result = if s.severity() != super::StatusSeverity::Success {
+            Err(s)
+        } else {
+            match unsafe { buf.as_ref() } {
+                None => Err(Status::SB_BUFFER_INVALID),
+                Some(b) => Ok(Buffer { b: b }),
+            }
+        };
 
-        match unsafe { buf.as_ref() } {
-            None => Err(Status::SB_BUFFER_INVALID),
-            Some(b) => closure(Buffer { b: b }),
-        }
+        closure(result)
     }
 }
 
