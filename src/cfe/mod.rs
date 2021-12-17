@@ -19,7 +19,7 @@ use printf_wrap::{NullString, null_str};
 
 #[derive(Clone,Copy,Debug)]
 pub struct ResourceId {
-    pub id: CFE_ResourceId_t
+    id: CFE_ResourceId_t
 }
 
 impl ResourceId {
@@ -58,13 +58,20 @@ impl From<ResourceId> for c_ulong {
 
 #[derive(Clone,Copy,PartialEq,Eq,Debug)]
 pub struct Status {
-    pub status: CFE_Status_t
+    pub(crate) status: CFE_Status_t
 }
 
 impl From<CFE_Status_t> for Status {
     #[inline]
     fn from(status: CFE_Status_t) -> Status {
         Status { status: status }
+    }
+}
+
+impl From<Status> for CFE_Status_t {
+    #[inline]
+    fn from(status: Status) -> CFE_Status_t {
+        status.status
     }
 }
 

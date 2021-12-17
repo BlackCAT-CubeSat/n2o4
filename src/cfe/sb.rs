@@ -252,6 +252,7 @@ impl<'a> Buffer<'a> {
         self.try_cast::<Telemetry<T>>(MsgType::Tlm)
     }
 
+    #[inline]
     pub fn as_message(&self) -> &'a Message {
         let p: &CFE_MSG_Message_t = unsafe { &self.b.Msg };
         Message::from_cfe(p)
