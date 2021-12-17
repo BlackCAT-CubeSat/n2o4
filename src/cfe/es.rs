@@ -1,5 +1,7 @@
 // Copyright (c) 2021 The Pennsylvania State University. All rights reserved.
 
+//! Executive Services system
+
 use cfs_sys::*;
 use super::Status;
 use printf_wrap::{PrintfFmt, PrintfArgument};

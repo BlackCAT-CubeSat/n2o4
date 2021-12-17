@@ -1,5 +1,7 @@
 // Copyright (c) 2021 The Pennsylvania State University. All rights reserved.
 
+//! cFE APIs
+
 use cfs_sys::*;
 use libc::c_ulong;
 

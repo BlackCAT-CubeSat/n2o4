@@ -1,5 +1,7 @@
 // Copyright (c) 2021 The Pennsylvania State University. All rights reserved.
 
+//! Message utilities
+
 use core::default::Default;
 use core::mem;
 use core::ops::{Deref,DerefMut};

@@ -1,5 +1,7 @@
 // Copyright (c) 2021 The Pennsylvania State University. All rights reserved.
 
+//! Software Bus system
+
 use cfs_sys::*;
 use printf_wrap::NullString;
 use super::Status;
