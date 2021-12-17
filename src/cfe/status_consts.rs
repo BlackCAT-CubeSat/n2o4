@@ -1,5 +1,7 @@
 // Copyright (c) 2021 The Pennsylvania State University. All rights reserved.
 
+//! Status constants used by cFE.
+
 use cfs_sys::*;
 use super::Status;
 
