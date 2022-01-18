@@ -1,2 +1,8 @@
+# Build artifacts
 /target
 Cargo.lock
+
+# Editor tempfiles
+*~
+~*
+*.sw[po]
