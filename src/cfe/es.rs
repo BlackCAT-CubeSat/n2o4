@@ -86,9 +86,24 @@ pub fn exit_app(exit_status: RunStatus) {
     unsafe { CFE_ES_ExitApp(exit_status as u32) };
 }
 
+/// Check for exit requests from the cFE system,
+/// or make a request for app shutdown to the cFE system.
+///
+/// If `run_status` is set to
+/// `Some(`[`AppExit`](`RunStatus::AppExit`)`)` or
+/// `Some(`[`AppError`](`RunStatus::AppError`)`)`,
+/// the cFE system treats the function call
+/// as a shutdown request for this application.
+///
+/// Returns whether the app should continue running;
+/// a return value of `false` means the application should
+/// gracefully shut down.
 #[inline]
-pub fn run_loop(run_status: RunStatus) -> bool {
-    let mut rs: u32 = run_status as u32;
-    let result = unsafe { CFE_ES_RunLoop(&mut rs) };
-    result
+pub fn run_loop(run_status: Option<RunStatus>) -> bool {
+    let mut rs: u32 = run_status.unwrap_or(0);
+    let p: *mut u32 = match run_status {
+        None => core::ptr::null_mut(),
+        Some(status) => &mut rs,
+    };
+    unsafe { CFE_ES_RunLoop(p) }
 }
