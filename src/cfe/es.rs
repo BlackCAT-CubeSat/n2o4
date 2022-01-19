@@ -100,10 +100,10 @@ pub fn exit_app(exit_status: RunStatus) {
 /// gracefully shut down.
 #[inline]
 pub fn run_loop(run_status: Option<RunStatus>) -> bool {
-    let mut rs: u32 = run_status.unwrap_or(0);
+    let mut rs: u32 = run_status.map_or(0u32, |status| { status as u32 });
     let p: *mut u32 = match run_status {
         None => core::ptr::null_mut(),
-        Some(status) => &mut rs,
+        Some(_) => &mut rs,
     };
     unsafe { CFE_ES_RunLoop(p) }
 }
