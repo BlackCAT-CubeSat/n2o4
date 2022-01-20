@@ -9,17 +9,29 @@ use printf_wrap::NullString;
 use super::Status;
 use super::msg::{Message,MsgType,Command,Telemetry};
 
+/// The numeric value of a [message ID](`MsgId`).
+#[doc(inline)]
 pub use cfs_sys::CFE_SB_MsgId_Atom_t as MsgId_Atom;
 
+/// An encoded message ID.
+///
+/// This a mapped version of the [numeric message ID](`MsgId_Atom`)
+/// used by SB.
 #[derive(Clone,Copy,Debug)]
 pub struct MsgId { pub(crate) id: CFE_SB_MsgId_t }
 
 impl MsgId {
+    /// Returns whether `self` is a valid message ID.
+    ///
+    /// Wraps CFE_SB_IsValidMsgId.
     #[inline]
     pub fn is_valid(self) -> bool {
         unsafe { CFE_SB_IsValidMsgId(self.id) }
     }
 
+    /// Returns the message type this message ID corresponds to.
+    ///
+    /// Wraps CFE_MSG_GetTypeFromMsgId.
     #[inline]
     pub fn msg_type(self) -> Result<MsgType, Status> {
         let mut t: CFE_MSG_Type_t = CFE_MSG_Type_CFE_MSG_Type_Invalid;
@@ -30,10 +42,14 @@ impl MsgId {
         s.as_result(|| { MsgType::from_cfe(t) })
     }
 
+    /// A reserved value that will not match any valid message ID.
     pub const RESERVED: MsgId = MsgId { id: X_CFE_SB_MSGID_RESERVED };
+
+    /// Value representing an invalid message ID.
     pub const INVALID: MsgId = MsgId { id: X_CFE_SB_INVALID_MSG_ID };
 }
 
+/// Wraps CFE_SB_MsgId_Equal.
 impl PartialEq<MsgId> for MsgId {
     #[inline]
     fn eq(&self, other: &Self) -> bool {
@@ -43,6 +59,7 @@ impl PartialEq<MsgId> for MsgId {
 
 impl Eq for MsgId { }
 
+/// Wraps CFE_SB_ValueToMsgId.
 impl From<MsgId_Atom> for MsgId {
     #[inline]
     fn from(val: MsgId_Atom) -> Self {
@@ -51,6 +68,7 @@ impl From<MsgId_Atom> for MsgId {
     }
 }
 
+/// Wraps CFE_SB_MsgIdToValue.
 impl From<MsgId> for MsgId_Atom {
     #[inline]
     fn from(id: MsgId) -> Self {
