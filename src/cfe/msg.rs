@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Pennsylvania State University. All rights reserved.
+// Copyright (c) 2021-2022 The Pennsylvania State University. All rights reserved.
 
 //! Message utilities
 
@@ -16,6 +16,18 @@ pub type Size = CFE_MSG_Size_t;
 #[repr(transparent)]
 pub struct Message {
     pub(super) msg: CFE_MSG_Message_t
+}
+
+#[repr(C)]
+pub struct Command<T> {
+    header: CFE_MSG_CommandHeader_t,
+    pub payload: T,
+}
+
+#[repr(C)]
+pub struct Telemetry<T> {
+    header: CFE_MSG_TelemetryHeader_t,
+    pub payload: T,
 }
 
 impl Message {
@@ -109,118 +121,19 @@ impl Message {
     }
 }
 
-#[repr(transparent)]
-pub struct CommandHeader {
-    pub(super) hdr: CFE_MSG_CommandHeader_t
-}
-
-#[repr(transparent)]
-pub struct TelemetryHeader {
-    pub(super) hdr: CFE_MSG_TelemetryHeader_t
-}
-
-impl Deref for CommandHeader {
-    type Target = Message;
-
-    #[inline]
-    fn deref(&self) -> &Message {
-        Message::from_cfe(&self.hdr.Msg)
-    }
-}
-
-impl DerefMut for CommandHeader {
-    #[inline]
-    fn deref_mut(&mut self) -> &mut Message {
-        Message::from_cfe_mut(&mut self.hdr.Msg)
-    }
-}
-
-impl Deref for TelemetryHeader {
-    type Target = Message;
-
-    #[inline]
-    fn deref(&self) -> &Message {
-        Message::from_cfe(&self.hdr.Msg)
-    }
-}
-
-impl DerefMut for TelemetryHeader {
-    #[inline]
-    fn deref_mut(&mut self) -> &mut Message {
-        Message::from_cfe_mut(&mut self.hdr.Msg)
-    }
-}
-
-impl CommandHeader {
+impl<T: Copy + Sized> Command<T> {
     const ZERO_SECONDARY: CFE_MSG_CommandSecondaryHeader_t = CFE_MSG_CommandSecondaryHeader_t {
         FunctionCode: 0,
         Checksum: 0,
     };
 
     #[inline]
-    pub fn new_zeroed() -> CommandHeader {
-        CommandHeader {
-            hdr: CFE_MSG_CommandHeader_t {
-                Msg: Message::ZERO_MESSAGE,
-                Sec: Self::ZERO_SECONDARY,
-            }
-        }
-    }
-
-    #[inline]
-    pub fn fcn_code(&self) -> Result<FunctionCode, Status> {
-        let mut fc: FunctionCode = 0;
-        let s: Status = unsafe {
-            CFE_MSG_GetFcnCode(&self.hdr.Msg, &mut fc)
-        }.into();
-
-        s.as_result(|| { fc })
-    }
-
-    #[inline]
-    pub fn set_fcn_code(&mut self, fcn_code: FunctionCode) -> Result<(), Status> {
-        let s: Status = unsafe {
-            CFE_MSG_SetFcnCode(&mut self.hdr.Msg, fcn_code)
-        }.into();
-
-        s.as_result(|| { () })
-    }
-}
-
-impl TelemetryHeader {
-    const ZERO_SECONDARY: CFE_MSG_TelemetrySecondaryHeader_t = CFE_MSG_TelemetrySecondaryHeader_t {
-        Time: [0; 6],
-    };
-
-    #[inline]
-    pub fn new_zeroed() -> TelemetryHeader {
-        TelemetryHeader {
-            hdr: CFE_MSG_TelemetryHeader_t {
-                Msg: Message::ZERO_MESSAGE,
-                Sec: Self::ZERO_SECONDARY,
-                Spare: [0; 4],
-            }
-        }
-    }
-}
-
-#[repr(C)]
-pub struct Command<T> {
-    header: CommandHeader,
-    pub payload: T,
-}
-
-#[repr(C)]
-pub struct Telemetry<T> {
-    header: TelemetryHeader,
-    pub payload: T,
-}
-
-impl<T: Copy + Sized> Command<T> {
-    #[inline]
     pub fn new(msg_id: MsgId, fcn_code: FunctionCode, payload: T) -> Result<Self, Status> {
         let mut cmd = Command {
-            header: CommandHeader::new_zeroed(),
+            header: CFE_MSG_CommandHeader_t {
+                Msg: Message::ZERO_MESSAGE,
+                Sec: Self::ZERO_SECONDARY,
+            },
             payload: payload,
         };
         let sz: Size = mem::size_of::<Self>() as Size;
@@ -242,6 +155,15 @@ impl<T: Copy + Sized + Default> Command<T> {
 
 impl<T: Copy + Sized> Command<T> {
     #[inline]
+    fn set_fcn_code(&mut self, fcn_code: FunctionCode) -> Result<(), Status> {
+        let s: Status = unsafe {
+            CFE_MSG_SetFcnCode(&mut self.hdr.Msg, fcn_code)
+        }.into();
+
+        s.as_result(|| { () })
+    }
+
+    #[inline]
     pub fn time_stamp(&mut self) {
         self.header.time_stamp();
     }
@@ -252,11 +174,37 @@ impl<T: Copy + Sized> Command<T> {
     }
 }
 
+impl<T> Deref for Command<T> {
+    type Target = Message;
+
+    #[inline]
+    fn deref(&self) -> &Message {
+        Message::from_cfe(&self.header.Msg)
+    }
+}
+
+impl<T> DerefMut for Command<T> {
+    type Target = Message;
+
+    #[inline]
+    fn deref_mut(&mut self) -> &mut Message {
+        Message::from_cfe_mut(&mut self.header.Msg)
+    }
+}
+
 impl<T: Copy + Sized> Telemetry<T> {
+    const ZERO_SECONDARY: CFE_MSG_TelemetrySecondaryHeader_t = CFE_MSG_TelemetrySecondaryHeader_t {
+        Time: [0; 6],
+    };
+
     #[inline]
     pub fn new(msg_id: MsgId, payload: T) -> Result<Self, Status> {
         let mut tlm = Telemetry {
-            header: TelemetryHeader::new_zeroed(),
+            header: CFE_MSG_TelemetryHeader_t {
+                Msg: Message::ZERO_MESSAGE,
+                Sec: Self::ZERO_SECONDARY,
+                Spare: [0; 4],
+            }
             payload: payload,
         };
         let sz: Size = mem::size_of::<Self>() as Size;
@@ -286,35 +234,21 @@ impl<T: Copy + Sized> Telemetry<T> {
     }
 }
 
-impl<T> Deref for Command<T> {
-    type Target = CommandHeader;
-
-    #[inline]
-    fn deref(&self) -> &CommandHeader {
-        &self.header
-    }
-}
-
-impl<T> DerefMut for Command<T> {
-    #[inline]
-    fn deref_mut(&mut self) -> &mut CommandHeader {
-        &mut self.header
-    }
-}
-
 impl<T> Deref for Telemetry<T> {
-    type Target = TelemetryHeader;
+    type Target = Message;
 
     #[inline]
-    fn deref(&self) -> &TelemetryHeader {
-        &self.header
+    fn deref(&self) -> &Message {
+        Message::from_cfe(&self.header.Msg)
     }
 }
 
 impl<T> DerefMut for Telemetry<T> {
+    type Target = Message;
+
     #[inline]
-    fn deref_mut(&mut self) -> &mut TelemetryHeader {
-        &mut self.header
+    fn deref_mut(&mut self) -> &mut Message {
+        Message::from_cfe_mut(&mut self.header.Msg)
     }
 }
 
