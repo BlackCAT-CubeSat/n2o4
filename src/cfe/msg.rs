@@ -138,9 +138,9 @@ impl<T: Copy + Sized> Command<T> {
         };
         let sz: Size = mem::size_of::<Self>() as Size;
 
-        unsafe { cmd.header.init(msg_id, sz) }?;
+        unsafe { Message::from_cfe_mut(&mut cmd.header.Msg).init(msg_id, sz) }?;
 
-        cmd.header.set_fcn_code(fcn_code)?;
+        cmd.set_fcn_code(fcn_code)?;
 
         Ok(cmd)
     }
@@ -155,22 +155,12 @@ impl<T: Copy + Sized + Default> Command<T> {
 
 impl<T: Copy + Sized> Command<T> {
     #[inline]
-    fn set_fcn_code(&mut self, fcn_code: FunctionCode) -> Result<(), Status> {
+    pub fn set_fcn_code(&mut self, fcn_code: FunctionCode) -> Result<(), Status> {
         let s: Status = unsafe {
-            CFE_MSG_SetFcnCode(&mut self.hdr.Msg, fcn_code)
+            CFE_MSG_SetFcnCode(&mut self.header.Msg, fcn_code)
         }.into();
 
         s.as_result(|| { () })
-    }
-
-    #[inline]
-    pub fn time_stamp(&mut self) {
-        self.header.time_stamp();
-    }
-
-    #[inline]
-    pub fn transmit(&mut self, increment_sequence_count: bool) -> Result<(), Status> {
-        self.header.transmit(increment_sequence_count)
     }
 }
 
@@ -184,8 +174,6 @@ impl<T> Deref for Command<T> {
 }
 
 impl<T> DerefMut for Command<T> {
-    type Target = Message;
-
     #[inline]
     fn deref_mut(&mut self) -> &mut Message {
         Message::from_cfe_mut(&mut self.header.Msg)
@@ -203,13 +191,13 @@ impl<T: Copy + Sized> Telemetry<T> {
             header: CFE_MSG_TelemetryHeader_t {
                 Msg: Message::ZERO_MESSAGE,
                 Sec: Self::ZERO_SECONDARY,
-                Spare: [0; 4],
-            }
+                Spare: [0; 4], //CFE_MSG_TelemetryHeader_t::Spare::size_of()],
+            },
             payload: payload,
         };
         let sz: Size = mem::size_of::<Self>() as Size;
 
-        unsafe { tlm.header.init(msg_id, sz) }?;
+        unsafe { Message::from_cfe_mut(&mut tlm.header.Msg).init(msg_id, sz) }?;
 
         Ok(tlm)
     }
@@ -219,18 +207,6 @@ impl<T: Copy + Sized + Default> Telemetry<T> {
     #[inline]
     pub fn new_default(msg_id: MsgId) -> Result<Self, Status> {
         Self::new(msg_id, T::default())
-    }
-}
-
-impl<T: Copy + Sized> Telemetry<T> {
-    #[inline]
-    pub fn time_stamp(&mut self) {
-        self.header.time_stamp();
-    }
-
-    #[inline]
-    pub fn transmit(&mut self, increment_sequence_count: bool) -> Result<(), Status> {
-        self.header.transmit(increment_sequence_count)
     }
 }
 
@@ -244,8 +220,6 @@ impl<T> Deref for Telemetry<T> {
 }
 
 impl<T> DerefMut for Telemetry<T> {
-    type Target = Message;
-
     #[inline]
     fn deref_mut(&mut self) -> &mut Message {
         Message::from_cfe_mut(&mut self.header.Msg)
