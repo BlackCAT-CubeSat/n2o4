@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Pennsylvania State University. All rights reserved.
+// Copyright (c) 2021-2022 The Pennsylvania State University. All rights reserved.
 
 //! Safe, higher-level bindings to the APIs of
 //! [cFE](https://github.com/nasa/cFE)
