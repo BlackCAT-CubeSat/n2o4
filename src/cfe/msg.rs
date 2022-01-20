@@ -19,13 +19,13 @@ pub struct Message {
 }
 
 #[repr(C)]
-pub struct Command<T> {
+pub struct Command<T: Copy> {
     header: CFE_MSG_CommandHeader_t,
     pub payload: T,
 }
 
 #[repr(C)]
-pub struct Telemetry<T> {
+pub struct Telemetry<T: Copy> {
     header: CFE_MSG_TelemetryHeader_t,
     pub payload: T,
 }
@@ -138,6 +138,8 @@ impl<T: Copy + Sized> Command<T> {
         };
         let sz: Size = mem::size_of::<Self>() as Size;
 
+        if msg_id.msg_type() != Ok(MsgType::Cmd) { return Err(Status::SB_BAD_ARGUMENT); }
+
         unsafe { Message::from_cfe_mut(&mut cmd.header.Msg).init(msg_id, sz) }?;
 
         cmd.set_fcn_code(fcn_code)?;
@@ -164,7 +166,7 @@ impl<T: Copy + Sized> Command<T> {
     }
 }
 
-impl<T> Deref for Command<T> {
+impl<T: Copy> Deref for Command<T> {
     type Target = Message;
 
     #[inline]
@@ -173,7 +175,7 @@ impl<T> Deref for Command<T> {
     }
 }
 
-impl<T> DerefMut for Command<T> {
+impl<T: Copy> DerefMut for Command<T> {
     #[inline]
     fn deref_mut(&mut self) -> &mut Message {
         Message::from_cfe_mut(&mut self.header.Msg)
@@ -197,6 +199,8 @@ impl<T: Copy + Sized> Telemetry<T> {
         };
         let sz: Size = mem::size_of::<Self>() as Size;
 
+        if msg_id.msg_type() != Ok(MsgType::Tlm) { return Err(Status::SB_BAD_ARGUMENT); }
+
         unsafe { Message::from_cfe_mut(&mut tlm.header.Msg).init(msg_id, sz) }?;
 
         Ok(tlm)
@@ -210,7 +214,7 @@ impl<T: Copy + Sized + Default> Telemetry<T> {
     }
 }
 
-impl<T> Deref for Telemetry<T> {
+impl<T: Copy> Deref for Telemetry<T> {
     type Target = Message;
 
     #[inline]
@@ -219,7 +223,7 @@ impl<T> Deref for Telemetry<T> {
     }
 }
 
-impl<T> DerefMut for Telemetry<T> {
+impl<T: Copy> DerefMut for Telemetry<T> {
     #[inline]
     fn deref_mut(&mut self) -> &mut Message {
         Message::from_cfe_mut(&mut self.header.Msg)
