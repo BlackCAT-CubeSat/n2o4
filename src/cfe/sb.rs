@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Pennsylvania State University. All rights reserved.
+// Copyright (c) 2021-2022 The Pennsylvania State University. All rights reserved.
 
 //! Software Bus system
 
@@ -25,7 +25,7 @@ impl MsgId {
             CFE_MSG_GetTypeFromMsgId(self.id, &mut t)
         }.into();
 
-        s.as_result(|| { t.into() })
+        s.as_result(|| { MsgType::from_cfe(t) })
     }
 
     pub const RESERVED: MsgId = MsgId { id: X_CFE_SB_MSGID_RESERVED };
