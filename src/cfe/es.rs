@@ -49,6 +49,8 @@ pub enum RunStatus {
 /// `marker` is a system-wide ID for some portion of code.
 /// `entry_exit` should be `0` for an entry into the code in question,
 /// and `1` for an exit.
+///
+/// Wraps CFE_ES_PerfLogAdd.
 #[inline]
 pub fn perf_log_add(marker: u32, entry_exit: u32) {
     unsafe { CFE_ES_PerfLogAdd(marker, entry_exit) };
@@ -62,6 +64,7 @@ pub fn perf_log_entry(marker: u32) { perf_log_add(marker, 0); }
 #[inline]
 pub fn perf_log_exit(marker: u32) { perf_log_add(marker, 1); }
 
+/// Internal macro to generate _n_-adic wrappers around CFE_ES_WriteToSysLog.
 macro_rules! wtsl_impl {
     (@ $doc_end:expr, $name:ident, ( $($t:ident),* ), ( $($var:ident),* )) => {
         #[doc = concat!(

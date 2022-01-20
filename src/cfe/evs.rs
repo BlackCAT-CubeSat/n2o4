@@ -15,7 +15,18 @@ pub struct EventSender {
     _x: PhantomData<u8>
 }
 
-pub type BinFilter = CFE_EVS_BinFilter;
+/// Event-message filter definition for the binary filter scheme.
+///
+/// `EventID` is an event ID as supplied to [`send_event_*`](`EventSender::send_event_str`).
+/// `Mask` is used to control when an event message is sent as follows:
+///
+/// For each event ID supplied to [`register`], EVS maintains a (saturating) counter
+/// which gets incremented after an event message with that ID is emitted
+/// by the application.
+/// This counter is binary AND'ed with the `Mask` value for that filter ID.
+/// The message gets sent if (and only if) the result of the AND is zero.
+#[doc(inline)]
+pub use cfs_sys::CFE_EVS_BinFilter as BinFilter;
 
 pub trait FilterScheme {
     const SCHEME_ID: u16;
