@@ -86,6 +86,13 @@ impl FilterScheme for BinFilter {
     const SCHEME_ID: u16 = CFE_EVS_EventFilter_CFE_EVS_EventFilter_BINARY as u16;
 }
 
+/// Registers the application with event services.
+///
+/// This needs to be called before sending event messages, so "send an event"
+/// operations are implemented as methods on [`EventSender`],
+/// which is provided only by this function.
+///
+/// Wraps CFE_EVS_Register.
 #[inline]
 pub fn register<T: FilterScheme>(filters: &[T]) -> Result<EventSender, Status> {
     let num_filters = match u16::try_from(filters.len()) {
@@ -101,6 +108,9 @@ pub fn register<T: FilterScheme>(filters: &[T]) -> Result<EventSender, Status> {
     s.as_result(|| { EventSender { _x: PhantomData } })
 }
 
+/// The classification of an event message, analogous to the
+/// [syslog](https://en.wikipedia.org/wiki/Syslog)
+/// severity level.
 #[derive(Clone,Copy,PartialEq,Eq,Debug)]
 #[repr(u16)]
 pub enum EventType {
@@ -110,9 +120,15 @@ pub enum EventType {
     Critical = CFE_EVS_EventType_CFE_EVS_EventType_CRITICAL as u16,
 }
 
+/// Internal macro for generating _n_-adic wrappers around CFE_EVS_Send*Event*.
 macro_rules! send_impl {
-    (@ $doc_end:expr, $se:ident, $sewai:ident, $ste:ident, ( $($t:ident),* ), ( $($var:ident),* )) => {
-        #[doc = concat!("CFE_EVS_SendEvent with ", $doc_end)]
+    (@ $doc_args:expr, $se:ident, $sewai:ident, $ste:ident, ( $($t:ident),* ), ( $($var:ident),* )) => {
+        #[doc = concat!(
+            "Generates a software event using a format string and ",
+            $doc_args, ".\n",
+            "\n",
+            "Wraps CFE_EVS_SendEvent.\n",
+        )]
         #[inline]
         pub fn $se<$($t),*>(&self, event_id: u16, event_type: EventType, fmt: PrintfFmt<($($t,)*)>, $($var: $t),*) -> Status
             where $($t: PrintfArgument),* {
@@ -125,7 +141,13 @@ macro_rules! send_impl {
             }.into()
         }
 
-        #[doc = concat!("CFE_EVS_SendEventWithAppID with ", $doc_end)]
+        #[doc = concat!(
+            "Generates a software event (with the specified Application ID) ",
+            "using a format string and ",
+            $doc_args, ".\n",
+            "\n",
+            "Wraps CFE_EVS_SendEventWithAppID.\n",
+        )]
         #[inline]
         pub fn $sewai<$($t),*>(&self, event_id: u16, event_type: EventType, app_id: CFE_ES_AppId_t, fmt: PrintfFmt<($($t,)*)>, $($var: $t),*) -> Status
             where $($t: PrintfArgument),* {
@@ -138,7 +160,13 @@ macro_rules! send_impl {
             }.into()
         }
 
-        #[doc = concat!("CFE_EVS_SendTimedEvent with ", $doc_end)]
+        #[doc = concat!(
+            "Generates a software event (with a specific time tag) ",
+            "using a format string and ",
+            $doc_args, ".\n",
+            "\n",
+            "Wraps CFE_EVS_SendTimedEvent.\n",
+        )]
         #[inline]
         pub fn $ste<$($t),*>(&self, time: CFE_TIME_SysTime_t, event_id: u16, event_type: EventType, fmt: PrintfFmt<($($t,)*)>, $($var: $t),*) -> Status
             where $($t: PrintfArgument),* {
@@ -152,12 +180,12 @@ macro_rules! send_impl {
         }
     };
     ($num:expr, $se:ident, $sewai:ident, $ste:ident, ( $($t:ident),* ), ( $($var:ident),* )) => {
-        send_impl!(@ concat!(stringify!($num), " format arguments."),
+        send_impl!(@ concat!(stringify!($num), " format arguments"),
             $se, $sewai, $ste, ( $($t),* ), ( $($var),* )
         );
     };
     ($se:ident, $sewai:ident, $ste:ident, ( $($t:ident),* ), ( $($var:ident),* )) => {
-        send_impl!(@ "1 format argument.",
+        send_impl!(@ "1 format argument",
             $se, $sewai, $ste, ( $($t),* ), ( $($var),* )
         );
     };
@@ -183,10 +211,12 @@ impl EventSender {
     send_impl!(8, send_event8, send_event_with_app_id8, send_timed_event8,
                (A, B, C, D, E, F, G, H), (a, b, c, d, e, f, g, h));
 
-    /// CFE_EVS_SendEvent with a `str` argument.
+    /// Generates a software event using a [`str`] as the message.
     ///
     /// Note that any embedded null characters and anything past them
     /// will not get put into the event message.
+    ///
+    /// Wraps CFE_EVS_SendEvent.
     #[inline]
     pub fn send_event_str(&self, event_id: u16, event_type: EventType, msg: &str) -> Status {
         unsafe {
@@ -197,10 +227,13 @@ impl EventSender {
         }.into()
     }
 
-    /// CFE_EVS_SendEventWithAppID with a `str` argument.
+    /// Generates a software event with the specified Application ID
+    /// using a [`str`] as the message.
     ///
     /// Note that any embedded null characters and anything past them
     /// will not get put into the event message.
+    ///
+    /// Wraps CFE_EVS_SendEventWithAppID.
     #[inline]
     pub fn send_event_with_app_id_str(&self, event_id: u16, event_type: EventType, app_id: CFE_ES_AppId_t, msg: &str) -> Status {
         unsafe {
@@ -211,10 +244,13 @@ impl EventSender {
         }.into()
     }
 
-    /// CFE_EVS_SendTimedEvent with a `str` argument.
+    /// Generates a software event with a specific time tag
+    /// using a [`str`] as the message.
     ///
     /// Note that any embedded null characters and anything past them
     /// will not get put into the event message.
+    ///
+    /// Wraps CFE_EVS_SendTimedEvent.
     #[inline]
     pub fn send_timed_event_str(&self, time: CFE_TIME_SysTime_t, event_id: u16, event_type: EventType, msg: &str) -> Status {
         unsafe {

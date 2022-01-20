@@ -66,12 +66,12 @@ pub fn perf_log_exit(marker: u32) { perf_log_add(marker, 1); }
 
 /// Internal macro to generate _n_-adic wrappers around CFE_ES_WriteToSysLog.
 macro_rules! wtsl_impl {
-    (@ $doc_end:expr, $name:ident, ( $($t:ident),* ), ( $($var:ident),* )) => {
+    (@ $doc_args:expr, $name:ident, ( $($t:ident),* ), ( $($var:ident),* )) => {
         #[doc = concat!(
-            "Write a message to the cFE System Log using a format string and ",
-            $doc_end,
-            "\n\n",
-            "Wraps CFE_ES_WriteToSysLog.",
+            "Writes a message to the cFE System Log using a format string and ",
+            $doc_args, ".\n",
+            "\n",
+            "Wraps CFE_ES_WriteToSysLog.\n",
         )]
         #[inline]
         pub fn $name<$($t),*>(fmt: PrintfFmt<($($t,)*)>, $($var: $t),*) -> Status
@@ -83,12 +83,12 @@ macro_rules! wtsl_impl {
         }
     };
     ($num:expr, $name:ident, ( $($t:ident),* ), ( $($var:ident),* )) => {
-        wtsl_impl!(@ concat!(stringify!($num), " format arguments."),
+        wtsl_impl!(@ concat!(stringify!($num), " format arguments"),
             $name, ( $($t),* ), ( $($var),* )
         );
     };
     ($name:ident, ( $($t:ident),* ), ( $($var:ident),* )) => {
-        wtsl_impl!(@ "1 format argument.",
+        wtsl_impl!(@ "1 format argument",
             $name, ( $($t),* ), ( $($var),* )
         );
     };
@@ -104,7 +104,7 @@ wtsl_impl!( 6, write_to_syslog6, (A, B, C, D, E, F), (a, b, c, d, e, f) );
 wtsl_impl!( 7, write_to_syslog7, (A, B, C, D, E, F, G), (a, b, c, d, e, f, g) );
 wtsl_impl!( 8, write_to_syslog8, (A, B, C, D, E, F, G, H), (a, b, c, d, e, f, g, h) );
 
-/// Write the contents of a [`str`] to the cFE System Log.
+/// Writes the contents of a [`str`] to the cFE System Log.
 ///
 /// Note that any embedded null characters and anything past them
 /// will not get put into the log message.
@@ -120,7 +120,7 @@ pub fn write_to_syslog_str(msg: &str) -> Status {
     }.into()
 }
 
-/// Exit from the current application.
+/// Exits from the current application.
 ///
 /// Wraps CFE_ES_ExitApp.
 #[inline]
@@ -128,8 +128,8 @@ pub fn exit_app(exit_status: RunStatus) {
     unsafe { CFE_ES_ExitApp(exit_status as u32) };
 }
 
-/// Check for exit requests from the cFE system,
-/// and possibly make a request for app shutdown to the cFE system.
+/// Checks for exit requests from the cFE system
+/// and possibly makes a request for app shutdown to the cFE system.
 ///
 /// If `run_status` is set to
 /// `Some(`[`AppExit`](`RunStatus::AppExit`)`)` or
