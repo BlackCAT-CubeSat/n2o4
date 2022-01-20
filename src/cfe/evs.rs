@@ -25,8 +25,48 @@ pub struct EventSender {
 /// by the application.
 /// This counter is binary AND'ed with the `Mask` value for that filter ID.
 /// The message gets sent if (and only if) the result of the AND is zero.
+///
+/// See the [`bin_filter`] module for some possible values of `Mask`.
 #[doc(inline)]
 pub use cfs_sys::CFE_EVS_BinFilter as BinFilter;
+
+/// Values intended for use in the `Mask` field of [`BinFilter`].
+pub mod bin_filter {
+    use cfs_sys::*;
+
+    /// Value for [`Mask`](`super::BinFilter::Mask`): all event messages are sent (until the event counter saturates).
+    pub const NO_FILTER: u16 = CFE_EVS_NO_FILTER as u16;
+
+    /// Value for [`Mask`](`super::BinFilter::Mask`): only the first event message is sent.
+    pub const FIRST_ONE_STOP: u16 = CFE_EVS_FIRST_ONE_STOP as u16;
+
+    /// Value for [`Mask`](`super::BinFilter::Mask`): only the first two event messages are sent.
+    pub const FIRST_TWO_STOP: u16 = CFE_EVS_FIRST_TWO_STOP as u16;
+
+    /// Value for [`Mask`](`super::BinFilter::Mask`): only the first four event messages are sent.
+    pub const FIRST_4_STOP: u16 = CFE_EVS_FIRST_4_STOP as u16;
+
+    /// Value for [`Mask`](`super::BinFilter::Mask`): only the first eight event messages are sent.
+    pub const FIRST_8_STOP: u16 = CFE_EVS_FIRST_8_STOP as u16;
+
+    /// Value for [`Mask`](`super::BinFilter::Mask`): only the first 16 event messages are sent.
+    pub const FIRST_16_STOP: u16 = CFE_EVS_FIRST_16_STOP as u16;
+
+    /// Value for [`Mask`](`super::BinFilter::Mask`): only the first 32 event messages are sent.
+    pub const FIRST_32_STOP: u16 = CFE_EVS_FIRST_32_STOP as u16;
+
+    /// Value for [`Mask`](`super::BinFilter::Mask`): only the first 64 event messages are sent.
+    pub const FIRST_64_STOP: u16 = CFE_EVS_FIRST_64_STOP as u16;
+
+    /// Value for [`Mask`](`super::BinFilter::Mask`): every other event message is sent.
+    pub const EVERY_OTHER_ONE: u16 = CFE_EVS_EVERY_OTHER_ONE as u16;
+
+    /// Value for [`Mask`](`super::BinFilter::Mask`): sends two messages, filters out two, then repeats.
+    pub const EVERY_OTHER_TWO: u16 = CFE_EVS_EVERY_OTHER_TWO as u16;
+
+    /// Value for [`Mask`](`super::BinFilter::Mask`): every fourth event message is sent.
+    pub const EVERY_FOURTH_ONE: u16 = CFE_EVS_EVERY_FOURTH_ONE as u16;
+}
 
 pub trait FilterScheme {
     const SCHEME_ID: u16;
