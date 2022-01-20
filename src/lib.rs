@@ -13,3 +13,5 @@ extern crate libc;
 
 pub mod osal;
 pub mod cfe;
+
+pub(crate) mod sealed_traits;

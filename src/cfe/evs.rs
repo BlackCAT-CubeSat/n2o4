@@ -3,6 +3,7 @@
 //! Event system
 
 use cfs_sys::*;
+use crate::sealed_traits;
 use super::Status;
 use printf_wrap::{PrintfFmt, PrintfArgument};
 use libc::c_char;
@@ -68,9 +69,18 @@ pub mod bin_filter {
     pub const EVERY_FOURTH_ONE: u16 = CFE_EVS_EVERY_FOURTH_ONE as u16;
 }
 
-pub trait FilterScheme {
+/// A scheme for filtering event messages so that not all get recorded.
+///
+/// This is a [sealed trait](https://rust-lang.github.io/api-guidelines/future-proofing.html):
+/// cFE only supports a fixed set of filter schemes.
+pub trait FilterScheme: sealed_traits::FilterSchemeSealed {
+    /// An integer identifying the scheme in question.
+    ///
+    /// This gets used as the `FilterScheme` argument to CFE_EVS_Register.
     const SCHEME_ID: u16;
 }
+
+impl sealed_traits::FilterSchemeSealed for BinFilter { }
 
 impl FilterScheme for BinFilter {
     const SCHEME_ID: u16 = CFE_EVS_EventFilter_CFE_EVS_EventFilter_BINARY as u16;
