@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Pennsylvania State University. All rights reserved.
+// Copyright (c) 2021-2022 The Pennsylvania State University. All rights reserved.
 
 //! cFE APIs
 
@@ -17,21 +17,31 @@ mod status_consts;
 
 use printf_wrap::{NullString, null_str};
 
+/// An ID to identify cFE-managed resources.
+///
+/// Wraps CFE_ResourceId_t.
 #[derive(Clone,Copy,Debug)]
 pub struct ResourceId {
     id: CFE_ResourceId_t
 }
 
 impl ResourceId {
+    /// Checks if a resource ID value is defined.
+    ///
+    /// Wraps CFE_ResourceId_IsDefined.
     #[inline]
     pub fn is_defined(&self) -> bool {
         unsafe { SHIM_CFE_ResourceId_IsDefined(self.id) }
     }
 
+    /// A value that represents an undefined/unused resource.
     pub const UNDEFINED: Self = ResourceId { id: X_CFE_RESOURCEID_UNDEFINED };
+
+    /// A value that represents a reserved entry.
     pub const RESERVED: Self = ResourceId { id: X_CFE_RESOURCEID_RESERVED };
 }
 
+/// Wraps CFE_ResourceId_Equal.
 impl PartialEq<ResourceId> for ResourceId {
     #[inline]
     fn eq(&self, other: &ResourceId) -> bool {
@@ -41,6 +51,7 @@ impl PartialEq<ResourceId> for ResourceId {
 
 impl Eq for ResourceId { }
 
+/// Wraps CFE_ResourceId_FromInteger.
 impl From<c_ulong> for ResourceId {
     #[inline]
     fn from(val: c_ulong) -> ResourceId {
@@ -49,6 +60,7 @@ impl From<c_ulong> for ResourceId {
     }
 }
 
+/// Wraps CFE_ResourceId_ToInteger.
 impl From<ResourceId> for c_ulong {
     #[inline]
     fn from(id: ResourceId) -> c_ulong {
@@ -56,6 +68,9 @@ impl From<ResourceId> for c_ulong {
     }
 }
 
+/// A status-code type often used as a return type in this crate.
+///
+/// Wraps CFE_Status_t.
 #[derive(Clone,Copy,PartialEq,Eq,Debug)]
 pub struct Status {
     pub(crate) status: CFE_Status_t
@@ -75,17 +90,22 @@ impl From<Status> for CFE_Status_t {
     }
 }
 
+/// The severity part of a [`Status`].
 #[repr(u32)]
 #[derive(Clone,Copy,PartialEq,Eq,Debug)]
 pub enum StatusSeverity {
     Success = 0b00,
     Informational = 0b01,
+    Warning = 0b10,
     Error = 0b11,
 }
 
+/// The cFE service that generated a [`Status`].
 #[repr(u32)]
 #[derive(Clone,Copy,PartialEq,Eq,Debug)]
 pub enum StatusServiceId {
+    /// Not actually a cFE service;
+    /// use this value for application-defined statuses.
     NotCfe  = 0b000,
     EVS     = 0b001,
     ES      = 0b010,
@@ -97,6 +117,12 @@ pub enum StatusServiceId {
 }
 
 impl Status {
+    /// Constructs a `Status` from its component parts.
+    ///
+    /// NOTES:
+    ///
+    /// * Only the lower 9 bits of `mission_defined` get used.
+    /// * All 16 bits of `code` get used.
     #[inline]
     pub const fn new(
         severity: StatusSeverity,
@@ -111,6 +137,7 @@ impl Status {
         Status { status: n as CFE_Status_t }
     }
 
+    /// Returns the status's severity.
     #[inline]
     pub const fn severity(&self) -> StatusSeverity {
         use StatusSeverity::*;
@@ -118,10 +145,12 @@ impl Status {
         match (self.status >> 30) & 0b0011 {
             0b00 => Success,
             0b01 => Informational,
+            0b10 => Warning,
             _    => Error,
         }
     }
 
+    /// Returns the cFE service that generated this status.
     #[inline]
     pub const fn service_identifier(&self) -> StatusServiceId {
         use StatusServiceId::*;
@@ -138,23 +167,30 @@ impl Status {
         }
     }
 
+    /// Returns the mission-defined portion of the status.
     #[inline]
     pub const fn mission_defined(&self) -> u16 {
         ((self.status >> 16) & 0x01ff) as u16
     }
 
+    /// Returns the status code.
     #[inline]
     pub const fn code(&self) -> u16 {
         self.status as u16
     }
 
+    /// If `self` has a severity of [`Success`](`StatusSeverity::Success`)
+    /// or [`Informational`](`StatusSeverity::Informational`),
+    /// returns `Ok(on_success())`;
+    /// otherwise returns `Err(self)`.
     #[inline]
     pub fn as_result<T, F: FnOnce() -> T>(&self, on_success: F) -> Result<T, Status> {
         match self.severity() {
-            StatusSeverity::Success => Ok(on_success()),
+            StatusSeverity::Success | StatusSeverity::Informational => Ok(on_success()),
             _ => Err(*self),
         }
     }
 }
 
+/// Format string for using a Rust `str` in `printf(3)`-style C functions.
 const RUST_STR_FMT: NullString = null_str!("%.*s");
