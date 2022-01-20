@@ -2,6 +2,8 @@
 
 //! Software Bus system
 
+use core::marker::PhantomData;
+
 use cfs_sys::*;
 use printf_wrap::NullString;
 use super::Status;
@@ -10,7 +12,7 @@ use super::msg::{Message,MsgType,Command,Telemetry};
 pub use cfs_sys::CFE_SB_MsgId_Atom_t as MsgId_Atom;
 
 #[derive(Clone,Copy,Debug)]
-pub struct MsgId { pub id: CFE_SB_MsgId_t }
+pub struct MsgId { pub(crate) id: CFE_SB_MsgId_t }
 
 impl MsgId {
     #[inline]
@@ -90,14 +92,12 @@ impl Qos {
         priority: X_CFE_SB_DEFAULT_QOS_PRIORITY,
         reliability: X_CFE_SB_DEFAULT_QOS_RELIABILITY,
     };
-}
 
-impl From<Qos> for CFE_SB_Qos_t {
     #[inline]
-    fn from(x: Qos) -> CFE_SB_Qos_t {
+    fn into_cfe(self) -> CFE_SB_Qos_t {
         CFE_SB_Qos_t {
-            Priority: x.priority,
-            Reliability: x.reliability,
+            Priority: self.priority,
+            Reliability: self.reliability,
         }
     }
 }
@@ -122,7 +122,17 @@ impl From<TimeOut> for i32 {
 }
 
 #[derive(Debug)]
-pub struct Pipe { pub id: CFE_SB_PipeId_t }
+pub struct Pipe {
+    /// cFE ID for the pipe.
+    pub(crate) id: CFE_SB_PipeId_t,
+
+    /// Marker field used to make this type [`!Send`](`Send`) and [`!Sync`](`Sync`).
+    ///
+    /// A cFE message pipe may not be used on any thread other than the one
+    /// on which it was created, so we need to stop auto-derivation of
+    /// {`Send`, `Sync`}.
+    _pd: PhantomData<*const u8>,
+}
 
 impl Pipe {
     #[inline]
@@ -137,7 +147,7 @@ impl Pipe {
             return Err(Status::SB_PIPE_CR_ERR);
         }
 
-        s.as_result(|| { Pipe { id: p } })
+        s.as_result(|| { Pipe { id: p, _pd: PhantomData } })
     }
 
     #[inline]
@@ -156,7 +166,7 @@ impl Pipe {
 
     #[inline]
     pub fn subscribe_ex(&mut self, msg_id: MsgId, quality: Qos, msg_lim: u16) -> Result<(), Status> {
-        let qos: CFE_SB_Qos_t = quality.into();
+        let qos: CFE_SB_Qos_t = quality.into_cfe();
 
         let s: Status = unsafe {
             CFE_SB_SubscribeEx(msg_id.id, self.id, qos, msg_lim)
