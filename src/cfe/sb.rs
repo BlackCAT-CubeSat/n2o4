@@ -3,6 +3,7 @@
 //! Software Bus system
 
 use core::marker::PhantomData;
+use core::ops::Deref;
 
 use cfs_sys::*;
 use printf_wrap::NullString;
@@ -128,6 +129,7 @@ pub enum TimeOut {
 }
 
 impl From<TimeOut> for i32 {
+    #[inline]
     fn from(tmo: TimeOut) -> i32 {
         use TimeOut::*;
 
@@ -222,7 +224,7 @@ impl Pipe {
 
     #[inline]
     pub fn receive_buffer<T, F>(&mut self, time_out: TimeOut, closure: F) -> T
-        where F: for<'a> FnOnce(Result<Buffer<'a>, Status>) -> T {
+        where F: for<'a> FnOnce(Result<MessageBuffer<'a>, Status>) -> T {
 
         let mut buf: *mut CFE_SB_Buffer_t = core::ptr::null_mut();
 
@@ -230,13 +232,13 @@ impl Pipe {
             CFE_SB_ReceiveBuffer(&mut buf, self.id, time_out.into())
         }.into();
 
-        let result: Result<Buffer, Status>;
-        result = if s.severity() != super::StatusSeverity::Success {
+        let result: Result<MessageBuffer, Status>;
+        result = if s.severity() == super::StatusSeverity::Error {
             Err(s)
         } else {
             match unsafe { buf.as_ref() } {
                 None => Err(Status::SB_BUFFER_INVALID),
-                Some(b) => Ok(Buffer { b: b }),
+                Some(b) => Ok(MessageBuffer { b: b }),
             }
         };
 
@@ -244,20 +246,18 @@ impl Pipe {
     }
 }
 
-pub struct Buffer<'a> {
+pub struct MessageBuffer<'a> {
     b: &'a CFE_SB_Buffer_t
 }
 
-impl<'a> Buffer<'a> {
+impl<'a> MessageBuffer<'a> {
     #[inline]
     fn try_cast<T: Sized>(&self, msg_type: MsgType) -> Result<&'a T, Status> {
-        let msg = self.as_message();
-
-        if msg.msgid()?.msg_type()? != msg_type {
+        if self.msgid()?.msg_type()? != msg_type {
             return Err(Status::MSG_WRONG_MSG_TYPE);
         }
 
-        if msg.size()? as usize != core::mem::size_of::<T>() {
+        if self.size()? as usize != core::mem::size_of::<T>() {
             return Err(Status::STATUS_WRONG_MSG_LENGTH);
         }
 
@@ -279,9 +279,13 @@ impl<'a> Buffer<'a> {
     pub fn try_cast_tlm<T: Copy + Sized>(&self) -> Result<&'a Telemetry<T>, Status> {
         self.try_cast::<Telemetry<T>>(MsgType::Tlm)
     }
+}
+
+impl<'a> Deref for MessageBuffer<'a> {
+    type Target = Message;
 
     #[inline]
-    pub fn as_message(&self) -> &'a Message {
+    fn deref(&self) -> &'a Message {
         let p: &CFE_MSG_Message_t = unsafe { &self.b.Msg };
         Message::from_cfe(p)
     }
