@@ -16,8 +16,8 @@ pub use cfs_sys::CFE_SB_MsgId_Atom_t as MsgId_Atom;
 
 /// An encoded message ID.
 ///
-/// This a mapped version of the [numeric message ID](`MsgId_Atom`)
-/// used by SB.
+/// SB uses this as a mapped version of the
+/// [numeric message ID](`MsgId_Atom`).
 #[derive(Clone,Copy,Debug)]
 pub struct MsgId { pub(crate) id: CFE_SB_MsgId_t }
 
