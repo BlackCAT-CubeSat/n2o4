@@ -167,6 +167,43 @@ impl Message {
         s.as_result(|| { () })
     }
 
+    /// The backend of [`try_cast_cmd`](`Self::try_cast_cmd`)
+    /// and [`try_cast_tlm`](`Self::try_cast_tlm`).
+    #[inline]
+    fn try_cast<T: Sized>(&self, msg_type: MsgType) -> Result<&T, Status> {
+        if self.msgid()?.msg_type()? != msg_type {
+            return Err(Status::MSG_WRONG_MSG_TYPE);
+        }
+
+        if self.size()? as usize != core::mem::size_of::<T>() {
+            return Err(Status::STATUS_WRONG_MSG_LENGTH);
+        }
+
+        let p = &(self.msg) as *const CFE_MSG_Message_t as usize;
+        if p % core::mem::align_of::<T>() != 0 {
+            return Err(Status::SB_BAD_ARGUMENT);
+        }
+
+        let pkt: &T = unsafe { &*(p as *const T) };
+        Ok(pkt)
+    }
+
+    /// If it makes sense to do so (the message is the right size,
+    /// aligned correctly in memory, and has a compatible message ID),
+    /// returns a reference to the message as a [`Command<T>`].
+    #[inline]
+    pub fn try_cast_cmd<T: Copy + Sized>(&self) -> Result<&Command<T>, Status> {
+        self.try_cast::<Command<T>>(MsgType::Cmd)
+    }
+
+    /// If it makes sense to do so (the message is the right size,
+    /// aligned correctly in memory, and has a compatible message ID),
+    /// returns a reference to the message as a [`Telemetry<T>`].
+    #[inline]
+    pub fn try_cast_tlm<T: Copy + Sized>(&self) -> Result<&Telemetry<T>, Status> {
+        self.try_cast::<Telemetry<T>>(MsgType::Tlm)
+    }
+
     /// Sets the [`Message`]'s time field to the current spacecraft time.
     ///
     /// Wraps `CFE_SB_TimeStampMsg`.

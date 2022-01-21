@@ -3,12 +3,11 @@
 //! Software Bus system
 
 use core::marker::PhantomData;
-use core::ops::Deref;
 
 use cfs_sys::*;
 use printf_wrap::NullString;
 use super::Status;
-use super::msg::{Message,MsgType,Command,Telemetry};
+use super::msg::{Message,MsgType};
 
 /// The numeric value of a [message ID](`MsgId`).
 ///
@@ -293,13 +292,13 @@ impl Pipe {
     ///
     /// Uses `time_out` to determine how long to wait for a message if the pipe is empty.
     ///
-    /// Passing the buffer to a closure rather than returning it ensures that
+    /// Passing the message buffer to a closure rather than returning it ensures that
     /// the buffer's lifetime constraints are respected.
     ///
     /// Wraps `CFE_SB_ReceiveBuffer`.
     #[inline]
     pub fn receive_buffer<T, F>(&mut self, time_out: TimeOut, closure: F) -> T
-        where F: for<'a> FnOnce(Result<MessageBuffer<'a>, Status>) -> T {
+        where F: for<'a> FnOnce(Result<&'a Message, Status>) -> T {
 
         let mut buf: *mut CFE_SB_Buffer_t = core::ptr::null_mut();
 
@@ -307,72 +306,16 @@ impl Pipe {
             CFE_SB_ReceiveBuffer(&mut buf, self.id, time_out.into())
         }.into();
 
-        let result: Result<MessageBuffer, Status>;
+        let result: Result<&Message, Status>;
         result = if s.severity() == super::StatusSeverity::Error {
             Err(s)
         } else {
             match unsafe { buf.as_ref() } {
                 None => Err(Status::SB_BUFFER_INVALID),
-                Some(b) => Ok(MessageBuffer { b: b }),
+                Some(b) => Ok(Message::from_cfe(unsafe { &(b.Msg) })),
             }
         };
 
         closure(result)
-    }
-}
-
-/// A message received from a software pipe.
-///
-/// Wraps `CFE_SB_Buffer_t`.
-pub struct MessageBuffer<'a> {
-    b: &'a CFE_SB_Buffer_t
-}
-
-impl<'a> MessageBuffer<'a> {
-    /// The backend of [`try_cast_cmd`](`Self::try_cast_cmd`)
-    /// and [`try_cast_tlm`](`Self::try_cast_tlm`).
-    #[inline]
-    fn try_cast<T: Sized>(&self, msg_type: MsgType) -> Result<&'a T, Status> {
-        if self.msgid()?.msg_type()? != msg_type {
-            return Err(Status::MSG_WRONG_MSG_TYPE);
-        }
-
-        if self.size()? as usize != core::mem::size_of::<T>() {
-            return Err(Status::STATUS_WRONG_MSG_LENGTH);
-        }
-
-        let p = self.b as *const CFE_SB_Buffer_t as usize;
-        if p % core::mem::align_of::<T>() != 0 {
-            return Err(Status::SB_BAD_ARGUMENT);
-        }
-
-        let pkt: &T = unsafe { &*(p as *const T) };
-        Ok(pkt)
-    }
-
-    /// If it makes sense to do so (the message is the right size,
-    /// aligned correctly in memory, and has a compatible message ID),
-    /// returns a reference to the message as a [`Command<T>`].
-    #[inline]
-    pub fn try_cast_cmd<T: Copy + Sized>(&self) -> Result<&'a Command<T>, Status> {
-        self.try_cast::<Command<T>>(MsgType::Cmd)
-    }
-
-    /// If it makes sense to do so (the message is the right size,
-    /// aligned correctly in memory, and has a compatible message ID),
-    /// returns a reference to the message as a [`Telemetry<T>`].
-    #[inline]
-    pub fn try_cast_tlm<T: Copy + Sized>(&self) -> Result<&'a Telemetry<T>, Status> {
-        self.try_cast::<Telemetry<T>>(MsgType::Tlm)
-    }
-}
-
-impl<'a> Deref for MessageBuffer<'a> {
-    type Target = Message;
-
-    #[inline]
-    fn deref(&self) -> &'a Message {
-        let p: &CFE_MSG_Message_t = unsafe { &self.b.Msg };
-        Message::from_cfe(p)
     }
 }
