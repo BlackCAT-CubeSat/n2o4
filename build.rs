@@ -30,7 +30,7 @@ fn main() {
         .allowlist_recursively(true)
         .allowlist_type("(CFE|OS|OSAL|CFE_PSP|CCSDS)_.*")
         .allowlist_function("(CFE|OS|OSAL|CFE_PSP|SHIM)_.*")
-        .allowlist_var("(CFE|OS|OSAL|CFE_PSP|S_CFE|X_CFE)_.*")
+        .allowlist_var("(X_|S_)?(CFE|OS|OSAL|CFE_PSP)_.*")
         .blocklist_function("CFE_ES_Main") // only to be called by the BSP
         .blocklist_function("OS_BSP_.*")   // ditto
         .use_core()
