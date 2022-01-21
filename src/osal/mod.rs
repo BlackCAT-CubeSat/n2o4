@@ -166,6 +166,11 @@ pub struct ObjectId {
 }
 
 impl ObjectId {
+    /// An object ID guaranteed never to refer to a valid resource.
+    ///
+    /// Wraps OS_OBJECT_ID_UNDEFINED.
+    pub const UNDEFINED: ObjectId = ObjectId { id: X_OS_OBJECT_ID_UNDEFINED };
+
     /// Returns whether `self` refers to a defined resource.
     ///
     /// Wraps OS_ObjectIdDefined.
