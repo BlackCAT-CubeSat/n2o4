@@ -194,6 +194,12 @@ impl Status {
             _ => Err(*self),
         }
     }
+
+    /// Returns the status as a 32-bit number.
+    #[inline]
+    pub fn as_num(&self) -> u32 {
+        self.status as u32
+    }
 }
 
 /// Format string for using a Rust [`str`] in
