@@ -11,6 +11,8 @@ use super::Status;
 use super::msg::{Message,MsgType,Command,Telemetry};
 
 /// The numeric value of a [message ID](`MsgId`).
+///
+/// This is the same as `CFE_SB_MsgId_Atom_t`.
 #[doc(inline)]
 pub use cfs_sys::CFE_SB_MsgId_Atom_t as MsgId_Atom;
 
@@ -18,13 +20,15 @@ pub use cfs_sys::CFE_SB_MsgId_Atom_t as MsgId_Atom;
 ///
 /// SB uses this as a mapped version of the
 /// [numeric message ID](`MsgId_Atom`).
+///
+/// Wraps `CFE_SB_MsgId_t`.
 #[derive(Clone,Copy,Debug)]
 pub struct MsgId { pub(crate) id: CFE_SB_MsgId_t }
 
 impl MsgId {
     /// Returns whether `self` is a valid message ID.
     ///
-    /// Wraps CFE_SB_IsValidMsgId.
+    /// Wraps `CFE_SB_IsValidMsgId`.
     #[inline]
     pub fn is_valid(self) -> bool {
         unsafe { CFE_SB_IsValidMsgId(self.id) }
@@ -32,7 +36,7 @@ impl MsgId {
 
     /// Returns the message type this message ID corresponds to.
     ///
-    /// Wraps CFE_MSG_GetTypeFromMsgId.
+    /// Wraps `CFE_MSG_GetTypeFromMsgId`.
     #[inline]
     pub fn msg_type(self) -> Result<MsgType, Status> {
         let mut t: CFE_MSG_Type_t = CFE_MSG_Type_CFE_MSG_Type_Invalid;
@@ -44,13 +48,17 @@ impl MsgId {
     }
 
     /// A reserved value that will not match any valid message ID.
+    ///
+    /// Wraps `CFE_SB_MSGID_RESERVED`.
     pub const RESERVED: MsgId = MsgId { id: X_CFE_SB_MSGID_RESERVED };
 
     /// Value representing an invalid message ID.
+    ///
+    /// Wraps `CFE_SB_INVALID_MSG_ID`.
     pub const INVALID: MsgId = MsgId { id: X_CFE_SB_INVALID_MSG_ID };
 }
 
-/// Wraps CFE_SB_MsgId_Equal.
+/// Wraps `CFE_SB_MsgId_Equal`.
 impl PartialEq<MsgId> for MsgId {
     #[inline]
     fn eq(&self, other: &Self) -> bool {
@@ -60,7 +68,7 @@ impl PartialEq<MsgId> for MsgId {
 
 impl Eq for MsgId { }
 
-/// Wraps CFE_SB_ValueToMsgId.
+/// Wraps `CFE_SB_ValueToMsgId`.
 impl From<MsgId_Atom> for MsgId {
     #[inline]
     fn from(val: MsgId_Atom) -> Self {
@@ -69,7 +77,7 @@ impl From<MsgId_Atom> for MsgId {
     }
 }
 
-/// Wraps CFE_SB_MsgIdToValue.
+/// Wraps `CFE_SB_MsgIdToValue`.
 impl From<MsgId> for MsgId_Atom {
     #[inline]
     fn from(id: MsgId) -> Self {
@@ -95,6 +103,8 @@ pub enum QosReliability {
 
 /// Quality-of-service information for message subscriptions on the software bus.
 /// Currently unused by cFE.
+///
+/// This is the same as `CFE_SB_Qos_t`.
 #[derive(Clone,Copy,Debug,PartialEq,Eq)]
 #[repr(C)]
 pub struct Qos {
@@ -113,6 +123,8 @@ impl Qos {
     }
 
     /// The default QoS. Most applications should use this.
+    ///
+    /// Wraps `CFE_SB_DEFAULT_QOS`.
     pub const DEFAULT: Qos = Qos {
         priority: X_CFE_SB_DEFAULT_QOS_PRIORITY,
         reliability: X_CFE_SB_DEFAULT_QOS_RELIABILITY,
@@ -138,7 +150,7 @@ pub enum TimeOut {
     PendForever,
 }
 
-/// Converts a [`TimeOut`] into the `TimeOut` argument to CFE_SB_ReceiveBuffer.
+/// Converts a [`TimeOut`] into the `TimeOut` argument to `CFE_SB_ReceiveBuffer`.
 impl From<TimeOut> for i32 {
     #[inline]
     fn from(tmo: TimeOut) -> i32 {
@@ -155,6 +167,8 @@ impl From<TimeOut> for i32 {
 /// A software bus pipe; an application needs one of these to receive messages.
 ///
 /// This may not be used from a different thread from the one it was created on.
+///
+/// Wraps `CFE_SB_PipeId_t`.
 #[derive(Debug)]
 pub struct Pipe {
     /// cFE ID for the pipe.
@@ -172,7 +186,7 @@ impl Pipe {
     /// Creates a new pipe with space for `depth` yet-to-be-handled messages
     /// and the name `pipe_name`.
     ///
-    /// Wraps CFE_SB_CreatePipe.
+    /// Wraps `CFE_SB_CreatePipe`.
     #[inline]
     pub fn new(depth: u16, pipe_name: NullString) -> Result<Pipe, Status> {
         let mut p: CFE_SB_PipeId_t = super::ResourceId::UNDEFINED.id;
@@ -190,10 +204,11 @@ impl Pipe {
 
     /// Deletes the software bus pipe.
     ///
-    /// Note that applications should not call this as they are shutting down;
+    /// Note that applications should not call this if the deletion
+    /// is part of application shutdown;
     /// the framework will do the needed cleanup at application exit.
     ///
-    /// Wraps CFE_SB_DeletePipe.
+    /// Wraps `CFE_SB_DeletePipe`.
     #[inline]
     pub fn delete(self) {
         unsafe { CFE_SB_DeletePipe(self.id); }
@@ -202,7 +217,7 @@ impl Pipe {
     /// Subscribes to messages with ID `msg_id`
     /// on the software bus with default parameters.
     ///
-    /// Wraps CFE_SB_Subscribe.
+    /// Wraps `CFE_SB_Subscribe`.
     #[inline]
     pub fn subscribe(&mut self, msg_id: MsgId) -> Result<(), Status> {
         let s: Status = unsafe {
@@ -217,7 +232,7 @@ impl Pipe {
     /// and a limit to the number of messages with this ID
     /// allowed in the pipe at the same time.
     ///
-    /// Wraps CFE_SB_SubscribeEx.
+    /// Wraps `CFE_SB_SubscribeEx`.
     #[inline]
     pub fn subscribe_ex(&mut self, msg_id: MsgId, quality: Qos, msg_lim: u16) -> Result<(), Status> {
         let qos: CFE_SB_Qos_t = quality.into_cfe();
@@ -234,7 +249,7 @@ impl Pipe {
     ///
     /// This is typically only used by the [SBN](https://github.com/nasa/SBN) application.
     ///
-    /// Wraps CFE_SB_SubscribeLocal.
+    /// Wraps `CFE_SB_SubscribeLocal`.
     #[inline]
     pub fn subscribe_local(&mut self, msg_id: MsgId, msg_lim: u16) -> Result<(), Status> {
         let s: Status = unsafe {
@@ -246,7 +261,7 @@ impl Pipe {
 
     /// Removes the current pipe's subscription to messages with ID `msg_id`.
     ///
-    /// Wraps CFE_SB_Unsubscribe.
+    /// Wraps `CFE_SB_Unsubscribe`.
     #[inline]
     pub fn unsubscribe(&mut self, msg_id: MsgId) -> Result<(), Status> {
         let s: Status = unsafe {
@@ -261,7 +276,7 @@ impl Pipe {
     ///
     /// This is typically only used by the [SBN](https://github.com/nasa/SBN) application.
     ///
-    /// Wraps CFE_SB_UnsubscribeLocal.
+    /// Wraps `CFE_SB_UnsubscribeLocal`.
     #[inline]
     pub fn unsubscribe_local(&mut self, msg_id: MsgId) -> Result<(), Status> {
         let s: Status = unsafe {
@@ -281,7 +296,7 @@ impl Pipe {
     /// Passing the buffer to a closure rather than returning it ensures that
     /// the buffer's lifetime constraints are respected.
     ///
-    /// Wraps CFE_SB_ReceiveBuffer.
+    /// Wraps `CFE_SB_ReceiveBuffer`.
     #[inline]
     pub fn receive_buffer<T, F>(&mut self, time_out: TimeOut, closure: F) -> T
         where F: for<'a> FnOnce(Result<MessageBuffer<'a>, Status>) -> T {
@@ -307,12 +322,15 @@ impl Pipe {
 }
 
 /// A message received from a software pipe.
+///
+/// Wraps `CFE_SB_Buffer_t`.
 pub struct MessageBuffer<'a> {
     b: &'a CFE_SB_Buffer_t
 }
 
 impl<'a> MessageBuffer<'a> {
-    /// The backend of [`try_cast_cmd`] and [`try_cast_tlm`].
+    /// The backend of [`try_cast_cmd`](`Self::try_cast_cmd`)
+    /// and [`try_cast_tlm`](`Self::try_cast_tlm`).
     #[inline]
     fn try_cast<T: Sized>(&self, msg_type: MsgType) -> Result<&'a T, Status> {
         if self.msgid()?.msg_type()? != msg_type {

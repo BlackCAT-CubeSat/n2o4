@@ -14,6 +14,8 @@ use core::ops::{Add,Sub};
 /// Many of the time-related functions in OSAL apply equally to
 /// _instants_ in time and to _intervals_ over time. In these bindings,
 /// we separate the two for greater clarity as to which is meant.
+///
+/// Wraps `OS_time_t`.
 #[derive(Clone,Copy,Debug)]
 pub struct OSTime {
     pub(crate) tm: OS_time_t
@@ -24,11 +26,14 @@ pub struct OSTime {
 /// Many of the time-related functions in OSAL apply equally to
 /// _instants_ in time and to _intervals_ over time. In these bindings,
 /// we separate the two for greater clarity as to which is meant.
+///
+/// Wraps `OS_time_t`.
 #[derive(Clone,Copy,Debug)]
 pub struct OSTimeInterval {
     pub(crate) int: OS_time_t
 }
 
+/// Methods in common between [`OSTime`] and [`OSTimeInterval`].
 macro_rules! time_methods {
     (@
         $fraction_lower:ident, $fraction_upper:ident,
@@ -40,7 +45,7 @@ macro_rules! time_methods {
         #[doc = concat!(
             "Creates the ", $term, " with the specified (seconds, ", stringify!($fraction_lower), ").\n",
             "\n",
-            "Wraps OS_TimeAssembleFrom", stringify!($fraction_upper), ".\n",
+            "Wraps `OS_TimeAssembleFrom", stringify!($fraction_upper), "`.\n",
         )]
         #[inline]
         pub fn $name_from(seconds: i64, $fraction_lower: u32) -> Self {
@@ -52,7 +57,7 @@ macro_rules! time_methods {
         #[doc = concat!(
             "Converts the ", $term, " into a count of ", stringify!($fraction_lower), ".\n",
             "\n",
-            "Wraps OS_TimeGetTotal", stringify!($fraction_upper), ".\n",
+            "Wraps `OS_TimeGetTotal", stringify!($fraction_upper), "`.\n",
         )]
         #[inline]
         pub fn $name_total(&self) -> i64 {
@@ -63,7 +68,7 @@ macro_rules! time_methods {
         #[doc = concat!(
             "Returns the fractional-seconds part of the ", $term, " in ", stringify!($fraction_lower), ".\n",
             "\n",
-            "Wraps OS_TimeGet", stringify!($fraction_upper), "Part.\n",
+            "Wraps `OS_TimeGet", stringify!($fraction_upper), "Part`.\n",
         )]
         #[inline]
         pub fn $name_part(&self) -> u32 {
@@ -102,7 +107,7 @@ macro_rules! time_methods {
             #[doc = concat!(
                 "Converts the ", $term, " into a count of seconds.\n",
                 "\n",
-                "Wraps OS_TimeGetTotalSeconds.\n"
+                "Wraps `OS_TimeGetTotalSeconds`.\n"
             )]
             #[inline]
             pub fn total_seconds(&self) -> i64 {
@@ -112,7 +117,7 @@ macro_rules! time_methods {
             #[doc = concat!(
                 "Returns the fractional-seconds part of the ", $term, " in (non-standardized) ticks.\n",
                 "\n",
-                "Wraps OS_TimeGetFractionalPart.\n"
+                "Wraps `OS_TimeGetFractionalPart`.\n"
             )]
             #[inline]
             pub fn fractional_part(&self) -> i64 {
@@ -135,9 +140,10 @@ macro_rules! time_methods {
 time_methods!(OSTime, tm, "time");
 time_methods!(OSTimeInterval, int, "interval");
 
+/// Quick generation of an implementation of arithmetic for times, time intervals.
 macro_rules! arith_impl {
     ($trait:ident, $lhs:ident, $rhs:ident, $method:ident, $result:ident, $func:ident, $func_suffix:ident) => {
-        #[doc = concat!("Wraps OS_Time", stringify!($func_suffix), ".")]
+        #[doc = concat!("Wraps `OS_Time", stringify!($func_suffix), "`.")]
         impl $trait<$rhs> for $lhs {
             type Output = $result;
 
@@ -160,6 +166,9 @@ arith_impl!(Sub, OSTime,         OSTime,         sub, OSTimeInterval, SHIM_OS_Ti
 arith_impl!(Sub, OSTime,         OSTimeInterval, sub, OSTime,         SHIM_OS_TimeSubtract, Subtract);
 arith_impl!(Sub, OSTimeInterval, OSTimeInterval, sub, OSTimeInterval, SHIM_OS_TimeSubtract, Subtract);
 
+/// An identifier for an object managed by OSAL.
+///
+/// Wraps `osal_id_t`.
 #[derive(Clone,Copy,Debug)]
 pub struct ObjectId {
     id: osal_id_t
@@ -168,19 +177,19 @@ pub struct ObjectId {
 impl ObjectId {
     /// An object ID guaranteed never to refer to a valid resource.
     ///
-    /// Wraps OS_OBJECT_ID_UNDEFINED.
+    /// Wraps `OS_OBJECT_ID_UNDEFINED`.
     pub const UNDEFINED: ObjectId = ObjectId { id: X_OS_OBJECT_ID_UNDEFINED };
 
     /// Returns whether `self` refers to a defined resource.
     ///
-    /// Wraps OS_ObjectIdDefined.
+    /// Wraps `OS_ObjectIdDefined`.
     #[inline]
     pub fn is_defined(&self) -> bool {
         unsafe { SHIM_OS_ObjectIdDefined(self.id) }
     }
 }
 
-/// Wraps OS_ObjectIdFromInteger.
+/// Wraps `OS_ObjectIdFromInteger`.
 impl From<c_ulong> for ObjectId {
     #[inline]
     fn from(val: c_ulong) -> ObjectId {
@@ -188,7 +197,7 @@ impl From<c_ulong> for ObjectId {
     }
 }
 
-/// Wraps OS_ObjectIdToInteger.
+/// Wraps `OS_ObjectIdToInteger`.
 impl From<ObjectId> for c_ulong {
     #[inline]
     fn from(oid: ObjectId) -> c_ulong {
@@ -196,7 +205,7 @@ impl From<ObjectId> for c_ulong {
     }
 }
 
-/// Wraps OS_ObjectIdEqual.
+/// Wraps `OS_ObjectIdEqual`.
 impl PartialEq<Self> for ObjectId {
     #[inline]
     fn eq(&self, other_id: &Self) -> bool {

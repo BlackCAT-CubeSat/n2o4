@@ -50,7 +50,7 @@ pub enum RunStatus {
 /// `entry_exit` should be `0` for an entry into the code in question,
 /// and `1` for an exit.
 ///
-/// Wraps CFE_ES_PerfLogAdd.
+/// Wraps `CFE_ES_PerfLogAdd`.
 #[inline]
 pub fn perf_log_add(marker: u32, entry_exit: u32) {
     unsafe { CFE_ES_PerfLogAdd(marker, entry_exit) };
@@ -64,14 +64,14 @@ pub fn perf_log_entry(marker: u32) { perf_log_add(marker, 0); }
 #[inline]
 pub fn perf_log_exit(marker: u32) { perf_log_add(marker, 1); }
 
-/// Internal macro to generate _n_-adic wrappers around CFE_ES_WriteToSysLog.
+/// Internal macro to generate _n_-adic wrappers around `CFE_ES_WriteToSysLog`.
 macro_rules! wtsl_impl {
     (@ $doc_args:expr, $name:ident, ( $($t:ident),* ), ( $($var:ident),* )) => {
         #[doc = concat!(
             "Writes a message to the cFE System Log using a format string and ",
             $doc_args, ".\n",
             "\n",
-            "Wraps CFE_ES_WriteToSysLog.\n",
+            "Wraps `CFE_ES_WriteToSysLog`.\n",
         )]
         #[inline]
         pub fn $name<$($t),*>(fmt: PrintfFmt<($($t,)*)>, $($var: $t),*) -> Status
@@ -109,7 +109,7 @@ wtsl_impl!( 8, write_to_syslog8, (A, B, C, D, E, F, G, H), (a, b, c, d, e, f, g,
 /// Note that any embedded null characters and anything past them
 /// will not get put into the log message.
 ///
-/// Wraps CFE_ES_WriteToSysLog.
+/// Wraps `CFE_ES_WriteToSysLog`.
 #[inline]
 pub fn write_to_syslog_str(msg: &str) -> Status {
     unsafe {
@@ -122,7 +122,7 @@ pub fn write_to_syslog_str(msg: &str) -> Status {
 
 /// Exits from the current application.
 ///
-/// Wraps CFE_ES_ExitApp.
+/// Wraps `CFE_ES_ExitApp`.
 #[inline]
 pub fn exit_app(exit_status: RunStatus) {
     unsafe { CFE_ES_ExitApp(exit_status as u32) };
@@ -141,7 +141,7 @@ pub fn exit_app(exit_status: RunStatus) {
 /// a return value of `false` means the application should
 /// gracefully shut down.
 ///
-/// Wraps CFE_ES_RunLoop.
+/// Wraps `CFE_ES_RunLoop`.
 #[inline]
 pub fn run_loop(run_status: Option<RunStatus>) -> bool {
     let mut rs: u32 = run_status.map_or(0, |status| { status as u32 });

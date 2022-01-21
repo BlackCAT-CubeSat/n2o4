@@ -19,7 +19,7 @@ use printf_wrap::{NullString, null_str};
 
 /// An ID to identify cFE-managed resources.
 ///
-/// Wraps CFE_ResourceId_t.
+/// Wraps `CFE_ResourceId_t`.
 #[derive(Clone,Copy,Debug)]
 pub struct ResourceId {
     id: CFE_ResourceId_t
@@ -28,20 +28,24 @@ pub struct ResourceId {
 impl ResourceId {
     /// Checks if a resource ID value is defined.
     ///
-    /// Wraps CFE_ResourceId_IsDefined.
+    /// Wraps `CFE_ResourceId_IsDefined`.
     #[inline]
     pub fn is_defined(&self) -> bool {
         unsafe { SHIM_CFE_ResourceId_IsDefined(self.id) }
     }
 
     /// A value that represents an undefined/unused resource.
+    ///
+    /// Wraps `CFE_RESOURCEID_UNDEFINED`.
     pub const UNDEFINED: Self = ResourceId { id: X_CFE_RESOURCEID_UNDEFINED };
 
     /// A value that represents a reserved entry.
+    ///
+    /// Wraps `CFE_RESOURCEID_RESERVED`.
     pub const RESERVED: Self = ResourceId { id: X_CFE_RESOURCEID_RESERVED };
 }
 
-/// Wraps CFE_ResourceId_Equal.
+/// Wraps `CFE_ResourceId_Equal`.
 impl PartialEq<ResourceId> for ResourceId {
     #[inline]
     fn eq(&self, other: &ResourceId) -> bool {
@@ -51,7 +55,7 @@ impl PartialEq<ResourceId> for ResourceId {
 
 impl Eq for ResourceId { }
 
-/// Wraps CFE_ResourceId_FromInteger.
+/// Wraps `CFE_ResourceId_FromInteger`.
 impl From<c_ulong> for ResourceId {
     #[inline]
     fn from(val: c_ulong) -> ResourceId {
@@ -60,7 +64,7 @@ impl From<c_ulong> for ResourceId {
     }
 }
 
-/// Wraps CFE_ResourceId_ToInteger.
+/// Wraps `CFE_ResourceId_ToInteger`.
 impl From<ResourceId> for c_ulong {
     #[inline]
     fn from(id: ResourceId) -> c_ulong {
@@ -70,7 +74,7 @@ impl From<ResourceId> for c_ulong {
 
 /// A status-code type often used as a return type in this crate.
 ///
-/// Wraps CFE_Status_t.
+/// Wraps `CFE_Status_t`.
 #[derive(Clone,Copy,PartialEq,Eq,Debug)]
 pub struct Status {
     pub(crate) status: CFE_Status_t
@@ -192,5 +196,6 @@ impl Status {
     }
 }
 
-/// Format string for using a Rust `str` in `printf(3)`-style C functions.
+/// Format string for using a Rust [`str`] in
+/// [`printf(3)`](https://www.freebsd.org/cgi/man.cgi?printf%283%29)-style C functions.
 const RUST_STR_FMT: NullString = null_str!("%.*s");
