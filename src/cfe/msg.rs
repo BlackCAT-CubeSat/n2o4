@@ -97,6 +97,8 @@ impl Message {
     }
 
     /// Returns the message ID.
+    ///
+    /// Wraps CFE_MSG_GetMsgId.
     #[inline]
     pub fn msgid(&self) -> Result<MsgId, Status> {
         let mut mid: MsgId = MsgId::INVALID;

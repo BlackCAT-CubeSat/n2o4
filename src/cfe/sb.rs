@@ -77,6 +77,7 @@ impl From<MsgId> for MsgId_Atom {
     }
 }
 
+/// Message priority for off-system routing. Currently unused by cFE.
 #[derive(Clone,Copy,Debug,PartialEq,Eq)]
 #[repr(u8)]
 pub enum QosPriority {
@@ -84,6 +85,7 @@ pub enum QosPriority {
     Low = CFE_SB_QosPriority_CFE_SB_QosPriority_LOW as u8,
 }
 
+/// Message transfer reliability for off-instance routing. Currently unused by cFE.
 #[derive(Clone,Copy,Debug,PartialEq,Eq)]
 #[repr(u8)]
 pub enum QosReliability {
@@ -91,6 +93,8 @@ pub enum QosReliability {
     Low = CFE_SB_QosReliability_CFE_SB_QosReliability_LOW as u8,
 }
 
+/// Quality-of-service information for message subscriptions on the software bus.
+/// Currently unused by cFE.
 #[derive(Clone,Copy,Debug,PartialEq,Eq)]
 #[repr(C)]
 pub struct Qos {
@@ -99,6 +103,7 @@ pub struct Qos {
 }
 
 impl Qos {
+    /// Constructs a new QoS with the specified priority and reliability.
     #[inline]
     pub const fn new(priority: QosPriority, reliability: QosReliability) -> Qos {
         Qos {
@@ -107,6 +112,7 @@ impl Qos {
         }
     }
 
+    /// The default QoS. Most applications should use this.
     pub const DEFAULT: Qos = Qos {
         priority: X_CFE_SB_DEFAULT_QOS_PRIORITY,
         reliability: X_CFE_SB_DEFAULT_QOS_RELIABILITY,
@@ -121,13 +127,18 @@ impl Qos {
     }
 }
 
+/// How long to wait for a new message if a pipe is empty.
 #[derive(Clone,Copy,Debug,PartialEq,Eq)]
 pub enum TimeOut {
+    /// Wait for the specified number of milliseconds.
     Millis(u32),
+    /// Non-blocking receive.
     Poll,
+    /// Wait forever for a message to arrive.
     PendForever,
 }
 
+/// Converts a [`TimeOut`] into the `TimeOut` argument to CFE_SB_ReceiveBuffer.
 impl From<TimeOut> for i32 {
     #[inline]
     fn from(tmo: TimeOut) -> i32 {
@@ -141,6 +152,9 @@ impl From<TimeOut> for i32 {
     }
 }
 
+/// A software bus pipe; an application needs one of these to receive messages.
+///
+/// This may not be used from a different thread from the one it was created on.
 #[derive(Debug)]
 pub struct Pipe {
     /// cFE ID for the pipe.
@@ -155,6 +169,10 @@ pub struct Pipe {
 }
 
 impl Pipe {
+    /// Creates a new pipe with space for `depth` yet-to-be-handled messages
+    /// and the name `pipe_name`.
+    ///
+    /// Wraps CFE_SB_CreatePipe.
     #[inline]
     pub fn new(depth: u16, pipe_name: NullString) -> Result<Pipe, Status> {
         let mut p: CFE_SB_PipeId_t = super::ResourceId::UNDEFINED.id;
@@ -170,11 +188,21 @@ impl Pipe {
         s.as_result(|| { Pipe { id: p, _pd: PhantomData } })
     }
 
+    /// Deletes the software bus pipe.
+    ///
+    /// Note that applications should not call this as they are shutting down;
+    /// the framework will do the needed cleanup at application exit.
+    ///
+    /// Wraps CFE_SB_DeletePipe.
     #[inline]
     pub fn delete(self) {
         unsafe { CFE_SB_DeletePipe(self.id); }
     }
 
+    /// Subscribes to messages with ID `msg_id`
+    /// on the software bus with default parameters.
+    ///
+    /// Wraps CFE_SB_Subscribe.
     #[inline]
     pub fn subscribe(&mut self, msg_id: MsgId) -> Result<(), Status> {
         let s: Status = unsafe {
@@ -184,6 +212,12 @@ impl Pipe {
         s.as_result(|| { () })
     }
 
+    /// Subscribes to messages with ID `msg_id` on the software bus
+    /// with the specified quality of service (currently unused by cFE)
+    /// and a limit to the number of messages with this ID
+    /// allowed in the pipe at the same time.
+    ///
+    /// Wraps CFE_SB_SubscribeEx.
     #[inline]
     pub fn subscribe_ex(&mut self, msg_id: MsgId, quality: Qos, msg_lim: u16) -> Result<(), Status> {
         let qos: CFE_SB_Qos_t = quality.into_cfe();
@@ -195,6 +229,12 @@ impl Pipe {
         s.as_result(|| { () })
     }
 
+    /// Subscribes to messages with ID `msg_id`,
+    /// but keep the subscription local to the current CPU.
+    ///
+    /// This is typically only used by the [SBN](https://github.com/nasa/SBN) application.
+    ///
+    /// Wraps CFE_SB_SubscribeLocal.
     #[inline]
     pub fn subscribe_local(&mut self, msg_id: MsgId, msg_lim: u16) -> Result<(), Status> {
         let s: Status = unsafe {
@@ -204,6 +244,9 @@ impl Pipe {
         s.as_result(|| { () })
     }
 
+    /// Removes the current pipe's subscription to messages with ID `msg_id`.
+    ///
+    /// Wraps CFE_SB_Unsubscribe.
     #[inline]
     pub fn unsubscribe(&mut self, msg_id: MsgId) -> Result<(), Status> {
         let s: Status = unsafe {
@@ -213,6 +256,12 @@ impl Pipe {
         s.as_result(|| { () })
     }
 
+    /// Removes the current pipe's subscription to messages with ID `msg_id`,
+    /// keeping the unsubscription local to the current CPU.
+    ///
+    /// This is typically only used by the [SBN](https://github.com/nasa/SBN) application.
+    ///
+    /// Wraps CFE_SB_UnsubscribeLocal.
     #[inline]
     pub fn unsubscribe_local(&mut self, msg_id: MsgId) -> Result<(), Status> {
         let s: Status = unsafe {
@@ -222,6 +271,17 @@ impl Pipe {
         s.as_result(|| { () })
     }
 
+    /// Receives a message from the pipe.
+    ///
+    /// Whether or not a message was received, `closure` gets called with
+    /// the result of the reception attempt.
+    ///
+    /// Uses `time_out` to determine how long to wait for a message if the pipe is empty.
+    ///
+    /// Passing the buffer to a closure rather than returning it ensures that
+    /// the buffer's lifetime constraints are respected.
+    ///
+    /// Wraps CFE_SB_ReceiveBuffer.
     #[inline]
     pub fn receive_buffer<T, F>(&mut self, time_out: TimeOut, closure: F) -> T
         where F: for<'a> FnOnce(Result<MessageBuffer<'a>, Status>) -> T {
@@ -246,11 +306,13 @@ impl Pipe {
     }
 }
 
+/// A message received from a software pipe.
 pub struct MessageBuffer<'a> {
     b: &'a CFE_SB_Buffer_t
 }
 
 impl<'a> MessageBuffer<'a> {
+    /// The backend of [`try_cast_cmd`] and [`try_cast_tlm`].
     #[inline]
     fn try_cast<T: Sized>(&self, msg_type: MsgType) -> Result<&'a T, Status> {
         if self.msgid()?.msg_type()? != msg_type {
@@ -270,11 +332,17 @@ impl<'a> MessageBuffer<'a> {
         Ok(pkt)
     }
 
+    /// If it makes sense to do so (the message is the right size,
+    /// aligned correctly in memory, and has a compatible message ID),
+    /// returns a reference to the message as a [`Command<T>`].
     #[inline]
     pub fn try_cast_cmd<T: Copy + Sized>(&self) -> Result<&'a Command<T>, Status> {
         self.try_cast::<Command<T>>(MsgType::Cmd)
     }
 
+    /// If it makes sense to do so (the message is the right size,
+    /// aligned correctly in memory, and has a compatible message ID),
+    /// returns a reference to the message as a [`Telemetry<T>`].
     #[inline]
     pub fn try_cast_tlm<T: Copy + Sized>(&self) -> Result<&'a Telemetry<T>, Status> {
         self.try_cast::<Telemetry<T>>(MsgType::Tlm)
