@@ -15,7 +15,7 @@ and the locations of the cFE and OSAL include files.
 In addition, generating Rustdocs for all the projects
 
 This all is handled by a couple of CMake files
-you can find in the `build/` directory of this repository:
+you can find in the `etc/` directory of this repository:
 `rust_cfs_app.cmake` and `rust_mission_build.cmake`.
 Copy those files to your cFS project's `*_defs` directory,
 then add the following line to `*_defs/mission_build_custom.cmake`:
@@ -71,7 +71,7 @@ pub extern "C" fn RUSTFSW_AppMain() {
 ```
 
 The cFS CMake build system assumes your application has at least one C source file.
-If all your logic is in Rust, you can use the `placebo.c` file in `build/` to
+If all your logic is in Rust, you can use the `placebo.c` file in `etc/` to
 satisfy that assumption.
 
 Finally, to tie everything together, use the `cfe_rust_crate` function in your
