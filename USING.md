@@ -85,8 +85,11 @@ project(CFE_RUSTFSW_APP C)
 
 add_cfe_app(rustfsw fsw/src/placebo.c)
 
-cfe_rust_crate(rustfsw rustfsw)
+# cfe_rust_crate takes two arguments: the name of the cFE app
+# and the name of the crate at rust-fsw/Cargo.toml:
+cfe_rust_crate(rustfsw thecratename)
 
-# Make sure the application entry point is in the linked-together app
+# Since the Rust code is compiled to a static library, you need to
+# ensure the application entry point is in the linked-together app:
 target_link_options(rustfsw PUBLIC LINKER:--require-defined=RUSTFSW_AppMain)
 ```
