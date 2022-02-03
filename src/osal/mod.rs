@@ -5,8 +5,6 @@
 use cfs_sys::*;
 use libc::c_ulong;
 
-use core::ops::{Add,Sub};
-
 // NOTE: the following will probably get moved to submodules as `osal` gets flushed out.
 
 /// An instant in time.
@@ -16,9 +14,9 @@ use core::ops::{Add,Sub};
 /// we separate the two for greater clarity as to which is meant.
 ///
 /// Wraps `OS_time_t`.
-#[derive(Clone,Copy,Debug)]
+#[derive(Clone, Copy, Debug)]
 pub struct OSTime {
-    pub(crate) tm: OS_time_t
+    pub(crate) tm: OS_time_t,
 }
 
 /// A time interval.
@@ -28,9 +26,9 @@ pub struct OSTime {
 /// we separate the two for greater clarity as to which is meant.
 ///
 /// Wraps `OS_time_t`.
-#[derive(Clone,Copy,Debug)]
+#[derive(Clone, Copy, Debug)]
 pub struct OSTimeInterval {
-    pub(crate) int: OS_time_t
+    pub(crate) int: OS_time_t,
 }
 
 /// Methods in common between [`OSTime`] and [`OSTimeInterval`].
@@ -158,20 +156,27 @@ macro_rules! arith_impl {
     };
 }
 
-arith_impl!(Add, OSTime,         OSTimeInterval, add, OSTime,         SHIM_OS_TimeAdd, Add);
-arith_impl!(Add, OSTimeInterval, OSTime,         add, OSTime,         SHIM_OS_TimeAdd, Add);
-arith_impl!(Add, OSTimeInterval, OSTimeInterval, add, OSTimeInterval, SHIM_OS_TimeAdd, Add);
+#[rustfmt::skip]
+mod time_arith_impls {
+    use cfs_sys::*;
+    use core::ops::{Add, Sub};
+    use super::*;
 
-arith_impl!(Sub, OSTime,         OSTime,         sub, OSTimeInterval, SHIM_OS_TimeSubtract, Subtract);
-arith_impl!(Sub, OSTime,         OSTimeInterval, sub, OSTime,         SHIM_OS_TimeSubtract, Subtract);
-arith_impl!(Sub, OSTimeInterval, OSTimeInterval, sub, OSTimeInterval, SHIM_OS_TimeSubtract, Subtract);
+    arith_impl!(Add, OSTime,         OSTimeInterval, add, OSTime,         SHIM_OS_TimeAdd, Add);
+    arith_impl!(Add, OSTimeInterval, OSTime,         add, OSTime,         SHIM_OS_TimeAdd, Add);
+    arith_impl!(Add, OSTimeInterval, OSTimeInterval, add, OSTimeInterval, SHIM_OS_TimeAdd, Add);
+
+    arith_impl!(Sub, OSTime,         OSTime,         sub, OSTimeInterval, SHIM_OS_TimeSubtract, Subtract);
+    arith_impl!(Sub, OSTime,         OSTimeInterval, sub, OSTime,         SHIM_OS_TimeSubtract, Subtract);
+    arith_impl!(Sub, OSTimeInterval, OSTimeInterval, sub, OSTimeInterval, SHIM_OS_TimeSubtract, Subtract);
+}
 
 /// An identifier for an object managed by OSAL.
 ///
 /// Wraps `osal_id_t`.
-#[derive(Clone,Copy,Debug)]
+#[derive(Clone, Copy, Debug)]
 pub struct ObjectId {
-    id: osal_id_t
+    id: osal_id_t,
 }
 
 impl ObjectId {
@@ -193,7 +198,9 @@ impl ObjectId {
 impl From<c_ulong> for ObjectId {
     #[inline]
     fn from(val: c_ulong) -> ObjectId {
-        ObjectId { id: unsafe { SHIM_OS_ObjectIdFromInteger(val) } }
+        ObjectId {
+            id: unsafe { SHIM_OS_ObjectIdFromInteger(val) },
+        }
     }
 }
 
@@ -213,4 +220,4 @@ impl PartialEq<Self> for ObjectId {
     }
 }
 
-impl Eq for ObjectId { }
+impl Eq for ObjectId {}

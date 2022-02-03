@@ -2,8 +2,8 @@
 
 //! Status constants used by cFE.
 
-use cfs_sys::*;
 use super::Status;
+use cfs_sys::*;
 
 const fn mk_status(n: CFE_Status_t) -> Status {
     Status { status: n }
@@ -15,8 +15,10 @@ impl Status {
     pub const STATUS_WRONG_MSG_LENGTH: Status = mk_status(S_CFE_STATUS_WRONG_MSG_LENGTH);
     pub const STATUS_UNKNOWN_MSG_ID: Status = mk_status(S_CFE_STATUS_UNKNOWN_MSG_ID);
     pub const STATUS_BAD_COMMAND_CODE: Status = mk_status(S_CFE_STATUS_BAD_COMMAND_CODE);
-    pub const STATUS_EXTERNAL_RESOURCE_FAIL: Status = mk_status(S_CFE_STATUS_EXTERNAL_RESOURCE_FAIL);
-    pub const STATUS_REQUEST_ALREADY_PENDING: Status = mk_status(S_CFE_STATUS_REQUEST_ALREADY_PENDING);
+    pub const STATUS_EXTERNAL_RESOURCE_FAIL: Status =
+        mk_status(S_CFE_STATUS_EXTERNAL_RESOURCE_FAIL);
+    pub const STATUS_REQUEST_ALREADY_PENDING: Status =
+        mk_status(S_CFE_STATUS_REQUEST_ALREADY_PENDING);
     pub const STATUS_NOT_IMPLEMENTED: Status = mk_status(S_CFE_STATUS_NOT_IMPLEMENTED);
     pub const EVS_UNKNOWN_FILTER: Status = mk_status(S_CFE_EVS_UNKNOWN_FILTER);
     pub const EVS_APP_NOT_REGISTERED: Status = mk_status(S_CFE_EVS_APP_NOT_REGISTERED);
@@ -46,7 +48,8 @@ impl Status {
     pub const ES_RST_ACCESS_ERR: Status = mk_status(S_CFE_ES_RST_ACCESS_ERR);
     pub const ES_ERR_APP_REGISTER: Status = mk_status(S_CFE_ES_ERR_APP_REGISTER);
     pub const ES_ERR_CHILD_TASK_DELETE: Status = mk_status(S_CFE_ES_ERR_CHILD_TASK_DELETE);
-    pub const ES_ERR_CHILD_TASK_DELETE_MAIN_TASK: Status = mk_status(S_CFE_ES_ERR_CHILD_TASK_DELETE_MAIN_TASK);
+    pub const ES_ERR_CHILD_TASK_DELETE_MAIN_TASK: Status =
+        mk_status(S_CFE_ES_ERR_CHILD_TASK_DELETE_MAIN_TASK);
     pub const ES_CDS_BLOCK_CRC_ERR: Status = mk_status(S_CFE_ES_CDS_BLOCK_CRC_ERR);
     pub const ES_MUT_SEM_DELETE_ERR: Status = mk_status(S_CFE_ES_MUT_SEM_DELETE_ERR);
     pub const ES_BIN_SEM_DELETE_ERR: Status = mk_status(S_CFE_ES_BIN_SEM_DELETE_ERR);
@@ -111,9 +114,11 @@ impl Status {
     pub const TBL_INFO_NO_UPDATE_PENDING: Status = mk_status(S_CFE_TBL_INFO_NO_UPDATE_PENDING);
     pub const TBL_INFO_TABLE_LOCKED: Status = mk_status(S_CFE_TBL_INFO_TABLE_LOCKED);
     pub const TBL_INFO_VALIDATION_PENDING: Status = mk_status(S_CFE_TBL_INFO_VALIDATION_PENDING);
-    pub const TBL_INFO_NO_VALIDATION_PENDING: Status = mk_status(S_CFE_TBL_INFO_NO_VALIDATION_PENDING);
+    pub const TBL_INFO_NO_VALIDATION_PENDING: Status =
+        mk_status(S_CFE_TBL_INFO_NO_VALIDATION_PENDING);
     pub const TBL_ERR_BAD_SUBTYPE_ID: Status = mk_status(S_CFE_TBL_ERR_BAD_SUBTYPE_ID);
-    pub const TBL_ERR_FILE_SIZE_INCONSISTENT: Status = mk_status(S_CFE_TBL_ERR_FILE_SIZE_INCONSISTENT);
+    pub const TBL_ERR_FILE_SIZE_INCONSISTENT: Status =
+        mk_status(S_CFE_TBL_ERR_FILE_SIZE_INCONSISTENT);
     pub const TBL_ERR_NO_STD_HEADER: Status = mk_status(S_CFE_TBL_ERR_NO_STD_HEADER);
     pub const TBL_ERR_NO_TBL_HEADER: Status = mk_status(S_CFE_TBL_ERR_NO_TBL_HEADER);
     pub const TBL_ERR_FILENAME_TOO_LONG: Status = mk_status(S_CFE_TBL_ERR_FILENAME_TOO_LONG);
@@ -135,7 +140,8 @@ impl Status {
     pub const TIME_NOT_IMPLEMENTED: Status = mk_status(S_CFE_TIME_NOT_IMPLEMENTED);
     pub const TIME_INTERNAL_ONLY: Status = mk_status(S_CFE_TIME_INTERNAL_ONLY);
     pub const TIME_OUT_OF_RANGE: Status = mk_status(S_CFE_TIME_OUT_OF_RANGE);
-    pub const TIME_TOO_MANY_SYNCH_CALLBACKS: Status = mk_status(S_CFE_TIME_TOO_MANY_SYNCH_CALLBACKS);
+    pub const TIME_TOO_MANY_SYNCH_CALLBACKS: Status =
+        mk_status(S_CFE_TIME_TOO_MANY_SYNCH_CALLBACKS);
     pub const TIME_CALLBACK_NOT_REGISTERED: Status = mk_status(S_CFE_TIME_CALLBACK_NOT_REGISTERED);
     pub const TIME_BAD_ARGUMENT: Status = mk_status(S_CFE_TIME_BAD_ARGUMENT);
 }

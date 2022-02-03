@@ -15,14 +15,14 @@ pub mod time;
 
 mod status_consts;
 
-use printf_wrap::{NullString, null_str};
+use printf_wrap::{null_str, NullString};
 
 /// An ID to identify cFE-managed resources.
 ///
 /// Wraps `CFE_ResourceId_t`.
-#[derive(Clone,Copy,Debug)]
+#[derive(Clone, Copy, Debug)]
 pub struct ResourceId {
-    id: CFE_ResourceId_t
+    id: CFE_ResourceId_t,
 }
 
 impl ResourceId {
@@ -53,7 +53,7 @@ impl PartialEq<ResourceId> for ResourceId {
     }
 }
 
-impl Eq for ResourceId { }
+impl Eq for ResourceId {}
 
 /// Wraps `CFE_ResourceId_FromInteger`.
 impl From<c_ulong> for ResourceId {
@@ -75,9 +75,9 @@ impl From<ResourceId> for c_ulong {
 /// A status-code type often used as a return type in this crate.
 ///
 /// Wraps `CFE_Status_t`.
-#[derive(Clone,Copy,PartialEq,Eq,Debug)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub struct Status {
-    pub(crate) status: CFE_Status_t
+    pub(crate) status: CFE_Status_t,
 }
 
 impl From<CFE_Status_t> for Status {
@@ -96,17 +96,17 @@ impl From<Status> for CFE_Status_t {
 
 /// The severity part of a [`Status`].
 #[repr(u32)]
-#[derive(Clone,Copy,PartialEq,Eq,Debug)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum StatusSeverity {
     Success = 0b00,
     Informational = 0b01,
     Warning = 0b10,
-    Error = 0b11,
+    Error   = 0b11,
 }
 
 /// The cFE service that generated a [`Status`].
 #[repr(u32)]
-#[derive(Clone,Copy,PartialEq,Eq,Debug)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum StatusServiceId {
     /// Not actually a cFE service;
     /// use this value for application-defined statuses.
@@ -132,12 +132,12 @@ impl Status {
         severity: StatusSeverity,
         service_id: StatusServiceId,
         mission_defined: u16,
-        code: u16
+        code: u16,
     ) -> Status {
         let n = (severity as u32) << 30
-              | (service_id as u32) << 25
-              | ((mission_defined as u32) & 0x01ff) << 16
-              | (code as u32);
+            | (service_id as u32) << 25
+            | ((mission_defined as u32) & 0x01ff) << 16
+            | (code as u32);
         Status { status: n as CFE_Status_t }
     }
 
@@ -150,7 +150,7 @@ impl Status {
             0b00 => Success,
             0b01 => Informational,
             0b10 => Warning,
-            _    => Error,
+            _ => Error,
         }
     }
 
@@ -167,7 +167,7 @@ impl Status {
             0b100 => Generic,
             0b101 => SB,
             0b110 => TBL,
-            _     => TIME,
+            _ => TIME,
         }
     }
 

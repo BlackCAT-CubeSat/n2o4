@@ -4,10 +4,10 @@
 
 use core::marker::PhantomData;
 
+use super::msg::{Message, MsgType};
+use super::Status;
 use cfs_sys::*;
 use printf_wrap::NullString;
-use super::Status;
-use super::msg::{Message,MsgType};
 
 /// The numeric value of a [message ID](`MsgId`).
 ///
@@ -21,8 +21,10 @@ pub use cfs_sys::CFE_SB_MsgId_Atom_t as MsgId_Atom;
 /// [numeric message ID](`MsgId_Atom`).
 ///
 /// Wraps `CFE_SB_MsgId_t`.
-#[derive(Clone,Copy,Debug)]
-pub struct MsgId { pub(crate) id: CFE_SB_MsgId_t }
+#[derive(Clone, Copy, Debug)]
+pub struct MsgId {
+    pub(crate) id: CFE_SB_MsgId_t,
+}
 
 impl MsgId {
     /// Returns whether `self` is a valid message ID.
@@ -39,11 +41,9 @@ impl MsgId {
     #[inline]
     pub fn msg_type(self) -> Result<MsgType, Status> {
         let mut t: CFE_MSG_Type_t = CFE_MSG_Type_CFE_MSG_Type_Invalid;
-        let s: Status = unsafe {
-            CFE_MSG_GetTypeFromMsgId(self.id, &mut t)
-        }.into();
+        let s: Status = unsafe { CFE_MSG_GetTypeFromMsgId(self.id, &mut t) }.into();
 
-        s.as_result(|| { MsgType::from_cfe(t) })
+        s.as_result(|| MsgType::from_cfe(t))
     }
 
     /// A reserved value that will not match any valid message ID.
@@ -65,7 +65,7 @@ impl PartialEq<MsgId> for MsgId {
     }
 }
 
-impl Eq for MsgId { }
+impl Eq for MsgId {}
 
 /// Wraps `CFE_SB_ValueToMsgId`.
 impl From<MsgId_Atom> for MsgId {
@@ -85,29 +85,29 @@ impl From<MsgId> for MsgId_Atom {
 }
 
 /// Message priority for off-system routing. Currently unused by cFE.
-#[derive(Clone,Copy,Debug,PartialEq,Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(u8)]
 pub enum QosPriority {
     High = CFE_SB_QosPriority_CFE_SB_QosPriority_HIGH as u8,
-    Low = CFE_SB_QosPriority_CFE_SB_QosPriority_LOW as u8,
+    Low  = CFE_SB_QosPriority_CFE_SB_QosPriority_LOW as u8,
 }
 
 /// Message transfer reliability for off-instance routing. Currently unused by cFE.
-#[derive(Clone,Copy,Debug,PartialEq,Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(u8)]
 pub enum QosReliability {
     High = CFE_SB_QosReliability_CFE_SB_QosReliability_HIGH as u8,
-    Low = CFE_SB_QosReliability_CFE_SB_QosReliability_LOW as u8,
+    Low  = CFE_SB_QosReliability_CFE_SB_QosReliability_LOW as u8,
 }
 
 /// Quality-of-service information for message subscriptions on the software bus.
 /// Currently unused by cFE.
 ///
 /// This is the same as `CFE_SB_Qos_t`.
-#[derive(Clone,Copy,Debug,PartialEq,Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(C)]
 pub struct Qos {
-    priority: u8,
+    priority:    u8,
     reliability: u8,
 }
 
@@ -116,7 +116,7 @@ impl Qos {
     #[inline]
     pub const fn new(priority: QosPriority, reliability: QosReliability) -> Qos {
         Qos {
-            priority: priority as u8,
+            priority:    priority as u8,
             reliability: reliability as u8,
         }
     }
@@ -125,21 +125,21 @@ impl Qos {
     ///
     /// Wraps `CFE_SB_DEFAULT_QOS`.
     pub const DEFAULT: Qos = Qos {
-        priority: X_CFE_SB_DEFAULT_QOS_PRIORITY,
+        priority:    X_CFE_SB_DEFAULT_QOS_PRIORITY,
         reliability: X_CFE_SB_DEFAULT_QOS_RELIABILITY,
     };
 
     #[inline]
     fn into_cfe(self) -> CFE_SB_Qos_t {
         CFE_SB_Qos_t {
-            Priority: self.priority,
+            Priority:    self.priority,
             Reliability: self.reliability,
         }
     }
 }
 
 /// How long to wait for a new message if a pipe is empty.
-#[derive(Clone,Copy,Debug,PartialEq,Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum TimeOut {
     /// Wait for the specified number of milliseconds.
     Millis(u32),
@@ -190,15 +190,13 @@ impl Pipe {
     pub fn new(depth: u16, pipe_name: NullString) -> Result<Pipe, Status> {
         let mut p: CFE_SB_PipeId_t = super::ResourceId::UNDEFINED.id;
 
-        let s: Status = unsafe {
-            CFE_SB_CreatePipe(&mut p, depth, pipe_name.as_ptr())
-        }.into();
+        let s: Status = unsafe { CFE_SB_CreatePipe(&mut p, depth, pipe_name.as_ptr()) }.into();
 
         if p == super::ResourceId::UNDEFINED.id {
             return Err(Status::SB_PIPE_CR_ERR);
         }
 
-        s.as_result(|| { Pipe { id: p, _pd: PhantomData } })
+        s.as_result(|| Pipe { id: p, _pd: PhantomData })
     }
 
     /// Deletes the software bus pipe.
@@ -210,7 +208,9 @@ impl Pipe {
     /// Wraps `CFE_SB_DeletePipe`.
     #[inline]
     pub fn delete(self) {
-        unsafe { CFE_SB_DeletePipe(self.id); }
+        unsafe {
+            CFE_SB_DeletePipe(self.id);
+        }
     }
 
     /// Subscribes to messages with ID `msg_id`
@@ -219,11 +219,9 @@ impl Pipe {
     /// Wraps `CFE_SB_Subscribe`.
     #[inline]
     pub fn subscribe(&mut self, msg_id: MsgId) -> Result<(), Status> {
-        let s: Status = unsafe {
-            CFE_SB_Subscribe(msg_id.id, self.id)
-        }.into();
+        let s: Status = unsafe { CFE_SB_Subscribe(msg_id.id, self.id) }.into();
 
-        s.as_result(|| { () })
+        s.as_result(|| ())
     }
 
     /// Subscribes to messages with ID `msg_id` on the software bus
@@ -233,14 +231,17 @@ impl Pipe {
     ///
     /// Wraps `CFE_SB_SubscribeEx`.
     #[inline]
-    pub fn subscribe_ex(&mut self, msg_id: MsgId, quality: Qos, msg_lim: u16) -> Result<(), Status> {
+    pub fn subscribe_ex(
+        &mut self,
+        msg_id: MsgId,
+        quality: Qos,
+        msg_lim: u16,
+    ) -> Result<(), Status> {
         let qos: CFE_SB_Qos_t = quality.into_cfe();
 
-        let s: Status = unsafe {
-            CFE_SB_SubscribeEx(msg_id.id, self.id, qos, msg_lim)
-        }.into();
+        let s: Status = unsafe { CFE_SB_SubscribeEx(msg_id.id, self.id, qos, msg_lim) }.into();
 
-        s.as_result(|| { () })
+        s.as_result(|| ())
     }
 
     /// Subscribes to messages with ID `msg_id`,
@@ -251,11 +252,9 @@ impl Pipe {
     /// Wraps `CFE_SB_SubscribeLocal`.
     #[inline]
     pub fn subscribe_local(&mut self, msg_id: MsgId, msg_lim: u16) -> Result<(), Status> {
-        let s: Status = unsafe {
-            CFE_SB_SubscribeLocal(msg_id.id, self.id, msg_lim)
-        }.into();
+        let s: Status = unsafe { CFE_SB_SubscribeLocal(msg_id.id, self.id, msg_lim) }.into();
 
-        s.as_result(|| { () })
+        s.as_result(|| ())
     }
 
     /// Removes the current pipe's subscription to messages with ID `msg_id`.
@@ -263,11 +262,9 @@ impl Pipe {
     /// Wraps `CFE_SB_Unsubscribe`.
     #[inline]
     pub fn unsubscribe(&mut self, msg_id: MsgId) -> Result<(), Status> {
-        let s: Status = unsafe {
-            CFE_SB_Unsubscribe(msg_id.id, self.id)
-        }.into();
+        let s: Status = unsafe { CFE_SB_Unsubscribe(msg_id.id, self.id) }.into();
 
-        s.as_result(|| { () })
+        s.as_result(|| ())
     }
 
     /// Removes the current pipe's subscription to messages with ID `msg_id`,
@@ -278,11 +275,9 @@ impl Pipe {
     /// Wraps `CFE_SB_UnsubscribeLocal`.
     #[inline]
     pub fn unsubscribe_local(&mut self, msg_id: MsgId) -> Result<(), Status> {
-        let s: Status = unsafe {
-            CFE_SB_UnsubscribeLocal(msg_id.id, self.id)
-        }.into();
+        let s: Status = unsafe { CFE_SB_UnsubscribeLocal(msg_id.id, self.id) }.into();
 
-        s.as_result(|| { () })
+        s.as_result(|| ())
     }
 
     /// Receives a message from the pipe.
@@ -298,13 +293,12 @@ impl Pipe {
     /// Wraps `CFE_SB_ReceiveBuffer`.
     #[inline]
     pub fn receive_buffer<T, F>(&mut self, time_out: TimeOut, closure: F) -> T
-        where F: for<'a> FnOnce(Result<&'a Message, Status>) -> T {
-
+    where
+        F: for<'a> FnOnce(Result<&'a Message, Status>) -> T,
+    {
         let mut buf: *mut CFE_SB_Buffer_t = core::ptr::null_mut();
 
-        let s: Status = unsafe {
-            CFE_SB_ReceiveBuffer(&mut buf, self.id, time_out.into())
-        }.into();
+        let s: Status = unsafe { CFE_SB_ReceiveBuffer(&mut buf, self.id, time_out.into()) }.into();
 
         let result: Result<&Message, Status>;
         result = if s.severity() == super::StatusSeverity::Error {
