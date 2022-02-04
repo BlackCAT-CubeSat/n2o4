@@ -10,6 +10,31 @@ use super::sb::MsgId;
 use super::Status;
 use cfs_sys::*;
 
+/// Returns the number of items in array field `$field` of `$type`.
+///
+/// The `unsafe` variant may be used for fields in unions.
+///
+/// A tip of the hat to [https://stackoverflow.com/a/70224634] for the basic idea.
+macro_rules! array_field_len {
+    ($type:ty, $field:ident) => {{
+        const SZ: usize = length_of_return_array(&|s: $type| s.$field);
+        SZ
+    }};
+    ($type:ty, $field:ident, unsafe) => {{
+        const SZ: usize = length_of_return_array(&|s: $type| unsafe { s.$field });
+        SZ
+    }};
+}
+
+/// Returns the array length of the return type of a function,
+/// when the function returns an array.
+const fn length_of_return_array<F, T, U, const N: usize>(_f: &F) -> usize
+where
+    F: FnOnce(T) -> [U; N],
+{
+    N
+}
+
 /// A [`Message`]'s function code.
 ///
 /// This is the same as `CFE_MSG_FcnCode_t`.
@@ -58,7 +83,9 @@ pub struct Telemetry<T: Copy> {
 
 impl Message {
     /// An instance of [`CFE_MSG_Message_t`] for use when constructing instances.
-    const ZERO_MESSAGE: CFE_MSG_Message_t = CFE_MSG_Message_t { Byte: [0; 6] };
+    const ZERO_MESSAGE: CFE_MSG_Message_t = CFE_MSG_Message_t {
+        Byte: [0; array_field_len!(CFE_MSG_Message_t, Byte, unsafe)],
+    };
 
     /// Initialize a [`Message`]. As doing this arbitrarily can result in
     /// invalid state (e.g., a message with a command message ID but a telemetry
@@ -223,11 +250,13 @@ impl Message {
 }
 
 impl<T: Copy + Sized> Command<T> {
-    /// An instance of the command secondary header
-    /// for use when constructing instances.
-    const ZERO_SECONDARY: CFE_MSG_CommandSecondaryHeader_t = CFE_MSG_CommandSecondaryHeader_t {
-        FunctionCode: 0,
-        Checksum:     0,
+    /// An instance of the command header for use when constructing instances.
+    const ZERO_HEADER: CFE_MSG_CommandHeader_t = CFE_MSG_CommandHeader_t {
+        Msg: Message::ZERO_MESSAGE,
+        Sec: CFE_MSG_CommandSecondaryHeader_t {
+            FunctionCode: 0,
+            Checksum:     0,
+        },
     };
 
     /// Tries to create a new command message, setting the message ID and function code
@@ -237,10 +266,7 @@ impl<T: Copy + Sized> Command<T> {
     #[inline]
     pub fn new(msg_id: MsgId, fcn_code: FunctionCode, payload: T) -> Result<Self, Status> {
         let mut cmd = Command {
-            header:  CFE_MSG_CommandHeader_t {
-                Msg: Message::ZERO_MESSAGE,
-                Sec: Self::ZERO_SECONDARY,
-            },
+            header:  Self::ZERO_HEADER,
             payload: payload,
         };
         let sz: Size = mem::size_of::<Self>() as Size;
@@ -294,10 +320,14 @@ impl<T: Copy> DerefMut for Command<T> {
 }
 
 impl<T: Copy + Sized> Telemetry<T> {
-    /// An instance of the telemetry secondary header
-    /// for use when constructing instances.
-    const ZERO_SECONDARY: CFE_MSG_TelemetrySecondaryHeader_t =
-        CFE_MSG_TelemetrySecondaryHeader_t { Time: [0; 6] };
+    /// An instance of the telemetry header for use when constructing instances.
+    const ZERO_HEADER: CFE_MSG_TelemetryHeader_t = CFE_MSG_TelemetryHeader_t {
+        Msg:   Message::ZERO_MESSAGE,
+        Sec:   CFE_MSG_TelemetrySecondaryHeader_t {
+            Time: [0; array_field_len!(CFE_MSG_TelemetrySecondaryHeader_t, Time)],
+        },
+        Spare: [0; array_field_len!(CFE_MSG_TelemetryHeader_t, Spare)],
+    };
 
     /// Tries to create a new telemetry message, setting the message ID
     /// along the way.
@@ -306,11 +336,7 @@ impl<T: Copy + Sized> Telemetry<T> {
     #[inline]
     pub fn new(msg_id: MsgId, payload: T) -> Result<Self, Status> {
         let mut tlm = Telemetry {
-            header:  CFE_MSG_TelemetryHeader_t {
-                Msg:   Message::ZERO_MESSAGE,
-                Sec:   Self::ZERO_SECONDARY,
-                Spare: [0; 4], //CFE_MSG_TelemetryHeader_t::Spare::size_of()],
-            },
+            header:  Self::ZERO_HEADER,
             payload: payload,
         };
         let sz: Size = mem::size_of::<Self>() as Size;
