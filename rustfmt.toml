@@ -1,0 +1,4 @@
+enum_discrim_align_threshold = 12
+struct_field_align_threshold = 12
+struct_lit_width = 30
+use_small_heuristics = "Max"

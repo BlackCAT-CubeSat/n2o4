@@ -2,4 +2,4 @@
 
 //! Module for the creation of [sealed traits](https://rust-lang.github.io/api-guidelines/future-proofing.html).
 
-pub trait FilterSchemeSealed { }
+pub trait FilterSchemeSealed {}

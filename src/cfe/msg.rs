@@ -4,11 +4,11 @@
 
 use core::default::Default;
 use core::mem;
-use core::ops::{Deref,DerefMut};
+use core::ops::{Deref, DerefMut};
 
-use cfs_sys::*;
-use super::Status;
 use super::sb::MsgId;
+use super::Status;
+use cfs_sys::*;
 
 /// A [`Message`]'s function code.
 ///
@@ -27,7 +27,7 @@ pub use cfs_sys::CFE_MSG_Size_t as Size;
 /// Wraps `CFE_MSG_Message_t`.
 #[repr(transparent)]
 pub struct Message {
-    pub(super) msg: CFE_MSG_Message_t
+    pub(super) msg: CFE_MSG_Message_t,
 }
 
 /// A command message for use with the cFE software bus.
@@ -68,7 +68,7 @@ impl Message {
     #[inline]
     unsafe fn init(&mut self, msg_id: MsgId, size: Size) -> Result<(), Status> {
         let s: Status = CFE_MSG_Init(&mut self.msg, msg_id.id, size).into();
-        s.as_result(|| { () })
+        s.as_result(|| ())
     }
 
     /// Convenience function for creating a higher-level wrapper from the
@@ -93,11 +93,9 @@ impl Message {
     #[inline]
     pub fn fcn_code(&self) -> Result<FunctionCode, Status> {
         let mut fc: FunctionCode = 0;
-        let s: Status = unsafe {
-            CFE_MSG_GetFcnCode(&self.msg, &mut fc)
-        }.into();
+        let s: Status = unsafe { CFE_MSG_GetFcnCode(&self.msg, &mut fc) }.into();
 
-        s.as_result(|| { fc })
+        s.as_result(|| fc)
     }
 
     /// Returns the message ID.
@@ -107,11 +105,9 @@ impl Message {
     pub fn msgid(&self) -> Result<MsgId, Status> {
         let mut mid: MsgId = MsgId::INVALID;
 
-        let s: Status = unsafe {
-            CFE_MSG_GetMsgId(&self.msg, &mut mid.id)
-        }.into();
+        let s: Status = unsafe { CFE_MSG_GetMsgId(&self.msg, &mut mid.id) }.into();
 
-        s.as_result(|| { mid })
+        s.as_result(|| mid)
     }
 
     /// Tries to set the message ID, provided doing so would not change
@@ -139,7 +135,7 @@ impl Message {
     pub unsafe fn set_msgid_unchecked(&mut self, msg_id: MsgId) -> Result<(), Status> {
         let s: Status = CFE_MSG_SetMsgId(&mut self.msg, msg_id.id).into();
 
-        s.as_result(|| { () })
+        s.as_result(|| ())
     }
 
     /// Returns the total size of the message this [`Message`] is the header for.
@@ -148,11 +144,9 @@ impl Message {
     #[inline]
     pub fn size(&self) -> Result<Size, Status> {
         let mut sz: Size = 0;
-        let s: Status = unsafe {
-            CFE_MSG_GetSize(&self.msg, &mut sz)
-        }.into();
+        let s: Status = unsafe { CFE_MSG_GetSize(&self.msg, &mut sz) }.into();
 
-        s.as_result(|| { sz })
+        s.as_result(|| sz)
     }
 
     /// Sets the total size of the message this [`Message`] is the header for.
@@ -164,7 +158,7 @@ impl Message {
     #[inline]
     pub unsafe fn set_size(&mut self, sz: Size) -> Result<(), Status> {
         let s: Status = CFE_MSG_SetSize(&mut self.msg, sz).into();
-        s.as_result(|| { () })
+        s.as_result(|| ())
     }
 
     /// The backend of [`try_cast_cmd`](`Self::try_cast_cmd`)
@@ -221,11 +215,10 @@ impl Message {
     /// Wraps `CFE_SB_TransmitMsg`.
     #[inline]
     pub fn transmit(&mut self, increment_sequence_count: bool) -> Result<(), Status> {
-        let s: Status = unsafe {
-            CFE_SB_TransmitMsg(&mut self.msg, increment_sequence_count)
-        }.into();
+        let s: Status =
+            unsafe { CFE_SB_TransmitMsg(&mut self.msg, increment_sequence_count) }.into();
 
-        s.as_result(|| { () })
+        s.as_result(|| ())
     }
 }
 
@@ -234,7 +227,7 @@ impl<T: Copy + Sized> Command<T> {
     /// for use when constructing instances.
     const ZERO_SECONDARY: CFE_MSG_CommandSecondaryHeader_t = CFE_MSG_CommandSecondaryHeader_t {
         FunctionCode: 0,
-        Checksum: 0,
+        Checksum:     0,
     };
 
     /// Tries to create a new command message, setting the message ID and function code
@@ -244,7 +237,7 @@ impl<T: Copy + Sized> Command<T> {
     #[inline]
     pub fn new(msg_id: MsgId, fcn_code: FunctionCode, payload: T) -> Result<Self, Status> {
         let mut cmd = Command {
-            header: CFE_MSG_CommandHeader_t {
+            header:  CFE_MSG_CommandHeader_t {
                 Msg: Message::ZERO_MESSAGE,
                 Sec: Self::ZERO_SECONDARY,
             },
@@ -252,7 +245,9 @@ impl<T: Copy + Sized> Command<T> {
         };
         let sz: Size = mem::size_of::<Self>() as Size;
 
-        if msg_id.msg_type() != Ok(MsgType::Cmd) { return Err(Status::SB_BAD_ARGUMENT); }
+        if msg_id.msg_type() != Ok(MsgType::Cmd) {
+            return Err(Status::SB_BAD_ARGUMENT);
+        }
 
         unsafe { Message::from_cfe_mut(&mut cmd.header.Msg).init(msg_id, sz) }?;
 
@@ -276,11 +271,9 @@ impl<T: Copy + Sized> Command<T> {
     /// Wraps `CFE_MSG_SetFcnCode`.
     #[inline]
     pub fn set_fcn_code(&mut self, fcn_code: FunctionCode) -> Result<(), Status> {
-        let s: Status = unsafe {
-            CFE_MSG_SetFcnCode(&mut self.header.Msg, fcn_code)
-        }.into();
+        let s: Status = unsafe { CFE_MSG_SetFcnCode(&mut self.header.Msg, fcn_code) }.into();
 
-        s.as_result(|| { () })
+        s.as_result(|| ())
     }
 }
 
@@ -303,9 +296,8 @@ impl<T: Copy> DerefMut for Command<T> {
 impl<T: Copy + Sized> Telemetry<T> {
     /// An instance of the telemetry secondary header
     /// for use when constructing instances.
-    const ZERO_SECONDARY: CFE_MSG_TelemetrySecondaryHeader_t = CFE_MSG_TelemetrySecondaryHeader_t {
-        Time: [0; 6],
-    };
+    const ZERO_SECONDARY: CFE_MSG_TelemetrySecondaryHeader_t =
+        CFE_MSG_TelemetrySecondaryHeader_t { Time: [0; 6] };
 
     /// Tries to create a new telemetry message, setting the message ID
     /// along the way.
@@ -314,16 +306,18 @@ impl<T: Copy + Sized> Telemetry<T> {
     #[inline]
     pub fn new(msg_id: MsgId, payload: T) -> Result<Self, Status> {
         let mut tlm = Telemetry {
-            header: CFE_MSG_TelemetryHeader_t {
-                Msg: Message::ZERO_MESSAGE,
-                Sec: Self::ZERO_SECONDARY,
+            header:  CFE_MSG_TelemetryHeader_t {
+                Msg:   Message::ZERO_MESSAGE,
+                Sec:   Self::ZERO_SECONDARY,
                 Spare: [0; 4], //CFE_MSG_TelemetryHeader_t::Spare::size_of()],
             },
             payload: payload,
         };
         let sz: Size = mem::size_of::<Self>() as Size;
 
-        if msg_id.msg_type() != Ok(MsgType::Tlm) { return Err(Status::SB_BAD_ARGUMENT); }
+        if msg_id.msg_type() != Ok(MsgType::Tlm) {
+            return Err(Status::SB_BAD_ARGUMENT);
+        }
 
         unsafe { Message::from_cfe_mut(&mut tlm.header.Msg).init(msg_id, sz) }?;
 
@@ -356,14 +350,14 @@ impl<T: Copy> DerefMut for Telemetry<T> {
 }
 
 /// The type of a message.
-#[derive(Clone,Copy,Debug,PartialEq,Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(u32)]
 pub enum MsgType {
     /// Command message.
-    Cmd = CFE_MSG_Type_CFE_MSG_Type_Cmd,
+    Cmd     = CFE_MSG_Type_CFE_MSG_Type_Cmd,
 
     /// Telemetry message.
-    Tlm = CFE_MSG_Type_CFE_MSG_Type_Tlm,
+    Tlm     = CFE_MSG_Type_CFE_MSG_Type_Tlm,
 
     /// Invalid message type.
     Invalid = CFE_MSG_Type_CFE_MSG_Type_Invalid,
