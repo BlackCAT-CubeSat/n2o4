@@ -103,12 +103,11 @@ pub enum QosReliability {
 /// Quality-of-service information for message subscriptions on the software bus.
 /// Currently unused by cFE.
 ///
-/// This is the same as `CFE_SB_Qos_t`.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-#[repr(C)]
+/// Wraps `CFE_SB_Qos_t`.
+#[derive(Clone, Copy, Debug)]
+#[repr(transparent)]
 pub struct Qos {
-    priority:    u8,
-    reliability: u8,
+    qos: CFE_SB_Qos_t,
 }
 
 impl Qos {
@@ -116,8 +115,10 @@ impl Qos {
     #[inline]
     pub const fn new(priority: QosPriority, reliability: QosReliability) -> Qos {
         Qos {
-            priority:    priority as u8,
-            reliability: reliability as u8,
+            qos: CFE_SB_Qos_t {
+                Priority:    priority as u8,
+                Reliability: reliability as u8,
+            },
         }
     }
 
@@ -125,21 +126,15 @@ impl Qos {
     ///
     /// Wraps `CFE_SB_DEFAULT_QOS`.
     pub const DEFAULT: Qos = Qos {
-        priority:    X_CFE_SB_DEFAULT_QOS_PRIORITY,
-        reliability: X_CFE_SB_DEFAULT_QOS_RELIABILITY,
+        qos: CFE_SB_Qos_t {
+            Priority:    X_CFE_SB_DEFAULT_QOS_PRIORITY,
+            Reliability: X_CFE_SB_DEFAULT_QOS_RELIABILITY,
+        },
     };
-
-    #[inline]
-    fn into_cfe(self) -> CFE_SB_Qos_t {
-        CFE_SB_Qos_t {
-            Priority:    self.priority,
-            Reliability: self.reliability,
-        }
-    }
 }
 
 /// How long to wait for a new message if a pipe is empty.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug)]
 pub enum TimeOut {
     /// Wait for the specified number of milliseconds.
     Millis(u32),
@@ -237,9 +232,8 @@ impl Pipe {
         quality: Qos,
         msg_lim: u16,
     ) -> Result<(), Status> {
-        let qos: CFE_SB_Qos_t = quality.into_cfe();
-
-        let s: Status = unsafe { CFE_SB_SubscribeEx(msg_id.id, self.id, qos, msg_lim) }.into();
+        let s: Status =
+            unsafe { CFE_SB_SubscribeEx(msg_id.id, self.id, quality.qos, msg_lim) }.into();
 
         s.as_result(|| ())
     }
