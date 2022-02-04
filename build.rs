@@ -9,9 +9,9 @@ fn main() {
     let in_dir = env_unwrap("CARGO_MANIFEST_DIR");
     let out_dir = env_unwrap("OUT_DIR");
 
-    let api_header   = pb(&[&in_dir,  "cfs-api.h"]).to_string_unwrap();
-    let shims_header = pb(&[&in_dir,  "cfs-shims.h"]).to_string_unwrap();
-    let out_file     = pb(&[&out_dir, "cfs-all.rs"]).to_string_unwrap();
+    let api_header = pb(&[&in_dir, "cfs-api.h"]).to_string_unwrap();
+    let shims_header = pb(&[&in_dir, "cfs-shims.h"]).to_string_unwrap();
+    let out_file = pb(&[&out_dir, "cfs-all.rs"]).to_string_unwrap();
 
     for f in [&api_header, &shims_header] {
         println!("cargo:rerun-if-changed={}", f);
@@ -24,24 +24,24 @@ fn main() {
     let bindings = bindgen::builder()
         .header(&api_header)
         .header(&shims_header)
-        .clang_args(compile_defs.split('@').map(|s| { String::from("-D") + s }))
-        .clang_args(include_dirs.split('@').map(|s| { String::from("-I") + s }))
+        .clang_args(compile_defs.split('@').map(|s| String::from("-D") + s))
+        .clang_args(include_dirs.split('@').map(|s| String::from("-I") + s))
         .clang_args(compile_opts.split('@'))
         .allowlist_recursively(true)
         .allowlist_type("(CFE|OS|OSAL|CFE_PSP|CCSDS)_.*")
         .allowlist_function("(CFE|OS|OSAL|CFE_PSP|SHIM)_.*")
         .allowlist_var("(X_|S_)?(CFE|OS|OSAL|CFE_PSP)_.*")
         .blocklist_function("CFE_ES_Main") // only to be called by the BSP
-        .blocklist_function("OS_BSP_.*")   // ditto
+        .blocklist_function("OS_BSP_.*") // ditto
         .use_core()
         .ctypes_prefix("::libc")
         .size_t_is_usize(true)
         .generate_comments(false)
         .parse_callbacks(Box::new(bindgen::CargoCallbacks))
-        .generate().expect("Unable to generate cFS bindings");
+        .generate()
+        .expect("Unable to generate cFS bindings");
 
-    bindings.write_to_file(&out_file)
-        .expect("Unable to write out cFS bindings");
+    bindings.write_to_file(&out_file).expect("Unable to write out cFS bindings");
 
     let mut builder = cc::Build::new();
     builder.includes(include_dirs.split('@'));
@@ -53,15 +53,12 @@ fn main() {
         builder.flag(opt);
     }
 
-    builder
-        .file("cfs-shims.c")
-        .compile("cfs-shims");
+    builder.file("cfs-shims.c").compile("cfs-shims");
 }
 
 fn env_unwrap(key: &str) -> String {
     println!("cargo:rerun-if-env-changed={}", key);
-    env::var(key)
-        .expect(&format!("Environment variable {} non-existent or unusable", key))
+    env::var(key).expect(&format!("Environment variable {} non-existent or unusable", key))
 }
 
 /// Given a slice of path components, return the corresponding [`PathBuf`].
