@@ -67,7 +67,6 @@ impl Status {
     pub const ES_ERR_SYS_LOG_TRUNCATED: Status = mk_status(S_CFE_ES_ERR_SYS_LOG_TRUNCATED);
     pub const ES_NO_RESOURCE_IDS_AVAILABLE: Status = mk_status(S_CFE_ES_NO_RESOURCE_IDS_AVAILABLE);
     pub const ES_POOL_BLOCK_INVALID: Status = mk_status(S_CFE_ES_POOL_BLOCK_INVALID);
-    pub const ES_POOL_BOUNDS_ERROR: Status = mk_status(S_CFE_ES_POOL_BOUNDS_ERROR);
     pub const ES_ERR_DUPLICATE_NAME: Status = mk_status(S_CFE_ES_ERR_DUPLICATE_NAME);
     pub const ES_NOT_IMPLEMENTED: Status = mk_status(S_CFE_ES_NOT_IMPLEMENTED);
     pub const FS_BAD_ARGUMENT: Status = mk_status(S_CFE_FS_BAD_ARGUMENT);
@@ -98,7 +97,6 @@ impl Status {
     pub const TBL_WARN_DUPLICATE: Status = mk_status(S_CFE_TBL_WARN_DUPLICATE);
     pub const TBL_ERR_NO_ACCESS: Status = mk_status(S_CFE_TBL_ERR_NO_ACCESS);
     pub const TBL_ERR_UNREGISTERED: Status = mk_status(S_CFE_TBL_ERR_UNREGISTERED);
-    pub const TBL_ERR_BAD_APP_ID: Status = mk_status(S_CFE_TBL_ERR_BAD_APP_ID);
     pub const TBL_ERR_HANDLES_FULL: Status = mk_status(S_CFE_TBL_ERR_HANDLES_FULL);
     pub const TBL_ERR_DUPLICATE_DIFF_SIZE: Status = mk_status(S_CFE_TBL_ERR_DUPLICATE_DIFF_SIZE);
     pub const TBL_ERR_DUPLICATE_NOT_OWNED: Status = mk_status(S_CFE_TBL_ERR_DUPLICATE_NOT_OWNED);
@@ -107,7 +105,6 @@ impl Status {
     pub const TBL_ERR_DUMP_ONLY: Status = mk_status(S_CFE_TBL_ERR_DUMP_ONLY);
     pub const TBL_ERR_ILLEGAL_SRC_TYPE: Status = mk_status(S_CFE_TBL_ERR_ILLEGAL_SRC_TYPE);
     pub const TBL_ERR_LOAD_IN_PROGRESS: Status = mk_status(S_CFE_TBL_ERR_LOAD_IN_PROGRESS);
-    pub const TBL_ERR_FILE_NOT_FOUND: Status = mk_status(S_CFE_TBL_ERR_FILE_NOT_FOUND);
     pub const TBL_ERR_FILE_TOO_LARGE: Status = mk_status(S_CFE_TBL_ERR_FILE_TOO_LARGE);
     pub const TBL_WARN_SHORT_FILE: Status = mk_status(S_CFE_TBL_WARN_SHORT_FILE);
     pub const TBL_ERR_BAD_CONTENT_ID: Status = mk_status(S_CFE_TBL_ERR_BAD_CONTENT_ID);
