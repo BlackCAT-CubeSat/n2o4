@@ -6,4 +6,4 @@ and [OSAL](https://github.com/nasa/osal) APIs.
 
 **NOTE:** this is a work in progress.
 
-See [USING](USING.md) for importing information on how to use this crate.
+See [USING](USING.md) for important information on how to use this crate.
