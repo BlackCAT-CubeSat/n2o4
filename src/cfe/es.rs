@@ -2,7 +2,7 @@
 
 //! Executive Services system
 
-use super::Status;
+use super::{ResourceId, Status};
 use cfs_sys::*;
 use libc::c_char;
 use printf_wrap::{PrintfArgument, PrintfFmt};
@@ -153,4 +153,44 @@ pub fn run_loop(run_status: Option<RunStatus>) -> bool {
         Some(_) => &mut rs,
     };
     unsafe { CFE_ES_RunLoop(p) }
+}
+
+/// An identifier for cFE applications.
+///
+/// This wraps `CFE_ES_AppId_t`.
+#[derive(Clone, Copy, Debug)]
+pub struct AppId {
+    id: CFE_ES_AppId_t,
+}
+
+impl From<AppId> for ResourceId {
+    #[inline]
+    fn from(app_id: AppId) -> Self {
+        ResourceId { id: app_id.id }
+    }
+}
+
+/* TODO. Requires obtaining base resource-ID values from the cFE headers...
+impl TryFrom<ResourceId> for AppId {
+    type Error = ();
+
+    #[inline]
+    fn try_from(value: ResourceId) -> Result<Self, Self::Error> {
+        if value.base() == CFE_ES_APPID_BASE {
+            Ok(AppId { id: value.id })
+        } else {
+            Err(())
+        }
+    }
+}
+*/
+
+/// Returns (if successful) the application ID for the calling cFE application.
+///
+/// Wraps `CFE_ES_GetAppID`.
+#[inline]
+pub fn get_app_id() -> Result<AppId, Status> {
+    let mut app_id = AppId { id: 0 };
+    let s: Status = unsafe { CFE_ES_GetAppID(&mut app_id.id) }.into();
+    s.as_result(|| app_id)
 }
