@@ -5,7 +5,7 @@
 use super::{ResourceId, Status};
 use cfs_sys::*;
 use libc::c_char;
-use printf_wrap::{PrintfArgument, PrintfFmt};
+use printf_wrap::{NullString, PrintfArgument, PrintfFmt};
 
 /// The status (or requested status) of a cFE application.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
@@ -193,4 +193,31 @@ pub fn get_app_id() -> Result<AppId, Status> {
     let mut app_id = AppId { id: 0 };
     let s: Status = unsafe { CFE_ES_GetAppID(&mut app_id.id) }.into();
     s.as_result(|| app_id)
+}
+
+/// Restarts a single cFE application.
+///
+/// Wraps `CFE_ES_RestartApp`.
+#[inline]
+pub fn restart_app(app_id: AppId) -> Result<(), Status> {
+    let s: Status = unsafe { CFE_ES_RestartApp(app_id.id) }.into();
+    s.as_result(|| ())
+}
+
+/// Stops a cFE application, then loads and starts it using the specified file.
+///
+/// Wraps `CFE_ES_ReloadApp`.
+#[inline]
+pub fn reload_app(app_id: AppId, app_file_name: NullString) -> Result<(), Status> {
+    let s: Status = unsafe { CFE_ES_ReloadApp(app_id.id, app_file_name.as_ptr()) }.into();
+    s.as_result(|| ())
+}
+
+/// Stops a cFE application, then deletes it from the cFE application table.
+///
+/// Wraps `CFE_ES_DeleteApp`.
+#[inline]
+pub fn delete_app(app_id: AppId) -> Result<(), Status> {
+    let s: Status = unsafe { CFE_ES_DeleteApp(app_id.id) }.into();
+    s.as_result(|| ())
 }
