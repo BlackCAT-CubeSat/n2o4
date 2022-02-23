@@ -15,6 +15,16 @@
 # Target for building and installing Rustdocs for this arch.
 add_custom_target(install_rust_docs)
 
+set(RUSTDOC_TARGET_INDEX_PATH "${MISSION_BINARY_DIR}/docs/${TARGETSYSTEM}/index.html")
+file(
+  WRITE  "${RUSTDOC_TARGET_INDEX_PATH}"
+  "<!DOCTYPE html>\n<html>\n<head><title>${MISSION_NAME}: ${TARGETSYSTEM}: Rust applications</title></head>\n"
+)
+file(
+  APPEND "${RUSTDOC_TARGET_INDEX_PATH}"
+  "<body>\n<h1>Rust applications on ${TARGETSYSTEM}</h1>\n<ul>\n"
+)
+
 if(NOT DEFINED RUST_TARGET)
   # If we're not given a target, use the default target
 
@@ -23,7 +33,7 @@ if(NOT DEFINED RUST_TARGET)
 
   execute_process(
     COMMAND "rustc" "-vV"
-    COMMAND "sed" "-n" "s/^host: *//p"
+    COMMAND "sed" "-n" "-e" "s/^host: *//p"
     COMMAND "head" "-n" "1"
     OUTPUT_VARIABLE RUST_TARGET
     OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -66,7 +76,7 @@ endfunction()
 # This function has a couple of requirements:
 #
 # * The crate manifest (Cargo.toml) is in the application source's
-#   top-level directory.
+#   rust-fsw/ directory.
 #
 # * The crate compiles to a static library
 #   (lib.crate-type includes "staticlib").
@@ -138,6 +148,12 @@ function(cfe_rust_crate CFS_APP CRATE_NAME)
   )
 
   add_dependencies(install_rust_docs ${CFS_APP}_rustdocs_install)
+
+  # Add an entry to the Rustdocs index:
+  file(
+    APPEND "${RUSTDOC_TARGET_INDEX_PATH}"
+    "<li><a href=\"rust-${CFS_APP}/${CRATE_FILE_STEM}/index.html\">${CFS_APP}</a></li>\n"
+  )
 
   # When cleaning, clean up the build directory:
   set_directory_properties(

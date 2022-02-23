@@ -7,7 +7,18 @@
 # Top-level target to build and install Rustdocs for all mission CPUs:
 add_custom_target(rust-doc)
 
+set(RUSTDOC_TOP_INDEX_PATH "${MISSION_BINARY_DIR}/docs/rustdocs.html")
+
+file(
+  WRITE  "${RUSTDOC_TOP_INDEX_PATH}"
+  "<!DOCTYPE html>\n<html>\n<head><title>${MISSION_NAME} Rustdocs</title></head>\n"
+)
+file(
+  APPEND "${RUSTDOC_TOP_INDEX_PATH}" "<body>\n<h1>Targets</h1>\n<ul>\n")
+
 foreach(TGTSYS ${TGTSYS_LIST})
+  file(APPEND "${RUSTDOC_TOP_INDEX_PATH}" "<li><a href=\"${TGTSYS}/index.html\">${TGTSYS}</a></li>\n")
+
   # Cribbing from mission_build.cmake's process_arch() to construct the build directory...
   set(BUILD_CONFIG ${BUILD_CONFIG_${TGTSYS}})
   list(GET BUILD_CONFIG 0 ARCH_TOOLCHAIN_NAME)
@@ -20,5 +31,7 @@ foreach(TGTSYS ${TGTSYS_LIST})
       COMMAND $(MAKE) install_rust_docs
       WORKING_DIRECTORY "${ARCH_BINARY_DIR}"
   )
-  add_dependencies(rust-doc ${TGTSYS}_install_rust_docs)
+  add_dependencies(rust-doc "${TGTSYS}_install_rust_docs")
 endforeach()
+
+file(APPEND "${RUSTDOC_TOP_INDEX_PATH}" "</ul>\n</body>\n</html>\n")
