@@ -1,6 +1,7 @@
 // Copyright (c) 2021 The Pennsylvania State University. All rights reserved.
 
 extern crate bindgen;
+extern crate cc;
 
 use std::env;
 use std::path::PathBuf;
