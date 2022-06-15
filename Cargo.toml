@@ -6,6 +6,6 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-cfs-sys = { git = "https://git.psu.edu/BlackCAT/fsw/cfs-sys-rs.git", rev = "40a43402314f857eea455d8c174638de64d31dc4" }
-printf-wrap = { git = "https://git.psu.edu/BlackCAT/fsw/printf-wrap.git", rev = "9605c4b9fb5521cc8f3ec86fbc986eadf5761477", default-features = false }
+cfs-sys = { git = "https://git.psu.edu/BlackCAT/fsw/cfs-sys-rs.git", rev = "a68965f8936b93e153b992744e93e451e7739ac1" }
+printf-wrap = { git = "https://git.psu.edu/BlackCAT/fsw/printf-wrap.git", rev = "ba319eaed99d5d842fd61c6e6ee7b9b02aa97aa8", default-features = false }
 libc = { version = "^0.2.107", default-features = false }
