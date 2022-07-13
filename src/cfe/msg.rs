@@ -225,6 +225,32 @@ impl Message {
         self.try_cast::<Telemetry<T>>(MsgType::Tlm)
     }
 
+    /// Returns the payload of the message as a byte slice.
+    ///
+    /// This can be useful when the payload isn't a C structure.
+    #[inline]
+    pub fn payload(&self) -> Result<&[u8], Status> {
+        let size = self.size()? as usize;
+        let header_length = match self.msgid()?.msg_type()? {
+            MsgType::Cmd => mem::size_of::<CFE_MSG_CommandHeader_t>(),
+            MsgType::Tlm => mem::size_of::<CFE_MSG_TelemetryHeader_t>(),
+            _ => {
+                return Err(Status::MSG_WRONG_MSG_TYPE);
+            }
+        };
+
+        let slice: Option<&[u8]> = unsafe {
+            let base: *const u8 =
+                (self as *const Message as *const u8).offset(header_length as isize);
+            core::ptr::slice_from_raw_parts(base, size - header_length).as_ref()
+        };
+
+        match slice {
+            Some(s) => Ok(s),
+            None => Err(Status::SB_NO_MESSAGE),
+        }
+    }
+
     /// Sets the [`Message`]'s time field to the current spacecraft time.
     ///
     /// Wraps `CFE_SB_TimeStampMsg`.
