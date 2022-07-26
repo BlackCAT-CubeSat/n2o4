@@ -329,6 +329,28 @@ impl<T: Copy + Sized> Command<T> {
     }
 }
 
+impl<const SIZE: usize> Command<[u8; SIZE]> {
+    /// Transmits onto the software bus
+    /// the header and first min(`len`,&nbsp;`SIZE`) bytes
+    /// of [`payload`](`Command::payload`).
+    ///
+    /// After transmission, attempts to set the message size (in the header)
+    /// back to the structure's full length.
+    ///
+    /// Wraps `CFE_MSG_SetSize` and `CFE_SB_TransmitMsg`.
+    #[inline]
+    pub fn transmit_portion(&mut self, increment_sequence_count: bool, len: usize) -> Result<(), Status> {
+        let len = len.min(SIZE);
+        let sz = (mem::size_of::<Command<[u8; 1]>>() - 1 + len) as Size;
+
+        unsafe { self.set_size(sz) }?;
+        let ret_val = self.transmit(increment_sequence_count);
+        let _ = unsafe { self.set_size(mem::size_of::<Self>() as Size) };
+
+        ret_val
+    }
+}
+
 impl<T: Copy> Deref for Command<T> {
     type Target = Message;
 
@@ -382,6 +404,28 @@ impl<T: Copy + Sized + Default> Telemetry<T> {
     #[inline]
     pub fn new_default(msg_id: MsgId) -> Result<Self, Status> {
         Self::new(msg_id, T::default())
+    }
+}
+
+impl<const SIZE: usize> Telemetry<[u8; SIZE]> {
+    /// Transmits onto the software bus
+    /// the header and first min(`len`,&nbsp;`SIZE`) bytes
+    /// of [`payload`](`Telemetry::payload`).
+    ///
+    /// After transmission, attempts to set the message size (in the header)
+    /// back to the structure's full length.
+    ///
+    /// Wraps `CFE_MSG_SetSize` and `CFE_SB_TransmitMsg`.
+    #[inline]
+    pub fn transmit_portion(&mut self, increment_sequence_count: bool, len: usize) -> Result<(), Status> {
+        let len = len.min(SIZE);
+        let sz = (mem::size_of::<Telemetry<[u8; 1]>>() - 1 + len) as Size;
+
+        unsafe { self.set_size(sz) }?;
+        let ret_val = self.transmit(increment_sequence_count);
+        let _ = unsafe { self.set_size(mem::size_of::<Self>() as Size) };
+
+        ret_val
     }
 }
 
