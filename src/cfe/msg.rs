@@ -339,7 +339,7 @@ impl<const SIZE: usize> Command<[u8; SIZE]> {
     ///
     /// Wraps `CFE_MSG_SetSize` and `CFE_SB_TransmitMsg`.
     #[inline]
-    pub fn transmit_portion(&mut self, increment_sequence_count: bool, len: usize) -> Result<(), Status> {
+    pub fn transmit_partial(&mut self, increment_sequence_count: bool, len: usize) -> Result<(), Status> {
         let len = len.min(SIZE);
         let sz = (mem::size_of::<Command<[u8; 1]>>() - 1 + len) as Size;
 
@@ -417,7 +417,7 @@ impl<const SIZE: usize> Telemetry<[u8; SIZE]> {
     ///
     /// Wraps `CFE_MSG_SetSize` and `CFE_SB_TransmitMsg`.
     #[inline]
-    pub fn transmit_portion(&mut self, increment_sequence_count: bool, len: usize) -> Result<(), Status> {
+    pub fn transmit_partial(&mut self, increment_sequence_count: bool, len: usize) -> Result<(), Status> {
         let len = len.min(SIZE);
         let sz = (mem::size_of::<Telemetry<[u8; 1]>>() - 1 + len) as Size;
 
