@@ -42,6 +42,29 @@ pub enum RunStatus {
     Undefined    = CFE_ES_RunStatus_CFE_ES_RunStatus_UNDEFINED,
 }
 
+/// The current state of the overall cFS system.
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[repr(u32)]
+pub enum SystemState {
+    /// Single-threaded mode while setting up CFE itself.
+    EarlyInit = CFE_ES_SystemState_CFE_ES_SystemState_EARLY_INIT,
+
+    /// Core apps are starting.
+    CoreStartup = CFE_ES_SystemState_CFE_ES_SystemState_CORE_STARTUP,
+
+    /// Core is ready, starting external apps/libraries.
+    CoreReady = CFE_ES_SystemState_CFE_ES_SystemState_CORE_READY,
+
+    /// Startup apps have all completed early init, but are not necessarily operational yet.
+    AppsInit = CFE_ES_SystemState_CFE_ES_SystemState_APPS_INIT,
+
+    /// Normal operation mode; all apps are running.
+    Operational = CFE_ES_SystemState_CFE_ES_SystemState_OPERATIONAL,
+
+    /// Reserved for future use; all apps would be stopped.
+    Shutdown = CFE_ES_SystemState_CFE_ES_SystemState_SHUTDOWN,
+}
+
 /// Logs an entry/exit marker for a specified ID
 /// for use by
 /// [the Software Performance Analysis tool](https://github.com/nasa/perfutils-java).
@@ -219,5 +242,17 @@ pub fn reload_app(app_id: AppId, app_file_name: NullString) -> Result<(), Status
 #[inline]
 pub fn delete_app(app_id: AppId) -> Result<(), Status> {
     let s: Status = unsafe { CFE_ES_DeleteApp(app_id.id) }.into();
+    s.as_result(|| ())
+}
+
+/// Waits for a minimum state of the overall cFS system,
+/// or a timeout (in milliseconds), whichever comes first.
+///
+/// Wraps `CFE_ES_WaitForSystemState`.
+#[inline]
+pub fn wait_for_system_state(min_system_state: SystemState, timeout_ms: u32) -> Result<(), Status> {
+    let s: Status = unsafe {
+        CFE_ES_WaitForSystemState(min_system_state as u32, timeout_ms)
+    }.into();
     s.as_result(|| ())
 }
