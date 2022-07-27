@@ -35,6 +35,16 @@ where
     N
 }
 
+/// Returns the byte offset from the beginning of structure `$x` to
+/// the beginning its `$type`'s field.
+macro_rules! offset_of {
+    ($x:expr, $field:ident) => {{
+        let struct_addr = core::ptr::addr_of!($x);
+        let field_addr = core::ptr::addr_of!($x.$field);
+        (field_addr as usize) - (struct_addr as usize)
+    }};
+}
+
 /// A [`Message`]'s function code.
 ///
 /// This is the same as `CFE_MSG_FcnCode_t`.
@@ -329,6 +339,28 @@ impl<T: Copy + Sized> Command<T> {
     }
 }
 
+impl<T: Copy + Sized, const SIZE: usize> Command<[T; SIZE]> {
+    /// Transmits onto the software bus
+    /// the header and first min(`len`,&nbsp;`SIZE`) elements
+    /// of [`payload`](`Command::payload`).
+    ///
+    /// After transmission, attempts to set the message size (in the header)
+    /// back to the structure's full length.
+    ///
+    /// Wraps `CFE_MSG_SetSize` and `CFE_SB_TransmitMsg`.
+    #[inline]
+    pub fn transmit_partial(&mut self, increment_sequence_count: bool, len: usize) -> Result<(), Status> {
+        let len = len.min(SIZE);
+        let sz = (offset_of!(self, payload) + (len * mem::size_of::<T>())) as Size;
+
+        unsafe { self.set_size(sz) }?;
+        let ret_val = self.transmit(increment_sequence_count);
+        let _ = unsafe { self.set_size(mem::size_of::<Self>() as Size) };
+
+        ret_val
+    }
+}
+
 impl<T: Copy> Deref for Command<T> {
     type Target = Message;
 
@@ -382,6 +414,28 @@ impl<T: Copy + Sized + Default> Telemetry<T> {
     #[inline]
     pub fn new_default(msg_id: MsgId) -> Result<Self, Status> {
         Self::new(msg_id, T::default())
+    }
+}
+
+impl<T: Copy + Sized, const SIZE: usize> Telemetry<[T; SIZE]> {
+    /// Transmits onto the software bus
+    /// the header and first min(`len`,&nbsp;`SIZE`) elements
+    /// of [`payload`](`Telemetry::payload`).
+    ///
+    /// After transmission, attempts to set the message size (in the header)
+    /// back to the structure's full length.
+    ///
+    /// Wraps `CFE_MSG_SetSize` and `CFE_SB_TransmitMsg`.
+    #[inline]
+    pub fn transmit_partial(&mut self, increment_sequence_count: bool, len: usize) -> Result<(), Status> {
+        let len = len.min(SIZE);
+        let sz = (offset_of!(self, payload) + (len * mem::size_of::<T>())) as Size;
+
+        unsafe { self.set_size(sz) }?;
+        let ret_val = self.transmit(increment_sequence_count);
+        let _ = unsafe { self.set_size(mem::size_of::<Self>() as Size) };
+
+        ret_val
     }
 }
 
