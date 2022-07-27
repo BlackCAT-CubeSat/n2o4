@@ -35,6 +35,16 @@ where
     N
 }
 
+/// Returns the byte offset from the beginning of structure `$x` to
+/// the beginning its `$type`'s field.
+macro_rules! offset_of {
+    ($x:expr, $field:ident) => {{
+        let struct_addr = core::ptr::addr_of!($x);
+        let field_addr = core::ptr::addr_of!($x.$field);
+        (field_addr as usize) - (struct_addr as usize)
+    }};
+}
+
 /// A [`Message`]'s function code.
 ///
 /// This is the same as `CFE_MSG_FcnCode_t`.
@@ -329,9 +339,9 @@ impl<T: Copy + Sized> Command<T> {
     }
 }
 
-impl<const SIZE: usize> Command<[u8; SIZE]> {
+impl<T: Copy + Sized, const SIZE: usize> Command<[T; SIZE]> {
     /// Transmits onto the software bus
-    /// the header and first min(`len`,&nbsp;`SIZE`) bytes
+    /// the header and first min(`len`,&nbsp;`SIZE`) elements
     /// of [`payload`](`Command::payload`).
     ///
     /// After transmission, attempts to set the message size (in the header)
@@ -341,7 +351,7 @@ impl<const SIZE: usize> Command<[u8; SIZE]> {
     #[inline]
     pub fn transmit_partial(&mut self, increment_sequence_count: bool, len: usize) -> Result<(), Status> {
         let len = len.min(SIZE);
-        let sz = (mem::size_of::<Command<[u8; 1]>>() - 1 + len) as Size;
+        let sz = (offset_of!(self, payload) + (len * mem::size_of::<T>())) as Size;
 
         unsafe { self.set_size(sz) }?;
         let ret_val = self.transmit(increment_sequence_count);
@@ -407,9 +417,9 @@ impl<T: Copy + Sized + Default> Telemetry<T> {
     }
 }
 
-impl<const SIZE: usize> Telemetry<[u8; SIZE]> {
+impl<T: Copy + Sized, const SIZE: usize> Telemetry<[T; SIZE]> {
     /// Transmits onto the software bus
-    /// the header and first min(`len`,&nbsp;`SIZE`) bytes
+    /// the header and first min(`len`,&nbsp;`SIZE`) elements
     /// of [`payload`](`Telemetry::payload`).
     ///
     /// After transmission, attempts to set the message size (in the header)
@@ -419,7 +429,7 @@ impl<const SIZE: usize> Telemetry<[u8; SIZE]> {
     #[inline]
     pub fn transmit_partial(&mut self, increment_sequence_count: bool, len: usize) -> Result<(), Status> {
         let len = len.min(SIZE);
-        let sz = (mem::size_of::<Telemetry<[u8; 1]>>() - 1 + len) as Size;
+        let sz = (offset_of!(self, payload) + (len * mem::size_of::<T>())) as Size;
 
         unsafe { self.set_size(sz) }?;
         let ret_val = self.transmit(increment_sequence_count);
