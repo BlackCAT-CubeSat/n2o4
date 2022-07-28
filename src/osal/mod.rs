@@ -199,6 +199,7 @@ impl ObjectId {
     /// (non-Rustic) value.
     ///
     /// Wraps `OS_IdentifyObject`.
+    #[inline]
     pub(crate) fn obj_type(&self) -> osal_objtype_t {
         unsafe { OS_IdentifyObject(self.id) }
     }
