@@ -192,6 +192,14 @@ impl ObjectId {
     pub fn is_defined(&self) -> bool {
         unsafe { SHIM_OS_ObjectIdDefined(self.id) }
     }
+
+    /// Returns the object type of `self` as a raw
+    /// (non-Rustic) value.
+    ///
+    /// Wraps `OS_IdentifyObject`.
+    pub(crate) fn obj_type(&self) -> osal_objtype_t {
+        unsafe { OS_IdentifyObject(self.id) }
+    }
 }
 
 /// Wraps `OS_ObjectIdFromInteger`.
@@ -221,3 +229,8 @@ impl PartialEq<Self> for ObjectId {
 }
 
 impl Eq for ObjectId {}
+
+/// Error when trying to convert an `ObjectId` to a
+/// more-specialized type.
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub struct ObjectTypeConvertError {}
