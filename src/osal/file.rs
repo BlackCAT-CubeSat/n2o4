@@ -17,7 +17,7 @@ pub struct File {
 }
 
 impl File {
-    /// Opens a handle to a file, possibly creating the file if [`FileFlag::CREATE`] is set.
+    /// Opens a handle to a file, possibly creating the file if [`FileFlags::CREATE`] is set.
     ///
     /// Wraps `OS_OpenCreate`.
     #[inline]
@@ -177,7 +177,7 @@ impl From<OwnedFile> for File {
 
 /// The access mode a file should be opened with.
 ///
-/// Used with [`File::open`].
+/// Used with [`File::open_create`].
 #[repr(i32)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum AccessMode {
