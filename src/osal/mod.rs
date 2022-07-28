@@ -5,6 +5,8 @@
 use cfs_sys::*;
 use libc::c_ulong;
 
+pub mod file;
+
 // NOTE: the following will probably get moved to submodules as `osal` gets flushed out.
 
 /// An instant in time.
