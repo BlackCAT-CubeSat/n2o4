@@ -349,7 +349,11 @@ impl<T: Copy + Sized, const SIZE: usize> Command<[T; SIZE]> {
     ///
     /// Wraps `CFE_MSG_SetSize` and `CFE_SB_TransmitMsg`.
     #[inline]
-    pub fn transmit_partial(&mut self, increment_sequence_count: bool, len: usize) -> Result<(), Status> {
+    pub fn transmit_partial(
+        &mut self,
+        increment_sequence_count: bool,
+        len: usize,
+    ) -> Result<(), Status> {
         let len = len.min(SIZE);
         let sz = (offset_of!(self, payload) + (len * mem::size_of::<T>())) as Size;
 
@@ -427,7 +431,11 @@ impl<T: Copy + Sized, const SIZE: usize> Telemetry<[T; SIZE]> {
     ///
     /// Wraps `CFE_MSG_SetSize` and `CFE_SB_TransmitMsg`.
     #[inline]
-    pub fn transmit_partial(&mut self, increment_sequence_count: bool, len: usize) -> Result<(), Status> {
+    pub fn transmit_partial(
+        &mut self,
+        increment_sequence_count: bool,
+        len: usize,
+    ) -> Result<(), Status> {
         let len = len.min(SIZE);
         let sz = (offset_of!(self, payload) + (len * mem::size_of::<T>())) as Size;
 
