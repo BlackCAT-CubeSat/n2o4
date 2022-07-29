@@ -39,7 +39,7 @@ where
 /// the beginning its `$type`'s field.
 macro_rules! offset_of {
     ($x:expr, $field:ident) => {{
-        let struct_addr = core::ptr::addr_of!($x);
+        let struct_addr = core::ptr::addr_of!(*$x);
         let field_addr = core::ptr::addr_of!($x.$field);
         (field_addr as usize) - (struct_addr as usize)
     }};
