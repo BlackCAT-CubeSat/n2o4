@@ -3,10 +3,9 @@ name = "cfs"
 version = "0.0.0"
 edition = "2021"
 publish = false
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+workspace = ".."
 
 [dependencies]
-cfs-sys = { git = "https://git.psu.edu/BlackCAT/fsw/cfs-sys-rs.git", rev = "a68965f8936b93e153b992744e93e451e7739ac1" }
+cfs-sys = { path = "../cfs-sys" }
 printf-wrap = { version = "^0.1", default-features = false }
 libc = { version = "^0.2.107", default-features = false }

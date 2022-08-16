@@ -6,6 +6,7 @@ authors = ["Zachary Catlin <zec0@psu.edu>"]
 edition = "2021"
 readme = "README.md"
 publish = false
+workspace = ".."
 
 [dependencies]
 libc = { version = "^0.2.107", default-features = false }
