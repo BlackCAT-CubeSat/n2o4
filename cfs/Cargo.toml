@@ -1,7 +1,9 @@
 [package]
 name = "cfs"
 version = "0.0.0"
+description = "Idiomatic, safe Rust bindings to cFE and OSAL APIs"
 edition = "2021"
+readme = "README.md"
 publish = false
 workspace = ".."
 
