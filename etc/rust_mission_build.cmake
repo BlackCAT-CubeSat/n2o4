@@ -4,6 +4,13 @@
 # mission-wide build target, and generally should be included
 # from mission_build_custom.cmake.
 
+# Target for running Rust tests for all mission CPUs.
+#
+# WARNING: right now, this probably does nonsensical things on non-native builds!
+#
+# TODO: figure out what to do for non-native builds
+add_custom_target(rust-test)
+
 # Top-level target to build and install Rustdocs for all mission CPUs:
 add_custom_target(rust-doc)
 
@@ -26,10 +33,17 @@ foreach(TGTSYS ${TGTSYS_LIST})
   string(REGEX REPLACE "[^A-Za-z0-9]" "_" ARCH_CONFIG_NAME "${BUILD_CONFIG}")
   set(ARCH_BINARY_DIR "${CMAKE_BINARY_DIR}/${ARCH_TOOLCHAIN_NAME}/${ARCH_CONFIG_NAME}")
 
+  # run Rust tests for this target:
+  add_custom_target(${TGTSYS}_run_rust_tests
+    COMMAND $(MAKE) run_rust_tests
+    WORKING_DIRECTORY "${ARCH_BINARY_DIR}"
+  )
+  add_dependencies(rust-test "${TGTSYS}_run_rust_tests")
+
   # install Rustdocs for this target:
   add_custom_target(${TGTSYS}_install_rust_docs
-      COMMAND $(MAKE) install_rust_docs
-      WORKING_DIRECTORY "${ARCH_BINARY_DIR}"
+    COMMAND $(MAKE) install_rust_docs
+    WORKING_DIRECTORY "${ARCH_BINARY_DIR}"
   )
   add_dependencies(rust-doc "${TGTSYS}_install_rust_docs")
 endforeach()

@@ -12,6 +12,13 @@
 # and cc crates.
 
 
+# Target for running Rust tests for this arch.
+#
+# WARNING: currently, this probably does nothing good on non-native builds
+#
+# TODO: figure out what to do for non-native builds
+add_custom_target(run_rust_tests)
+
 # Target for building and installing Rustdocs for this arch.
 add_custom_target(install_rust_docs)
 
@@ -105,7 +112,7 @@ function(cfe_rust_crate CFS_APP CRATE_NAME)
     WORKING_DIRECTORY ${RUST_SOURCE_DIR}
     COMMAND ${CMAKE_COMMAND} -E env
       ${CARGO_ENV_VARIABLES}
-      cargo +nightly build
+      cargo +nightly build -Z build-std=std,panic_abort
       ${CARGO_OUTPUT_FLAGS}
     DEPFILE ${LIB_BUILD_DIR}/lib${CRATE_FILE_STEM}.d
     DEPENDS ${RUST_SOURCE_DIR}/Cargo.toml
@@ -125,7 +132,19 @@ function(cfe_rust_crate CFS_APP CRATE_NAME)
 
 
   # Now that we've set up building the Rust code for the application,
-  # we set up building its Rustdocs:
+  # we set up crate-level testing:
+  add_custom_target(${CFS_APP}_run_rust_tests
+    COMMAND ${CMAKE_COMMAND} -E env
+      ${CARGO_ENV_VARIABLES}
+      cargo +nightly test
+      ${CARGO_OUTPUT_FLAGS}
+    WORKING_DIRECTORY ${RUST_SOURCE_DIR}
+    VERBATIM
+  )
+
+  add_dependencies(run_rust_tests ${CFS_APP}_run_rust_tests)
+
+  # and now we build its Rustdocs:
   set(DOC_DIR ${CARGO_TARGET_DIR}/${RUST_TARGET}/doc)
 
   add_custom_target(${CFS_APP}_rustdocs_build
