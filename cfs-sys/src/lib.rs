@@ -1,4 +1,5 @@
-// Copyright (c) 2021 The Pennsylvania State University. All rights reserved.
+// Copyright (c) 2021-2022 The Pennsylvania State University and the project contributors.
+// SPDX-License-Identifier: Apache-2.0
 
 //! Low-level bindings to the C APIs of [cFE](https://github.com/nasa/cFE)
 //! and [OSAL](https://github.com/nasa/osal).

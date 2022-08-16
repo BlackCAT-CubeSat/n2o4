@@ -2,6 +2,7 @@
 name = "cfs-sys"
 version = "0.0.0"
 description = "Low-level bindings to cFE and OSAL C APIs"
+license = "Apache-2.0"
 edition = "2021"
 readme = "README.md"
 publish = false

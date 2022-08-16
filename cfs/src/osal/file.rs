@@ -1,3 +1,6 @@
+// Copyright (c) 2022 The Pennsylvania State University and the project contributors.
+// SPDX-License-Identifier: Apache-2.0
+
 //! Types and methods for interacting with files.
 
 use cfs_sys::*;

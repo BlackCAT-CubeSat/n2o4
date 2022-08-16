@@ -2,6 +2,7 @@
 name = "cfs"
 version = "0.0.0"
 description = "Idiomatic, safe Rust bindings to cFE and OSAL APIs"
+license = "Apache-2.0"
 edition = "2021"
 readme = "README.md"
 publish = false

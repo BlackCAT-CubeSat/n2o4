@@ -1,4 +1,5 @@
-# Copyright (c) 2022 The Pennsylvania State University. All rights reserved.
+# Copyright (c) 2022 The Pennsylvania State University and the project contributors.
+# SPDX-License-Identifier: Apache-2.0
 #
 # Build configuration for Rust code in cFS. This file contains a top-level
 # mission-wide build target, and generally should be included

@@ -1,4 +1,5 @@
-// Copyright (c) 2021 The Pennsylvania State University. All rights reserved.
+// Copyright (c) 2021-2022 The Pennsylvania State University and the project contributors.
+// SPDX-License-Identifier: Apache-2.0
 
 //! OSAL APIs
 
@@ -7,7 +8,7 @@ use libc::c_ulong;
 
 pub mod file;
 
-// NOTE: the following will probably get moved to submodules as `osal` gets flushed out.
+// NOTE: much of the following will probably get moved to submodules as `osal` gets flushed out.
 
 /// An instant in time.
 ///
