@@ -1,7 +1,7 @@
 // Copyright (c) 2021-2022 The Pennsylvania State University and the project contributors.
 // SPDX-License-Identifier: Apache-2.0
 
-//! Executive Services system
+//! Executive Services system.
 
 use super::{ResourceId, Status};
 use cfs_sys::*;
@@ -181,7 +181,7 @@ pub fn run_loop(run_status: Option<RunStatus>) -> bool {
 
 /// An identifier for cFE applications.
 ///
-/// This wraps `CFE_ES_AppId_t`.
+/// Wraps `CFE_ES_AppId_t`.
 #[derive(Clone, Copy, Debug)]
 pub struct AppId {
     id: CFE_ES_AppId_t,

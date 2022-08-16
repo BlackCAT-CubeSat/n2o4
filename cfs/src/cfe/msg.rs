@@ -1,7 +1,7 @@
 // Copyright (c) 2021-2022 The Pennsylvania State University and the project contributors.
 // SPDX-License-Identifier: Apache-2.0
 
-//! Message utilities
+//! Message utilities.
 
 use core::default::Default;
 use core::mem;
@@ -15,7 +15,7 @@ use cfs_sys::*;
 ///
 /// The `unsafe` variant may be used for fields in unions.
 ///
-/// A tip of the hat to [https://stackoverflow.com/a/70224634] for the basic idea.
+/// A tip of the hat to <https://stackoverflow.com/a/70224634> for the basic idea.
 macro_rules! array_field_len {
     ($type:ty, $field:ident) => {{
         const SZ: usize = length_of_return_array(&|s: $type| s.$field);

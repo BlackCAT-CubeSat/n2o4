@@ -1,7 +1,7 @@
 // Copyright (c) 2021-2022 The Pennsylvania State University and the project contributors.
 // SPDX-License-Identifier: Apache-2.0
 
-//! Event system
+//! Event system.
 
 use super::Status;
 use crate::sealed_traits;
@@ -74,7 +74,7 @@ pub mod bin_filter {
 
 /// A scheme for filtering event messages so that not all get recorded.
 ///
-/// This is a [sealed trait](https://rust-lang.github.io/api-guidelines/future-proofing.html):
+/// This is a [sealed trait](https://rust-lang.github.io/api-guidelines/future-proofing.html#c-sealed):
 /// cFE only supports a fixed set of filter schemes.
 pub trait FilterScheme: sealed_traits::FilterSchemeSealed {
     /// An integer identifying the scheme in question.
