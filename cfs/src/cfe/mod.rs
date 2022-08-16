@@ -73,6 +73,12 @@ impl From<ResourceId> for c_ulong {
     }
 }
 
+/// The numeric type corresponding to a [`Status`].
+///
+/// This is the same as `CFE_Status_t`.
+#[doc(inline)]
+pub use cfs_sys::CFE_Status_t as CFE_Status;
+
 /// A status-code type often used as a return type in this crate.
 ///
 /// Wraps `CFE_Status_t`.
@@ -81,16 +87,16 @@ pub struct Status {
     pub(crate) status: CFE_Status_t,
 }
 
-impl From<CFE_Status_t> for Status {
+impl From<CFE_Status> for Status {
     #[inline]
-    fn from(status: CFE_Status_t) -> Status {
+    fn from(status: CFE_Status) -> Status {
         Status { status: status }
     }
 }
 
-impl From<Status> for CFE_Status_t {
+impl From<Status> for CFE_Status {
     #[inline]
-    fn from(status: Status) -> CFE_Status_t {
+    fn from(status: Status) -> CFE_Status {
         status.status
     }
 }
@@ -101,7 +107,6 @@ impl From<Status> for CFE_Status_t {
 pub enum StatusSeverity {
     Success = 0b00,
     Informational = 0b01,
-    Warning = 0b10,
     Error   = 0b11,
 }
 
@@ -150,7 +155,6 @@ impl Status {
         match (self.status >> 30) & 0b0011 {
             0b00 => Success,
             0b01 => Informational,
-            0b10 => Warning,
             _ => Error,
         }
     }
@@ -184,14 +188,13 @@ impl Status {
         self.status as u16
     }
 
-    /// If `self` has a severity of [`Success`](`StatusSeverity::Success`)
-    /// or [`Informational`](`StatusSeverity::Informational`),
+    /// If `self` has a severity of [`Success`](`StatusSeverity::Success`),
     /// returns `Ok(on_success())`;
     /// otherwise returns `Err(self)`.
     #[inline]
     pub fn as_result<T, F: FnOnce() -> T>(&self, on_success: F) -> Result<T, Status> {
         match self.severity() {
-            StatusSeverity::Success | StatusSeverity::Informational => Ok(on_success()),
+            StatusSeverity::Success => Ok(on_success()),
             _ => Err(*self),
         }
     }
