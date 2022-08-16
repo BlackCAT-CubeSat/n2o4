@@ -1,9 +1,9 @@
 [package]
 name = "cfs-sys"
 description = "Low-level bindings to cFE and OSAL C APIs"
-version = "0.1.0"
+version = "0.0.0"
 authors = ["Zachary Catlin <zec0@psu.edu>"]
-edition = "2018"
+edition = "2021"
 readme = "README.md"
 publish = false
 
