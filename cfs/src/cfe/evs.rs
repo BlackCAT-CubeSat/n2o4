@@ -5,6 +5,7 @@
 
 use super::Status;
 use crate::sealed_traits;
+use crate::cfe::{es::AppId, time::SysTime};
 use cfs_sys::*;
 use core::convert::TryFrom;
 use core::ffi::c_void;
@@ -152,12 +153,12 @@ macro_rules! send_impl {
             "Wraps `CFE_EVS_SendEventWithAppID`.\n",
         )]
         #[inline]
-        pub fn $sewai<$($t),*>(&self, event_id: u16, event_type: EventType, app_id: CFE_ES_AppId_t, fmt: PrintfFmt<($($t,)*)>, $($var: $t),*) -> Status
+        pub fn $sewai<$($t),*>(&self, event_id: u16, event_type: EventType, app_id: AppId, fmt: PrintfFmt<($($t,)*)>, $($var: $t),*) -> Status
             where $($t: PrintfArgument),* {
 
             unsafe {
                 CFE_EVS_SendEventWithAppID(
-                    event_id, event_type as u16, app_id, fmt.as_ptr()
+                    event_id, event_type as u16, app_id.id, fmt.as_ptr()
                     $(, $var.as_c_val() )*
                 )
             }.into()
@@ -171,12 +172,12 @@ macro_rules! send_impl {
             "Wraps `CFE_EVS_SendTimedEvent`.\n",
         )]
         #[inline]
-        pub fn $ste<$($t),*>(&self, time: CFE_TIME_SysTime_t, event_id: u16, event_type: EventType, fmt: PrintfFmt<($($t,)*)>, $($var: $t),*) -> Status
+        pub fn $ste<$($t),*>(&self, time: SysTime, event_id: u16, event_type: EventType, fmt: PrintfFmt<($($t,)*)>, $($var: $t),*) -> Status
             where $($t: PrintfArgument),* {
 
             unsafe {
                 CFE_EVS_SendTimedEvent(
-                    time, event_id, event_type as u16, fmt.as_ptr()
+                    time.tm, event_id, event_type as u16, fmt.as_ptr()
                     $(, $var.as_c_val() )*
                 )
             }.into()
@@ -249,14 +250,14 @@ impl EventSender {
         &self,
         event_id: u16,
         event_type: EventType,
-        app_id: CFE_ES_AppId_t,
+        app_id: AppId,
         msg: &str,
     ) -> Status {
         unsafe {
             CFE_EVS_SendEventWithAppID(
                 event_id,
                 event_type as u16,
-                app_id,
+                app_id.id,
                 super::RUST_STR_FMT.as_ptr(),
                 msg.len(),
                 msg.as_ptr() as *const c_char,
@@ -275,14 +276,14 @@ impl EventSender {
     #[inline]
     pub fn send_timed_event_str(
         &self,
-        time: CFE_TIME_SysTime_t,
+        time: SysTime,
         event_id: u16,
         event_type: EventType,
         msg: &str,
     ) -> Status {
         unsafe {
             CFE_EVS_SendTimedEvent(
-                time,
+                time.tm,
                 event_id,
                 event_type as u16,
                 super::RUST_STR_FMT.as_ptr(),

@@ -184,7 +184,7 @@ pub fn run_loop(run_status: Option<RunStatus>) -> bool {
 /// Wraps `CFE_ES_AppId_t`.
 #[derive(Clone, Copy, Debug)]
 pub struct AppId {
-    id: CFE_ES_AppId_t,
+    pub(crate) id: CFE_ES_AppId_t,
 }
 
 impl From<AppId> for ResourceId {
