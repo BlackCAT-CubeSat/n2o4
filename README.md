@@ -1,12 +1,20 @@
 # `cfs` Crate
 
-This crate provides safe, (ideally) idiomatic Rust bindings
+The `cfs` crate provides safe, (ideally) idiomatic Rust bindings
 to [cFE](https://github.com/nasa/cFE)
 and [OSAL](https://github.com/nasa/osal) APIs.
 
-**NOTE:** this is a work in progress.
+**NOTE:** this is a work in progress,
+and bindings for many APIs don't currently exist.
 
-See [USING](USING.md) for important information on how to use this crate.
+## Using this crate in your cFS app
+
+See [USING.md](USING.md) for how to set everything up to
+use `cfs` (and Rust in general) in your cFS application.
+
+## Contributing
+
+\[to fill out\]
 
 ## License
 
