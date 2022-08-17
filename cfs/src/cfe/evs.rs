@@ -14,6 +14,7 @@ use libc::c_char;
 use printf_wrap::{PrintfArgument, PrintfFmt};
 
 /// A marker type to ensure you [`register`] before sending events.
+#[derive(Clone, Debug)]
 pub struct EventSender {
     _x: PhantomData<u8>,
 }
