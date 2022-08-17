@@ -13,6 +13,7 @@ use printf_wrap::NullString;
 /// The numeric value of a [message ID](`MsgId`).
 ///
 /// This is the same as `CFE_SB_MsgId_Atom_t`.
+#[doc(alias = "CFG_SB_MsgId_Atom_t")]
 #[doc(inline)]
 pub use cfs_sys::CFE_SB_MsgId_Atom_t as MsgId_Atom;
 
@@ -22,6 +23,7 @@ pub use cfs_sys::CFE_SB_MsgId_Atom_t as MsgId_Atom;
 /// [numeric message ID](`MsgId_Atom`).
 ///
 /// Wraps `CFE_SB_MsgId_t`.
+#[doc(alias = "CFG_SB_MsgId_t")]
 #[derive(Clone, Copy, Debug)]
 pub struct MsgId {
     pub(crate) id: CFE_SB_MsgId_t,
@@ -31,6 +33,7 @@ impl MsgId {
     /// Returns whether `self` is a valid message ID.
     ///
     /// Wraps `CFE_SB_IsValidMsgId`.
+    #[doc(alias = "CFG_SB_IsValidMsgId")]
     #[inline]
     pub fn is_valid(self) -> bool {
         unsafe { CFE_SB_IsValidMsgId(self.id) }
@@ -39,6 +42,7 @@ impl MsgId {
     /// Returns the message type this message ID corresponds to.
     ///
     /// Wraps `CFE_MSG_GetTypeFromMsgId`.
+    #[doc(alias = "CFG_MSG_GetTypeFromMsgId")]
     #[inline]
     pub fn msg_type(self) -> Result<MsgType, Status> {
         let mut t: CFE_MSG_Type_t = CFE_MSG_Type_CFE_MSG_Type_Invalid;
@@ -50,16 +54,19 @@ impl MsgId {
     /// A reserved value that will not match any valid message ID.
     ///
     /// Wraps `CFE_SB_MSGID_RESERVED`.
+    #[doc(alias = "CFG_SB_MSGID_RESERVED")]
     pub const RESERVED: MsgId = MsgId { id: X_CFE_SB_MSGID_RESERVED };
 
     /// Value representing an invalid message ID.
     ///
     /// Wraps `CFE_SB_INVALID_MSG_ID`.
+    #[doc(alias = "CFG_SB_INVALID_MSG_ID")]
     pub const INVALID: MsgId = MsgId { id: X_CFE_SB_INVALID_MSG_ID };
 }
 
 /// Wraps `CFE_SB_MsgId_Equal`.
 impl PartialEq<MsgId> for MsgId {
+    #[doc(alias = "CFG_SB_MsgId_Equal")]
     #[inline]
     fn eq(&self, other: &Self) -> bool {
         unsafe { SHIM_CFE_SB_MsgId_Equal(self.id, other.id) }
@@ -70,6 +77,7 @@ impl Eq for MsgId {}
 
 /// Wraps `CFE_SB_ValueToMsgId`.
 impl From<MsgId_Atom> for MsgId {
+    #[doc(alias = "CFG_SB_ValueToMsgId")]
     #[inline]
     fn from(val: MsgId_Atom) -> Self {
         let msg_id = unsafe { SHIM_CFE_SB_ValueToMsgId(val) };
@@ -79,6 +87,7 @@ impl From<MsgId_Atom> for MsgId {
 
 /// Wraps `CFE_SB_MsgIdToValue`.
 impl From<MsgId> for MsgId_Atom {
+    #[doc(alias = "CFG_SB_MsgIdToValue")]
     #[inline]
     fn from(id: MsgId) -> Self {
         unsafe { SHIM_CFE_SB_MsgIdToValue(id.id) }
@@ -86,18 +95,30 @@ impl From<MsgId> for MsgId_Atom {
 }
 
 /// Message priority for off-system routing. Currently unused by cFE.
+#[doc(alias = "CFG_SB_QosPriority")]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(u8)]
 pub enum QosPriority {
+    /// High priority.
+    #[doc(alias = "CFG_SB_QosPriority_HIGH")]
     High = CFE_SB_QosPriority_CFE_SB_QosPriority_HIGH as u8,
+
+    /// Normal priority level.
+    #[doc(alias = "CFG_SB_QosPriority_LOW")]
     Low  = CFE_SB_QosPriority_CFE_SB_QosPriority_LOW as u8,
 }
 
 /// Message transfer reliability for off-instance routing. Currently unused by cFE.
+#[doc(alias = "CFG_SB_QosReliability")]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(u8)]
 pub enum QosReliability {
+    /// High reliability.
+    #[doc(alias = "CFG_SB_QosReliability_HIGH")]
     High = CFE_SB_QosReliability_CFE_SB_QosReliability_HIGH as u8,
+
+    /// Normal (best-effort) reliability.
+    #[doc(alias = "CFG_SB_QosReliability_LOW")]
     Low  = CFE_SB_QosReliability_CFE_SB_QosReliability_LOW as u8,
 }
 
@@ -105,6 +126,7 @@ pub enum QosReliability {
 /// Currently unused by cFE.
 ///
 /// Wraps `CFE_SB_Qos_t`.
+#[doc(alias = "CFG_SB_Qos_t")]
 #[derive(Clone, Copy, Debug)]
 #[repr(transparent)]
 pub struct Qos {
@@ -126,6 +148,7 @@ impl Qos {
     /// The default QoS. Most applications should use this.
     ///
     /// Wraps `CFE_SB_DEFAULT_QOS`.
+    #[doc(alias = "CFG_SB_DEFAULT_QOS")]
     pub const DEFAULT: Qos = Qos {
         qos: CFE_SB_Qos_t {
             Priority:    X_CFE_SB_DEFAULT_QOS_PRIORITY,
@@ -139,9 +162,13 @@ impl Qos {
 pub enum TimeOut {
     /// Wait for the specified number of milliseconds.
     Millis(u32),
+
     /// Non-blocking receive.
+    #[doc(alias = "CFE_SB_POLL")]
     Poll,
+
     /// Wait forever for a message to arrive.
+    #[doc(alias = "CFE_SB_PEND_FOREVER")]
     PendForever,
 }
 
@@ -164,6 +191,7 @@ impl From<TimeOut> for i32 {
 /// This may not be used from a different thread from the one it was created on.
 ///
 /// Wraps `CFE_SB_PipeId_t`.
+#[doc(alias = "CFG_SB_PipeId_t")]
 #[derive(Debug)]
 pub struct Pipe {
     /// cFE ID for the pipe.
@@ -182,6 +210,7 @@ impl Pipe {
     /// and the name `pipe_name`.
     ///
     /// Wraps `CFE_SB_CreatePipe`.
+    #[doc(alias = "CFG_SB_CreatePipe")]
     #[inline]
     pub fn new(depth: u16, pipe_name: NullString) -> Result<Pipe, Status> {
         let mut p: CFE_SB_PipeId_t = super::ResourceId::UNDEFINED.id;
@@ -202,6 +231,7 @@ impl Pipe {
     /// the framework will do the needed cleanup at application exit.
     ///
     /// Wraps `CFE_SB_DeletePipe`.
+    #[doc(alias = "CFG_SB_DeletePipe")]
     #[inline]
     pub fn delete(self) {
         unsafe {
@@ -213,6 +243,7 @@ impl Pipe {
     /// on the software bus with default parameters.
     ///
     /// Wraps `CFE_SB_Subscribe`.
+    #[doc(alias = "CFG_SB_Subscribe")]
     #[inline]
     pub fn subscribe(&mut self, msg_id: MsgId) -> Result<(), Status> {
         let s: Status = unsafe { CFE_SB_Subscribe(msg_id.id, self.id) }.into();
@@ -226,6 +257,7 @@ impl Pipe {
     /// allowed in the pipe at the same time.
     ///
     /// Wraps `CFE_SB_SubscribeEx`.
+    #[doc(alias = "CFG_SB_SubscribeEx")]
     #[inline]
     pub fn subscribe_ex(
         &mut self,
@@ -245,6 +277,7 @@ impl Pipe {
     /// This is typically only used by the [SBN](https://github.com/nasa/SBN) application.
     ///
     /// Wraps `CFE_SB_SubscribeLocal`.
+    #[doc(alias = "CFG_SB_SubscribeLocal")]
     #[inline]
     pub fn subscribe_local(&mut self, msg_id: MsgId, msg_lim: u16) -> Result<(), Status> {
         let s: Status = unsafe { CFE_SB_SubscribeLocal(msg_id.id, self.id, msg_lim) }.into();
@@ -255,6 +288,7 @@ impl Pipe {
     /// Removes the current pipe's subscription to messages with ID `msg_id`.
     ///
     /// Wraps `CFE_SB_Unsubscribe`.
+    #[doc(alias = "CFG_SB_Unsubscribe")]
     #[inline]
     pub fn unsubscribe(&mut self, msg_id: MsgId) -> Result<(), Status> {
         let s: Status = unsafe { CFE_SB_Unsubscribe(msg_id.id, self.id) }.into();
@@ -268,6 +302,7 @@ impl Pipe {
     /// This is typically only used by the [SBN](https://github.com/nasa/SBN) application.
     ///
     /// Wraps `CFE_SB_UnsubscribeLocal`.
+    #[doc(alias = "CFG_SB_UnsubscribeLocal")]
     #[inline]
     pub fn unsubscribe_local(&mut self, msg_id: MsgId) -> Result<(), Status> {
         let s: Status = unsafe { CFE_SB_UnsubscribeLocal(msg_id.id, self.id) }.into();
@@ -286,6 +321,7 @@ impl Pipe {
     /// the buffer's lifetime constraints are respected.
     ///
     /// Wraps `CFE_SB_ReceiveBuffer`.
+    #[doc(alias = "CFG_SB_ReceiveBuffer")]
     #[inline]
     pub fn receive_buffer<T, F>(&mut self, time_out: TimeOut, closure: F) -> T
     where

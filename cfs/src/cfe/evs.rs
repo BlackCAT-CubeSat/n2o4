@@ -4,8 +4,8 @@
 //! Event system.
 
 use super::Status;
-use crate::sealed_traits;
 use crate::cfe::{es::AppId, time::SysTime};
+use crate::sealed_traits;
 use cfs_sys::*;
 use core::convert::TryFrom;
 use core::ffi::c_void;
@@ -33,6 +33,7 @@ pub struct EventSender {
 /// See the [`bin_filter`] module for some possible values of `Mask`.
 ///
 /// This is the same as `CFE_EVS_BinFilter`.
+#[doc(alias = "CFE_EVS_BinFilter")]
 #[doc(inline)]
 pub use cfs_sys::CFE_EVS_BinFilter as BinFilter;
 
@@ -41,36 +42,47 @@ pub mod bin_filter {
     use cfs_sys::*;
 
     /// Value for [`Mask`](`super::BinFilter::Mask`): all event messages are sent (until the event counter saturates).
+    #[doc(alias = "CFE_EVS_NO_FILTER")]
     pub const NO_FILTER: u16 = CFE_EVS_NO_FILTER as u16;
 
     /// Value for [`Mask`](`super::BinFilter::Mask`): only the first event message is sent.
+    #[doc(alias = "CFE_EVS_FIRST_ONE_STOP")]
     pub const FIRST_ONE_STOP: u16 = CFE_EVS_FIRST_ONE_STOP as u16;
 
     /// Value for [`Mask`](`super::BinFilter::Mask`): only the first two event messages are sent.
+    #[doc(alias = "CFE_EVS_FIRST_TWO_STOP")]
     pub const FIRST_TWO_STOP: u16 = CFE_EVS_FIRST_TWO_STOP as u16;
 
     /// Value for [`Mask`](`super::BinFilter::Mask`): only the first four event messages are sent.
+    #[doc(alias = "CFE_EVS_FIRST_4_STOP")]
     pub const FIRST_4_STOP: u16 = CFE_EVS_FIRST_4_STOP as u16;
 
     /// Value for [`Mask`](`super::BinFilter::Mask`): only the first eight event messages are sent.
+    #[doc(alias = "CFE_EVS_FIRST_8_STOP")]
     pub const FIRST_8_STOP: u16 = CFE_EVS_FIRST_8_STOP as u16;
 
     /// Value for [`Mask`](`super::BinFilter::Mask`): only the first 16 event messages are sent.
+    #[doc(alias = "CFE_EVS_FIRST_16_STOP")]
     pub const FIRST_16_STOP: u16 = CFE_EVS_FIRST_16_STOP as u16;
 
     /// Value for [`Mask`](`super::BinFilter::Mask`): only the first 32 event messages are sent.
+    #[doc(alias = "CFE_EVS_FIRST_32_STOP")]
     pub const FIRST_32_STOP: u16 = CFE_EVS_FIRST_32_STOP as u16;
 
     /// Value for [`Mask`](`super::BinFilter::Mask`): only the first 64 event messages are sent.
+    #[doc(alias = "CFE_EVS_FIRST_64_STOP")]
     pub const FIRST_64_STOP: u16 = CFE_EVS_FIRST_64_STOP as u16;
 
     /// Value for [`Mask`](`super::BinFilter::Mask`): every other event message is sent.
+    #[doc(alias = "CFE_EVS_EVERY_OTHER_ONE")]
     pub const EVERY_OTHER_ONE: u16 = CFE_EVS_EVERY_OTHER_ONE as u16;
 
     /// Value for [`Mask`](`super::BinFilter::Mask`): sends two messages, filters out two, then repeats.
+    #[doc(alias = "CFE_EVS_EVERY_OTHER_TWO")]
     pub const EVERY_OTHER_TWO: u16 = CFE_EVS_EVERY_OTHER_TWO as u16;
 
     /// Value for [`Mask`](`super::BinFilter::Mask`): every fourth event message is sent.
+    #[doc(alias = "CFE_EVS_EVERY_FOURTH_ONE")]
     pub const EVERY_FOURTH_ONE: u16 = CFE_EVS_EVERY_FOURTH_ONE as u16;
 }
 
@@ -98,6 +110,7 @@ impl FilterScheme for BinFilter {
 /// which is provided only by this function.
 ///
 /// Wraps `CFE_EVS_Register`.
+#[doc(alias = "CFE_EVS_Register")]
 #[inline]
 pub fn register<T: FilterScheme>(filters: &[T]) -> Result<EventSender, Status> {
     let num_filters = match u16::try_from(filters.len()) {
@@ -116,12 +129,24 @@ pub fn register<T: FilterScheme>(filters: &[T]) -> Result<EventSender, Status> {
 /// The classification of an event message, analogous to the
 /// [syslog](https://en.wikipedia.org/wiki/Syslog)
 /// severity level.
+#[doc(alias = "CFE_EVS_EventType")]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[repr(u16)]
 pub enum EventType {
+    /// Events that are intended only for debugging, not nominal operations.
+    #[doc(alias = "CFE_EVS_EventType_DEBUG")]
     Debug       = CFE_EVS_EventType_CFE_EVS_EventType_DEBUG as u16,
+
+    /// Events that identify a state change or action that is not an error.
+    #[doc(alias = "CFE_EVS_EventType_INFORMATION")]
     Information = CFE_EVS_EventType_CFE_EVS_EventType_INFORMATION as u16,
+
+    /// Events that identify an error but are not catastrophic.
+    #[doc(alias = "CFE_EVS_EventType_ERROR")]
     Error       = CFE_EVS_EventType_CFE_EVS_EventType_ERROR as u16,
+
+    /// Events that identify errors that are unrecoverable autonomously.
+    #[doc(alias = "CFE_EVS_EventType_CRITICAL")]
     Critical    = CFE_EVS_EventType_CFE_EVS_EventType_CRITICAL as u16,
 }
 
@@ -134,6 +159,7 @@ macro_rules! send_impl {
             "\n",
             "Wraps `CFE_EVS_SendEvent`.\n",
         )]
+        #[doc(alias = "CFE_EVS_SendEvent")]
         #[inline]
         pub fn $se<$($t),*>(&self, event_id: u16, event_type: EventType, fmt: PrintfFmt<($($t,)*)>, $($var: $t),*) -> Status
             where $($t: PrintfArgument),* {
@@ -153,6 +179,7 @@ macro_rules! send_impl {
             "\n",
             "Wraps `CFE_EVS_SendEventWithAppID`.\n",
         )]
+        #[doc(alias = "CFE_EVS_SendEventWithAppID")]
         #[inline]
         pub fn $sewai<$($t),*>(&self, event_id: u16, event_type: EventType, app_id: AppId, fmt: PrintfFmt<($($t,)*)>, $($var: $t),*) -> Status
             where $($t: PrintfArgument),* {
@@ -172,6 +199,7 @@ macro_rules! send_impl {
             "\n",
             "Wraps `CFE_EVS_SendTimedEvent`.\n",
         )]
+        #[doc(alias = "CFE_EVS_SendTimedEvent")]
         #[inline]
         pub fn $ste<$($t),*>(&self, time: SysTime, event_id: u16, event_type: EventType, fmt: PrintfFmt<($($t,)*)>, $($var: $t),*) -> Status
             where $($t: PrintfArgument),* {
@@ -225,6 +253,7 @@ impl EventSender {
     /// will not get put into the event message.
     ///
     /// Wraps `CFE_EVS_SendEvent`.
+    #[doc(alias = "CFE_EVS_SendEvent")]
     #[inline]
     pub fn send_event_str(&self, event_id: u16, event_type: EventType, msg: &str) -> Status {
         unsafe {
@@ -246,6 +275,7 @@ impl EventSender {
     /// will not get put into the event message.
     ///
     /// Wraps `CFE_EVS_SendEventWithAppID`.
+    #[doc(alias = "CFE_EVS_SendEventWithAppID")]
     #[inline]
     pub fn send_event_with_app_id_str(
         &self,
@@ -274,6 +304,7 @@ impl EventSender {
     /// will not get put into the event message.
     ///
     /// Wraps `CFE_EVS_SendTimedEvent`.
+    #[doc(alias = "CFE_EVS_SendTimedEvent")]
     #[inline]
     pub fn send_timed_event_str(
         &self,

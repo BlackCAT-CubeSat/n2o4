@@ -14,6 +14,7 @@ use super::*;
 /// A file handle.
 ///
 /// Wraps `osal_id_t`.
+#[doc(alias = "osal_id_t")]
 #[derive(Clone, Debug)]
 pub struct File {
     id: osal_id_t,
@@ -23,6 +24,7 @@ impl File {
     /// Opens a handle to a file, possibly creating the file if [`FileFlags::CREATE`] is set.
     ///
     /// Wraps `OS_OpenCreate`.
+    #[doc(alias = "OS_OpenCreate")]
     #[inline]
     pub fn open_create(
         path: NullString,
@@ -48,6 +50,7 @@ impl File {
     /// the error code if not.
     ///
     /// Wraps `OS_read`.
+    #[doc(alias = "OS_read")]
     #[inline]
     pub fn read(&mut self, buf: &mut [u8]) -> Result<usize, i32> {
         let buffer = buf.as_mut_ptr() as *mut c_void;
@@ -67,6 +70,7 @@ impl File {
     /// the error code if not.
     ///
     /// Wraps `OS_write`.
+    #[doc(alias = "OS_write")]
     #[inline]
     pub fn write(&mut self, buf: &[u8]) -> Result<usize, i32> {
         let buffer = buf.as_ptr() as *const c_void;
@@ -86,6 +90,7 @@ impl File {
     /// the error code if not.
     ///
     /// Wraps `OS_lseek`.
+    #[doc(alias = "OS_lseek")]
     #[inline]
     pub fn lseek(&mut self, offset: i32, whence: SeekReference) -> Result<u32, i32> {
         let retval = unsafe { OS_lseek(self.id, offset, whence as u32) };
@@ -100,6 +105,7 @@ impl File {
     /// Closes the file handle `self`.
     ///
     /// Wraps `OS_close`.
+    #[doc(alias = "OS_close")]
     #[inline]
     pub fn close(self) -> Result<(), i32> {
         let retval = unsafe { OS_close(self.id) };
@@ -134,6 +140,7 @@ pub struct OwnedFile {
 
 impl OwnedFile {
     /// Like [`File::open_create`], but returning an [`OwnedFile`] on success instead.
+    #[doc(alias = "OS_OpenCreate")]
     #[inline]
     pub fn open_create(
         path: NullString,
@@ -168,7 +175,8 @@ impl Drop for OwnedFile {
     }
 }
 
-/// Take the wrapped [`File`] out of the [`OwnedFile`] wrapper
+/// Takes the wrapped [`File`] out of the [`OwnedFile`] wrapper
+/// without closing it.
 impl From<OwnedFile> for File {
     #[inline]
     fn from(o_f: OwnedFile) -> Self {
@@ -184,13 +192,22 @@ impl From<OwnedFile> for File {
 #[repr(i32)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum AccessMode {
+    /// Read-only access.
+    ///
     /// Wraps `OS_READ_ONLY`.
+    #[doc(alias = "OS_READ_ONLY")]
     ReadOnly  = OS_READ_ONLY as i32,
 
+    /// Write-only access.
+    ///
     /// Wraps `OS_WRITE_ONLY`.
+    #[doc(alias = "OS_WRITE_ONLY")]
     WriteOnly = OS_WRITE_ONLY as i32,
 
+    /// Read-write access.
+    ///
     /// Wraps `OS_READ_WRITE`.
+    #[doc(alias = "OS_READ_WRITE")]
     ReadWrite = OS_READ_WRITE as i32,
 }
 
@@ -199,6 +216,7 @@ pub enum AccessMode {
 /// This is a bitfield; elements may be combined using the `|` operator.
 ///
 /// Wraps `OS_file_flag_t`.
+#[doc(alias = "OS_file_flag_t")]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub struct FileFlags {
     flag: OS_file_flag_t,
@@ -208,6 +226,7 @@ impl FileFlags {
     /// No flags set.
     ///
     /// Wraps `OS_FILE_FLAG_NONE`.
+    #[doc(alias = "OS_FILE_FLAG_NONE")]
     pub const NONE: FileFlags = Self {
         flag: OS_file_flag_t_OS_FILE_FLAG_NONE,
     };
@@ -215,6 +234,7 @@ impl FileFlags {
     /// If the file doesn't exist, create it.
     ///
     /// Wraps `OS_FILE_FLAG_CREATE`.
+    #[doc(alias = "OS_FILE_FLAG_CREATE")]
     pub const CREATE: FileFlags = Self {
         flag: OS_file_flag_t_OS_FILE_FLAG_CREATE,
     };
@@ -222,6 +242,7 @@ impl FileFlags {
     /// If the file exists, truncate it on opening.
     ///
     /// Wraps `OS_FILE_FLAG_TRUNCATE`.
+    #[doc(alias = "OS_FILE_FLAG_TRUNCATE")]
     pub const TRUNCATE: FileFlags = Self {
         flag: OS_file_flag_t_OS_FILE_FLAG_TRUNCATE,
     };
@@ -252,15 +273,18 @@ pub enum SeekReference {
     /// Seek from the beginning of the file.
     ///
     /// Wraps `OS_SEEK_SET`.
+    #[doc(alias = "OS_SEEK_SET")]
     Beginning = OS_SEEK_SET,
 
     /// Seek from the current location in the file.
     ///
     /// Wraps `OS_SEEK_CUR`.
+    #[doc(alias = "OS_SEEK_CUR")]
     Current   = OS_SEEK_CUR,
 
     /// Seek from the end of the file.
     ///
     /// Wraps `OS_SEEK_END`.
+    #[doc(alias = "OS_SEEK_END")]
     End       = OS_SEEK_END,
 }

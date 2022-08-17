@@ -21,6 +21,7 @@ use printf_wrap::{null_str, NullString};
 /// An ID to identify cFE-managed resources.
 ///
 /// Wraps `CFE_ResourceId_t`.
+#[doc(alias = "CFE_ResourceId_t")]
 #[derive(Clone, Copy, Debug)]
 pub struct ResourceId {
     id: CFE_ResourceId_t,
@@ -30,6 +31,7 @@ impl ResourceId {
     /// Checks if a resource ID value is defined.
     ///
     /// Wraps `CFE_ResourceId_IsDefined`.
+    #[doc(alias = "CFE_ResourceId_IsDefined")]
     #[inline]
     pub fn is_defined(&self) -> bool {
         unsafe { SHIM_CFE_ResourceId_IsDefined(self.id) }
@@ -38,16 +40,19 @@ impl ResourceId {
     /// A value that represents an undefined/unused resource.
     ///
     /// Wraps `CFE_RESOURCEID_UNDEFINED`.
+    #[doc(alias = "CFE_RESOURCEID_UNDEFINED")]
     pub const UNDEFINED: Self = ResourceId { id: X_CFE_RESOURCEID_UNDEFINED };
 
     /// A value that represents a reserved entry.
     ///
     /// Wraps `CFE_RESOURCEID_RESERVED`.
+    #[doc(alias = "CFE_RESOURCEID_RESERVED")]
     pub const RESERVED: Self = ResourceId { id: X_CFE_RESOURCEID_RESERVED };
 }
 
 /// Wraps `CFE_ResourceId_Equal`.
 impl PartialEq<ResourceId> for ResourceId {
+    #[doc(alias = "CFE_ResourceId_Equal")]
     #[inline]
     fn eq(&self, other: &ResourceId) -> bool {
         unsafe { SHIM_CFE_ResourceId_Equal(self.id, other.id) }
@@ -58,6 +63,7 @@ impl Eq for ResourceId {}
 
 /// Wraps `CFE_ResourceId_FromInteger`.
 impl From<c_ulong> for ResourceId {
+    #[doc(alias = "CFE_ResourceId_FromInteger")]
     #[inline]
     fn from(val: c_ulong) -> ResourceId {
         let rid = unsafe { SHIM_CFE_ResourceId_FromInteger(val) };
@@ -67,6 +73,7 @@ impl From<c_ulong> for ResourceId {
 
 /// Wraps `CFE_ResourceId_ToInteger`.
 impl From<ResourceId> for c_ulong {
+    #[doc(alias = "CFE_ResourceId_ToInteger")]
     #[inline]
     fn from(id: ResourceId) -> c_ulong {
         unsafe { SHIM_CFE_ResourceId_ToInteger(id.id) }
@@ -76,12 +83,14 @@ impl From<ResourceId> for c_ulong {
 /// The numeric type corresponding to a [`Status`].
 ///
 /// This is the same as `CFE_Status_t`.
+#[doc(alias = "CFE_Status_t")]
 #[doc(inline)]
 pub use cfs_sys::CFE_Status_t as CFE_Status;
 
 /// A status-code type often used as a return type in this crate.
 ///
 /// Wraps `CFE_Status_t`.
+#[doc(alias = "CFE_Status_t")]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub struct Status {
     pub(crate) status: CFE_Status_t,
@@ -102,34 +111,65 @@ impl From<Status> for CFE_Status {
 }
 
 /// The severity part of a [`Status`].
+#[doc(alias = "CFE_SEVERITY_BITMASK")]
 #[repr(u32)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum StatusSeverity {
+    /// Operation completed successfully.
+    #[doc(alias = "CFE_SEVERITY_SUCCESS")]
     Success = 0b00,
+
+    /// Operation not completed for non-error reasons, or completed with caveats.
+    #[doc(alias = "CFE_SEVERITY_INFO")]
     Informational = 0b01,
+
+    /// Operation failed.
+    #[doc(alias = "CFE_SEVERITY_ERROR")]
     Error   = 0b11,
 }
 
 /// The cFE service that generated a [`Status`].
+#[doc(alias = "CFE_SERVICE_BITMASK")]
 #[repr(u32)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum StatusServiceId {
     /// Not actually a cFE service;
     /// use this value for application-defined statuses.
     NotCfe  = 0b000,
+
+    /// Event service.
+    #[doc(alias = "CFE_EVENTS_SERVICE")]
     EVS     = 0b001,
+
+    /// Executive service.
+    #[doc(alias = "CFE_EXECUTIVE_SERVICE")]
     ES      = 0b010,
+
+    /// File service.
+    #[doc(alias = "CFE_FILE_SERVICE")]
     FS      = 0b011,
+
+    /// Generic service.
+    #[doc(alias = "CFE_GENERIC_SERVICE")]
     Generic = 0b100,
+
+    /// Software Bus service.
+    #[doc(alias = "CFE_SOFTWARE_BUS_SERVICE")]
     SB      = 0b101,
+
+    /// Table service.
+    #[doc(alias = "CFE_TABLE_SERVICE")]
     TBL     = 0b110,
+
+    /// Time service.
+    #[doc(alias = "CFE_TIME_SERVICE")]
     TIME    = 0b111,
 }
 
 impl Status {
     /// Constructs a `Status` from its component parts.
     ///
-    /// NOTES:
+    /// ## Notes
     ///
     /// * Only the lower 9 bits of `mission_defined` get used.
     /// * All 16 bits of `code` get used.
@@ -148,6 +188,7 @@ impl Status {
     }
 
     /// Returns the status's severity.
+    #[doc(alias = "CFE_SEVERITY_BITMASK")]
     #[inline]
     pub const fn severity(&self) -> StatusSeverity {
         use StatusSeverity::*;
@@ -160,8 +201,9 @@ impl Status {
     }
 
     /// Returns the cFE service that generated this status.
+    #[doc(alias = "CFE_SERVICE_BITMASK")]
     #[inline]
-    pub const fn service_identifier(&self) -> StatusServiceId {
+    pub const fn service(&self) -> StatusServiceId {
         use StatusServiceId::*;
 
         match (self.status >> 25) & 0b0111 {
@@ -192,7 +234,7 @@ impl Status {
     /// returns `Ok(on_success())`;
     /// otherwise returns `Err(self)`.
     #[inline]
-    pub fn as_result<T, F: FnOnce() -> T>(&self, on_success: F) -> Result<T, Status> {
+    pub(crate) fn as_result<T, F: FnOnce() -> T>(&self, on_success: F) -> Result<T, Status> {
         match self.severity() {
             StatusSeverity::Success => Ok(on_success()),
             _ => Err(*self),

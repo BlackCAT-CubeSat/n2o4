@@ -7,6 +7,7 @@
 //! [Core Flight System](https://cfs.gsfc.nasa.gov/) applications.
 
 #![cfg_attr(not(test), no_std)]
+#![warn(missing_docs)]
 
 extern crate cfs_sys;
 extern crate libc;

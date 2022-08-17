@@ -17,6 +17,7 @@ pub mod file;
 /// we separate the two for greater clarity as to which is meant.
 ///
 /// Wraps `OS_time_t`.
+#[doc(alias = "OS_time_t")]
 #[derive(Clone, Copy, Debug)]
 pub struct OSTime {
     pub(crate) tm: OS_time_t,
@@ -29,6 +30,7 @@ pub struct OSTime {
 /// we separate the two for greater clarity as to which is meant.
 ///
 /// Wraps `OS_time_t`.
+#[doc(alias = "OS_time_t")]
 #[derive(Clone, Copy, Debug)]
 pub struct OSTimeInterval {
     pub(crate) int: OS_time_t,
@@ -37,17 +39,17 @@ pub struct OSTimeInterval {
 /// Methods in common between [`OSTime`] and [`OSTimeInterval`].
 macro_rules! time_methods {
     (@
-        $fraction_lower:ident, $fraction_upper:ident,
-        $field:ident, $term:literal,
-        $name_from:ident, $wrapped_function_from:ident,
-        $name_part:ident, $wrapped_function_part:ident
-        $(, $name_total:ident, $wrapped_function_total:ident)?
+        $fraction_lower:ident, $field:ident, $term:literal,
+        $name_from:ident, $wrapped_function_from:ident, $c_from:literal,
+        $name_part:ident, $wrapped_function_part:ident, $c_part:literal
+        $(, $name_total:ident, $wrapped_function_total:ident, $c_total:literal)?
     ) => {
         #[doc = concat!(
             "Creates the ", $term, " with the specified (seconds, ", stringify!($fraction_lower), ").\n",
             "\n",
-            "Wraps `OS_TimeAssembleFrom", stringify!($fraction_upper), "`.\n",
+            "Wraps `", $c_from, "`.\n",
         )]
+        #[doc(alias = $c_from)]
         #[inline]
         pub fn $name_from(seconds: i64, $fraction_lower: u32) -> Self {
             let tm = unsafe { $wrapped_function_from(seconds, $fraction_lower) };
@@ -58,8 +60,9 @@ macro_rules! time_methods {
         #[doc = concat!(
             "Converts the ", $term, " into a count of ", stringify!($fraction_lower), ".\n",
             "\n",
-            "Wraps `OS_TimeGetTotal", stringify!($fraction_upper), "`.\n",
+            "Wraps `", $c_total, "`.\n",
         )]
+        #[doc(alias = $c_total)]
         #[inline]
         pub fn $name_total(&self) -> i64 {
             unsafe { $wrapped_function_total(self.$field) }
@@ -69,8 +72,9 @@ macro_rules! time_methods {
         #[doc = concat!(
             "Returns the fractional-seconds part of the ", $term, " in ", stringify!($fraction_lower), ".\n",
             "\n",
-            "Wraps `OS_TimeGet", stringify!($fraction_upper), "Part`.\n",
+            "Wraps `", $c_part, "`.\n",
         )]
+        #[doc(alias = $c_part)]
         #[inline]
         pub fn $name_part(&self) -> u32 {
             unsafe { $wrapped_function_part(self.$field) }
@@ -79,30 +83,30 @@ macro_rules! time_methods {
     ($t:ident, $field:ident, $term:literal) => {
         impl $t {
             time_methods!(@
-                nanoseconds, Nanoseconds, $field, $term,
-                from_nanoseconds, SHIM_OS_TimeAssembleFromNanoseconds,
-                nanoseconds_part, SHIM_OS_TimeGetNanosecondsPart,
-                total_nanoseconds, SHIM_OS_TimeGetTotalNanoseconds
+                nanoseconds, $field, $term,
+                from_nanoseconds, SHIM_OS_TimeAssembleFromNanoseconds, "OS_TimeAssembleFromNanoseconds",
+                nanoseconds_part, SHIM_OS_TimeGetNanosecondsPart, "OS_TimeGetNanosecondsPart",
+                total_nanoseconds, SHIM_OS_TimeGetTotalNanoseconds, "OS_TimeGetTotalNanoseconds"
             );
 
             time_methods!(@
-                microseconds, Microseconds, $field, $term,
-                from_microseconds, SHIM_OS_TimeAssembleFromMicroseconds,
-                microseconds_part, SHIM_OS_TimeGetMicrosecondsPart,
-                total_microseconds, SHIM_OS_TimeGetTotalMicroseconds
+                microseconds, $field, $term,
+                from_microseconds, SHIM_OS_TimeAssembleFromMicroseconds, "OS_TimeAssembleFromMicroseconds",
+                microseconds_part, SHIM_OS_TimeGetMicrosecondsPart, "OS_TimeGetMicrosecondsPart",
+                total_microseconds, SHIM_OS_TimeGetTotalMicroseconds, "OS_TimeGetTotalMicroseconds"
             );
 
             time_methods!(@
-                milliseconds, Milliseconds, $field, $term,
-                from_milliseconds, SHIM_OS_TimeAssembleFromMilliseconds,
-                milliseconds_part, SHIM_OS_TimeGetMillisecondsPart,
-                total_milliseconds, SHIM_OS_TimeGetTotalMilliseconds
+                milliseconds, $field, $term,
+                from_milliseconds, SHIM_OS_TimeAssembleFromMilliseconds, "OS_TimeAssembleFromMilliseconds",
+                milliseconds_part, SHIM_OS_TimeGetMillisecondsPart, "OS_TimeGetMillisecondsPart",
+                total_milliseconds, SHIM_OS_TimeGetTotalMilliseconds, "OS_TimeGetTotalMilliseconds"
             );
 
             time_methods!(@
-                subseconds, Subseconds, $field, $term,
-                from_subseconds, SHIM_OS_TimeAssembleFromSubseconds,
-                subseconds_part, SHIM_OS_TimeGetSubsecondsPart
+                subseconds, $field, $term,
+                from_subseconds, SHIM_OS_TimeAssembleFromSubseconds, "OS_TimeAssembleFromSubseconds",
+                subseconds_part, SHIM_OS_TimeGetSubsecondsPart, "OS_TimeGetSubsecondsPart"
             );
 
             #[doc = concat!(
@@ -110,6 +114,7 @@ macro_rules! time_methods {
                 "\n",
                 "Wraps `OS_TimeGetTotalSeconds`.\n"
             )]
+            #[doc(alias = "OS_TimeGetTotalSeconds")]
             #[inline]
             pub fn total_seconds(&self) -> i64 {
                 unsafe { SHIM_OS_TimeGetTotalSeconds(self.$field) }
@@ -120,6 +125,7 @@ macro_rules! time_methods {
                 "\n",
                 "Wraps `OS_TimeGetFractionalPart`.\n"
             )]
+            #[doc(alias = "OS_TimeGetFractionalPart")]
             #[inline]
             pub fn fractional_part(&self) -> i64 {
                 unsafe { SHIM_OS_TimeGetFractionalPart(self.$field) }
@@ -143,11 +149,12 @@ time_methods!(OSTimeInterval, int, "interval");
 
 /// Quick generation of an implementation of arithmetic for times, time intervals.
 macro_rules! arith_impl {
-    ($trait:ident, $lhs:ident, $rhs:ident, $method:ident, $result:ident, $func:ident, $func_suffix:ident) => {
-        #[doc = concat!("Wraps `OS_Time", stringify!($func_suffix), "`.")]
+    ($trait:ident, $lhs:ident, $rhs:ident, $method:ident, $result:ident, $func:ident, $func_cname:literal) => {
+        #[doc = concat!("Wraps `", $func_cname, "`.")]
         impl $trait<$rhs> for $lhs {
             type Output = $result;
 
+            #[doc(alias = $func_cname)]
             #[inline]
             fn $method(self, other: $rhs) -> $result {
                 let s = self.as_os_time();
@@ -165,18 +172,19 @@ mod time_arith_impls {
     use core::ops::{Add, Sub};
     use super::*;
 
-    arith_impl!(Add, OSTime,         OSTimeInterval, add, OSTime,         SHIM_OS_TimeAdd, Add);
-    arith_impl!(Add, OSTimeInterval, OSTime,         add, OSTime,         SHIM_OS_TimeAdd, Add);
-    arith_impl!(Add, OSTimeInterval, OSTimeInterval, add, OSTimeInterval, SHIM_OS_TimeAdd, Add);
+    arith_impl!(Add, OSTime,         OSTimeInterval, add, OSTime,         SHIM_OS_TimeAdd, "OS_TimeAdd");
+    arith_impl!(Add, OSTimeInterval, OSTime,         add, OSTime,         SHIM_OS_TimeAdd, "OS_TimeAdd");
+    arith_impl!(Add, OSTimeInterval, OSTimeInterval, add, OSTimeInterval, SHIM_OS_TimeAdd, "OS_TimeAdd");
 
-    arith_impl!(Sub, OSTime,         OSTime,         sub, OSTimeInterval, SHIM_OS_TimeSubtract, Subtract);
-    arith_impl!(Sub, OSTime,         OSTimeInterval, sub, OSTime,         SHIM_OS_TimeSubtract, Subtract);
-    arith_impl!(Sub, OSTimeInterval, OSTimeInterval, sub, OSTimeInterval, SHIM_OS_TimeSubtract, Subtract);
+    arith_impl!(Sub, OSTime,         OSTime,         sub, OSTimeInterval, SHIM_OS_TimeSubtract, "OS_TimeSubtract");
+    arith_impl!(Sub, OSTime,         OSTimeInterval, sub, OSTime,         SHIM_OS_TimeSubtract, "OS_TimeSubtract");
+    arith_impl!(Sub, OSTimeInterval, OSTimeInterval, sub, OSTimeInterval, SHIM_OS_TimeSubtract, "OS_TimeSubtract");
 }
 
 /// An identifier for an object managed by OSAL.
 ///
 /// Wraps `osal_id_t`.
+#[doc(alias = "osal_id_t")]
 #[derive(Clone, Copy, Debug)]
 pub struct ObjectId {
     id: osal_id_t,
@@ -186,11 +194,13 @@ impl ObjectId {
     /// An object ID guaranteed never to refer to a valid resource.
     ///
     /// Wraps `OS_OBJECT_ID_UNDEFINED`.
+    #[doc(alias = "OS_OBJECT_ID_UNDEFINED")]
     pub const UNDEFINED: ObjectId = ObjectId { id: X_OS_OBJECT_ID_UNDEFINED };
 
     /// Returns whether `self` refers to a defined resource.
     ///
     /// Wraps `OS_ObjectIdDefined`.
+    #[doc(alias = "OS_ObjectIdDefined")]
     #[inline]
     pub fn is_defined(&self) -> bool {
         unsafe { SHIM_OS_ObjectIdDefined(self.id) }
@@ -200,6 +210,7 @@ impl ObjectId {
     /// (non-Rustic) value.
     ///
     /// Wraps `OS_IdentifyObject`.
+    #[doc(alias = "OS_IdentifyObject")]
     #[inline]
     pub(crate) fn obj_type(&self) -> osal_objtype_t {
         unsafe { OS_IdentifyObject(self.id) }
@@ -208,6 +219,7 @@ impl ObjectId {
 
 /// Wraps `OS_ObjectIdFromInteger`.
 impl From<c_ulong> for ObjectId {
+    #[doc(alias = "OS_ObjectIdFromInteger")]
     #[inline]
     fn from(val: c_ulong) -> ObjectId {
         ObjectId {
@@ -218,6 +230,7 @@ impl From<c_ulong> for ObjectId {
 
 /// Wraps `OS_ObjectIdToInteger`.
 impl From<ObjectId> for c_ulong {
+    #[doc(alias = "OS_ObjectIdToInteger")]
     #[inline]
     fn from(oid: ObjectId) -> c_ulong {
         unsafe { SHIM_OS_ObjectIdToInteger(oid.id) }
@@ -226,6 +239,7 @@ impl From<ObjectId> for c_ulong {
 
 /// Wraps `OS_ObjectIdEqual`.
 impl PartialEq<Self> for ObjectId {
+    #[doc(alias = "OS_ObjectIdEqual")]
     #[inline]
     fn eq(&self, other_id: &Self) -> bool {
         unsafe { SHIM_OS_ObjectIdEqual(self.id, other_id.id) }

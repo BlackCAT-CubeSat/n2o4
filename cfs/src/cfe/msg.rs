@@ -49,18 +49,21 @@ macro_rules! offset_of {
 /// A [`Message`]'s function code.
 ///
 /// This is the same as `CFE_MSG_FcnCode_t`.
+#[doc(alias = "CFE_MSG_FcnCode_t")]
 #[doc(inline)]
 pub use cfs_sys::CFE_MSG_FcnCode_t as FunctionCode;
 
 /// Represents the size of a [`Message`].
 ///
 /// This is the same as `CFE_MSG_Size_t`.
+#[doc(alias = "CFE_MSG_Size_t")]
 #[doc(inline)]
 pub use cfs_sys::CFE_MSG_Size_t as Size;
 
 /// An instance of the common header for cFE software bus messages.
 ///
 /// Wraps `CFE_MSG_Message_t`.
+#[doc(alias = "CFE_MSG_Message_t")]
 #[repr(transparent)]
 pub struct Message {
     pub(super) msg: CFE_MSG_Message_t,
@@ -69,6 +72,7 @@ pub struct Message {
 /// A command message for use with the cFE software bus.
 ///
 /// Wraps `CFE_MSG_CommandHeader_t`, with a user-specified payload following.
+#[doc(alias = "CFE_MSG_CommandHeader_t")]
 #[repr(C)]
 pub struct Command<T: Copy> {
     /// The command header.
@@ -82,6 +86,7 @@ pub struct Command<T: Copy> {
 /// A telemetry message for use with the cFE software bus.
 ///
 /// Wraps `CFE_MSG_TelemetryHeader_t`, with a user-specified payload following.
+#[doc(alias = "CFE_MSG_TelemetryHeader_t")]
 #[repr(C)]
 pub struct Telemetry<T: Copy> {
     /// The telemetry header.
@@ -98,11 +103,12 @@ impl Message {
         Byte: [0; array_field_len!(CFE_MSG_Message_t, Byte, unsafe)],
     };
 
-    /// Initialize a [`Message`]. As doing this arbitrarily can result in
+    /// Initializes a [`Message`]. As doing this arbitrarily can result in
     /// invalid state (e.g., a message with a command message ID but a telemetry
     /// secondary header), this is an unsafe operation.
     ///
     /// Wraps `CFE_MSG_Init`.
+    #[doc(alias = "CFE_MSG_Init")]
     #[inline]
     unsafe fn init(&mut self, msg_id: MsgId, size: Size) -> Result<(), Status> {
         let s: Status = CFE_MSG_Init(&mut self.msg, msg_id.id, size).into();
@@ -128,6 +134,7 @@ impl Message {
     /// Returns the [`Message`]'s function code (if it has one).
     ///
     /// Wraps `CFE_MSG_GetFcnCode`.
+    #[doc(alias = "CFE_MSG_GetFcnCode")]
     #[inline]
     pub fn fcn_code(&self) -> Result<FunctionCode, Status> {
         let mut fc: FunctionCode = 0;
@@ -139,6 +146,7 @@ impl Message {
     /// Returns the message ID.
     ///
     /// Wraps `CFE_MSG_GetMsgId`.
+    #[doc(alias = "CFE_MSG_GetMsgId")]
     #[inline]
     pub fn msgid(&self) -> Result<MsgId, Status> {
         let mut mid: MsgId = MsgId::INVALID;
@@ -152,6 +160,7 @@ impl Message {
     /// the message's type (e.g., telemetry to command).
     ///
     /// Wraps `CFE_MSG_SetMsgId`.
+    #[doc(alias = "CFE_MSG_SetMsgId")]
     #[inline]
     pub fn set_msgid(&mut self, msg_id: MsgId) -> Result<(), Status> {
         let old_msg_id = self.msgid()?;
@@ -169,6 +178,7 @@ impl Message {
     /// appropriately modifying them, this is an unsafe operation.
     ///
     /// Wraps `CFE_MSG_SetMsgId`.
+    #[doc(alias = "CFE_MSG_SetMsgId")]
     #[inline]
     pub unsafe fn set_msgid_unchecked(&mut self, msg_id: MsgId) -> Result<(), Status> {
         let s: Status = CFE_MSG_SetMsgId(&mut self.msg, msg_id.id).into();
@@ -179,6 +189,7 @@ impl Message {
     /// Returns the total size of the message this [`Message`] is the header for.
     ///
     /// Wraps `CFE_MSG_GetSize`.
+    #[doc(alias = "CFE_MSG_GetSize")]
     #[inline]
     pub fn size(&self) -> Result<Size, Status> {
         let mut sz: Size = 0;
@@ -193,6 +204,7 @@ impl Message {
     /// transmitted, this is an unsafe operation.
     ///
     /// Wraps `CFE_MSG_SetSize`.
+    #[doc(alias = "CFE_MSG_SetSize")]
     #[inline]
     pub unsafe fn set_size(&mut self, sz: Size) -> Result<(), Status> {
         let s: Status = CFE_MSG_SetSize(&mut self.msg, sz).into();
@@ -265,6 +277,7 @@ impl Message {
     /// Sets the [`Message`]'s time field to the current spacecraft time.
     ///
     /// Wraps `CFE_SB_TimeStampMsg`.
+    #[doc(alias = "CFE_SB_TimeStampMsg")]
     #[inline]
     pub fn time_stamp(&mut self) {
         unsafe { CFE_SB_TimeStampMsg(&mut self.msg) }
@@ -277,6 +290,7 @@ impl Message {
     /// calling this method.
     ///
     /// Wraps `CFE_SB_TransmitMsg`.
+    #[doc(alias = "CFE_SB_TransmitMsg")]
     #[inline]
     pub fn transmit(&mut self, increment_sequence_count: bool) -> Result<(), Status> {
         let s: Status =
@@ -300,6 +314,7 @@ impl<T: Copy + Sized> Command<T> {
     /// along the way.
     ///
     /// Wraps `CFE_MSG_Init`, `CFE_MSG_GetTypeFromMsgId`, and `CFE_MSG_SetFcnCode`.
+    #[doc(alias("CFE_MSG_Init", "CFE_MSG_GetTypeFromMsgId", "CFE_MSG_SetFcnCode"))]
     #[inline]
     pub fn new(msg_id: MsgId, fcn_code: FunctionCode, payload: T) -> Result<Self, Status> {
         let mut cmd = Command {
@@ -332,6 +347,7 @@ impl<T: Copy + Sized> Command<T> {
     /// Sets the message's function code.
     ///
     /// Wraps `CFE_MSG_SetFcnCode`.
+    #[doc(alias = "CFG_MSG_SetFcnCode")]
     #[inline]
     pub fn set_fcn_code(&mut self, fcn_code: FunctionCode) -> Result<(), Status> {
         let s: Status = unsafe { CFE_MSG_SetFcnCode(&mut self.header.Msg, fcn_code) }.into();
@@ -349,6 +365,7 @@ impl<T: Copy + Sized, const SIZE: usize> Command<[T; SIZE]> {
     /// back to the structure's full length.
     ///
     /// Wraps `CFE_MSG_SetSize` and `CFE_SB_TransmitMsg`.
+    #[doc(alias("CFE_MSG_SetSize", "CFE_SB_TransmitMsg"))]
     #[inline]
     pub fn transmit_partial(
         &mut self,
@@ -395,7 +412,8 @@ impl<T: Copy + Sized> Telemetry<T> {
     /// Tries to create a new telemetry message, setting the message ID
     /// along the way.
     ///
-    /// Wraps `CFE_MSG_Init`, `CFE_MSG_GetTypeFromMsgId`, and `CFE_MSG_SetFcnCode`.
+    /// Wraps `CFE_MSG_Init` and `CFE_MSG_GetTypeFromMsgId`.
+    #[doc(alias("CFE_MSG_Init", "CFE_MSG_GetTypeFromMsgId"))]
     #[inline]
     pub fn new(msg_id: MsgId, payload: T) -> Result<Self, Status> {
         let mut tlm = Telemetry {
@@ -431,6 +449,7 @@ impl<T: Copy + Sized, const SIZE: usize> Telemetry<[T; SIZE]> {
     /// back to the structure's full length.
     ///
     /// Wraps `CFE_MSG_SetSize` and `CFE_SB_TransmitMsg`.
+    #[doc(alias("CFE_MSG_SetSize", "CFE_SB_TransmitMsg"))]
     #[inline]
     pub fn transmit_partial(
         &mut self,
@@ -465,21 +484,25 @@ impl<T: Copy> DerefMut for Telemetry<T> {
 }
 
 /// The type of a message.
+#[doc(alias = "CFG_MSG_Type")]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(u32)]
 pub enum MsgType {
     /// Command message.
+    #[doc(alias = "CFG_MSG_Type_Cmd")]
     Cmd     = CFE_MSG_Type_CFE_MSG_Type_Cmd,
 
     /// Telemetry message.
+    #[doc(alias = "CFG_MSG_Type_Tlm")]
     Tlm     = CFE_MSG_Type_CFE_MSG_Type_Tlm,
 
     /// Invalid message type.
+    #[doc(alias = "CFG_MSG_Type_Invalid")]
     Invalid = CFE_MSG_Type_CFE_MSG_Type_Invalid,
 }
 
 impl MsgType {
-    /// Construct a [`MsgType`] from the corresponding cFE type.
+    /// Constructs a [`MsgType`] from the corresponding cFE type.
     #[inline]
     #[allow(non_upper_case_globals)]
     pub(crate) fn from_cfe(ty: CFE_MSG_Type_t) -> Self {

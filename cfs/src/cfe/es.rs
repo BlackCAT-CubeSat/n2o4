@@ -9,60 +9,78 @@ use libc::c_char;
 use printf_wrap::{NullString, PrintfArgument, PrintfFmt};
 
 /// The status (or requested status) of a cFE application.
+#[doc(alias = "CFE_ES_RunStatus")]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[repr(u32)]
 pub enum RunStatus {
     /// Application is exiting with an error.
+    #[doc(alias = "CFE_ES_RunStatus_APP_ERROR")]
     AppError     = CFE_ES_RunStatus_CFE_ES_RunStatus_APP_ERROR,
 
     /// Application wants to exit normally.
+    #[doc(alias = "CFE_ES_RunStatus_APP_EXIT")]
     AppExit      = CFE_ES_RunStatus_CFE_ES_RunStatus_APP_EXIT,
 
     /// Application should continue to run.
+    #[doc(alias = "CFE_ES_RunStatus_APP_RUN")]
     AppRun       = CFE_ES_RunStatus_CFE_ES_RunStatus_APP_RUN,
 
     /// Indication that the Core Application could not initialize.
+    #[doc(alias = "CFE_ES_RunStatus_CORE_APP_INIT_ERROR")]
     CoreAppInitError = CFE_ES_RunStatus_CFE_ES_RunStatus_CORE_APP_INIT_ERROR,
 
     /// Indication that the Core Application had a runtime failure.
+    #[doc(alias = "CFE_ES_RunStatus_CORE_APP_RUNTIME_ERROR")]
     CoreAppRuntimeError = CFE_ES_RunStatus_CFE_ES_RunStatus_CORE_APP_RUNTIME_ERROR,
 
     /// Indication that the system is requesting that the application stop.
+    #[doc(alias = "CFE_ES_RunStatus_SYS_DELETE")]
     SysDelete    = CFE_ES_RunStatus_CFE_ES_RunStatus_SYS_DELETE,
 
     /// Application caused an exception.
+    #[doc(alias = "CFE_ES_RunStatus_SYS_EXCEPTION")]
     SysException = CFE_ES_RunStatus_CFE_ES_RunStatus_SYS_EXCEPTION,
 
     /// The system is requesting a reload of the application.
+    #[doc(alias = "CFE_ES_RunStatus_SYS_RELOAD")]
     SysReload    = CFE_ES_RunStatus_CFE_ES_RunStatus_SYS_RELOAD,
 
     /// The system is requesting a restart of the application.
+    #[doc(alias = "CFE_ES_RunStatus_SYS_RESTART")]
     SysRestart   = CFE_ES_RunStatus_CFE_ES_RunStatus_SYS_RESTART,
 
     /// Reserved value; should not be used.
+    #[doc(alias = "CFE_ES_RunStatus_UNDEFINED")]
     Undefined    = CFE_ES_RunStatus_CFE_ES_RunStatus_UNDEFINED,
 }
 
 /// The current state of the overall cFS system.
+#[doc(alias = "CFE_ES_SystemState")]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[repr(u32)]
 pub enum SystemState {
     /// Single-threaded mode while setting up CFE itself.
+    #[doc(alias = "CFE_ES_SystemState_EARLY_INIT")]
     EarlyInit   = CFE_ES_SystemState_CFE_ES_SystemState_EARLY_INIT,
 
     /// Core apps are starting.
+    #[doc(alias = "CFE_ES_SystemState_CORE_STARTUP")]
     CoreStartup = CFE_ES_SystemState_CFE_ES_SystemState_CORE_STARTUP,
 
     /// Core is ready, starting external apps/libraries.
+    #[doc(alias = "CFE_ES_SystemState_CORE_READY")]
     CoreReady   = CFE_ES_SystemState_CFE_ES_SystemState_CORE_READY,
 
     /// Startup apps have all completed early init, but are not necessarily operational yet.
+    #[doc(alias = "CFE_ES_SystemState_APPS_INIT")]
     AppsInit    = CFE_ES_SystemState_CFE_ES_SystemState_APPS_INIT,
 
     /// Normal operation mode; all apps are running.
+    #[doc(alias = "CFE_ES_SystemState_OPERATIONAL")]
     Operational = CFE_ES_SystemState_CFE_ES_SystemState_OPERATIONAL,
 
     /// Reserved for future use; all apps would be stopped.
+    #[doc(alias = "CFE_ES_SystemState_SHUTDOWN")]
     Shutdown    = CFE_ES_SystemState_CFE_ES_SystemState_SHUTDOWN,
 }
 
@@ -75,18 +93,21 @@ pub enum SystemState {
 /// and `1` for an exit.
 ///
 /// Wraps `CFE_ES_PerfLogAdd`.
+#[doc(alias = "CFE_ES_PerfLogAdd")]
 #[inline]
 pub fn perf_log_add(marker: u32, entry_exit: u32) {
     unsafe { CFE_ES_PerfLogAdd(marker, entry_exit) };
 }
 
 /// Shortcut for [`perf_log_add`]`(marker, 0)`.
+#[doc(alias = "CFE_ES_PerfLogEntry")]
 #[inline]
 pub fn perf_log_entry(marker: u32) {
     perf_log_add(marker, 0);
 }
 
 /// Shortcut for [`perf_log_add`]`(marker, 1)`.
+#[doc(alias = "CFE_ES_PerfLogExit")]
 #[inline]
 pub fn perf_log_exit(marker: u32) {
     perf_log_add(marker, 1);
@@ -101,6 +122,7 @@ macro_rules! wtsl_impl {
             "\n",
             "Wraps `CFE_ES_WriteToSysLog`.\n",
         )]
+        #[doc(alias = "CFE_ES_WriteToSysLog")]
         #[inline]
         pub fn $name<$($t),*>(fmt: PrintfFmt<($($t,)*)>, $($var: $t),*) -> Status
             where $($t: PrintfArgument),* {
@@ -135,10 +157,11 @@ wtsl_impl!(8, write_to_syslog8, (A, B, C, D, E, F, G, H), (a, b, c, d, e, f, g, 
 
 /// Writes the contents of a [`str`] to the cFE System Log.
 ///
-/// Note that any embedded null characters and anything past them
+/// Note that any embedded null characters and anything after them
 /// will not get put into the log message.
 ///
 /// Wraps `CFE_ES_WriteToSysLog`.
+#[doc(alias = "CFE_ES_WriteToSysLog")]
 #[inline]
 pub fn write_to_syslog_str(msg: &str) -> Status {
     unsafe {
@@ -150,6 +173,7 @@ pub fn write_to_syslog_str(msg: &str) -> Status {
 /// Exits from the current application.
 ///
 /// Wraps `CFE_ES_ExitApp`.
+#[doc(alias = "CFE_ES_ExitApp")]
 #[inline]
 pub fn exit_app(exit_status: RunStatus) {
     unsafe { CFE_ES_ExitApp(exit_status as u32) };
@@ -169,6 +193,7 @@ pub fn exit_app(exit_status: RunStatus) {
 /// gracefully shut down.
 ///
 /// Wraps `CFE_ES_RunLoop`.
+#[doc(alias = "CFE_ES_RunLoop")]
 #[inline]
 pub fn run_loop(run_status: Option<RunStatus>) -> bool {
     let mut rs: u32 = run_status.map_or(0, |status| status as u32);
@@ -182,6 +207,7 @@ pub fn run_loop(run_status: Option<RunStatus>) -> bool {
 /// An identifier for cFE applications.
 ///
 /// Wraps `CFE_ES_AppId_t`.
+#[doc(alias = "CFE_ES_AppId_t")]
 #[derive(Clone, Copy, Debug)]
 pub struct AppId {
     pub(crate) id: CFE_ES_AppId_t,
@@ -212,6 +238,7 @@ impl TryFrom<ResourceId> for AppId {
 /// Returns (if successful) the application ID for the calling cFE application.
 ///
 /// Wraps `CFE_ES_GetAppID`.
+#[doc(alias = "CFE_ES_GetAppID")]
 #[inline]
 pub fn get_app_id() -> Result<AppId, Status> {
     let mut app_id = AppId { id: 0 };
@@ -222,6 +249,7 @@ pub fn get_app_id() -> Result<AppId, Status> {
 /// Restarts a single cFE application.
 ///
 /// Wraps `CFE_ES_RestartApp`.
+#[doc(alias = "CFE_ES_RestartApp")]
 #[inline]
 pub fn restart_app(app_id: AppId) -> Result<(), Status> {
     let s: Status = unsafe { CFE_ES_RestartApp(app_id.id) }.into();
@@ -231,6 +259,7 @@ pub fn restart_app(app_id: AppId) -> Result<(), Status> {
 /// Stops a cFE application, then loads and starts it using the specified file.
 ///
 /// Wraps `CFE_ES_ReloadApp`.
+#[doc(alias = "CFE_ES_ReloadApp")]
 #[inline]
 pub fn reload_app(app_id: AppId, app_file_name: NullString) -> Result<(), Status> {
     let s: Status = unsafe { CFE_ES_ReloadApp(app_id.id, app_file_name.as_ptr()) }.into();
@@ -240,6 +269,7 @@ pub fn reload_app(app_id: AppId, app_file_name: NullString) -> Result<(), Status
 /// Stops a cFE application, then deletes it from the cFE application table.
 ///
 /// Wraps `CFE_ES_DeleteApp`.
+#[doc(alias = "CFE_ES_DeleteApp")]
 #[inline]
 pub fn delete_app(app_id: AppId) -> Result<(), Status> {
     let s: Status = unsafe { CFE_ES_DeleteApp(app_id.id) }.into();
@@ -250,6 +280,7 @@ pub fn delete_app(app_id: AppId) -> Result<(), Status> {
 /// or a timeout (in milliseconds), whichever comes first.
 ///
 /// Wraps `CFE_ES_WaitForSystemState`.
+#[doc(alias = "CFE_ES_WaitForSystemState")]
 #[inline]
 pub fn wait_for_system_state(min_system_state: SystemState, timeout_ms: u32) -> Result<(), Status> {
     let s: Status =
