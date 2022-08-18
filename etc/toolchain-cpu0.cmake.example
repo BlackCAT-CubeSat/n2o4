@@ -3,7 +3,7 @@
 #
 # This is an example, derived from a working toolchain-*.cmake,
 # shows the additions needed for Rust-based applications using
-# the `cfs` crate. In the example, the target is a Zynq 7000
+# the `n2o4` crate. In the example, the target is a Zynq 7000
 # processor (two ARM Cortex-A9 cores); linking and C compilation
 # are provided by a Yocto-generated eSDK.
 

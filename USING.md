@@ -1,8 +1,8 @@
-# Using Rust and `cfs` in a cFS App
+# Using Rust and `n2o4` in a cFS Application
 
 cFS and its build system are strongly oriented towards C.
 However, with some finagling, you can write a cFS application in Rust
-the `cfs` crate.
+the `n2o4` crate.
 
 This is what you need to do:
 
@@ -30,7 +30,7 @@ $ rustup +nightly component add rust-src
 ## Build system additions
 
 The `cfs-sys` crate,
-which provides the low-level bindings to the cFS APIs that `cfs` uses,
+which provides the low-level bindings to the cFS APIs that `n2o4` uses,
 requires information about the C compiler used
 and the locations of the cFE and OSAL include files.
 In addition, generating Rustdocs for all the projects
@@ -95,7 +95,7 @@ panic = "abort"
 panic = "abort"
 ```
 
-The `cfs` crate isn't published on [crates.io] (at least for now)
+The `n2o4` crate isn't published on [crates.io] (at least for now)
 as its ability to work is tightly bound to
 `{rust_cfs_app,rust_mission_build}.cmake`
 and a specific version of cFE and OSAL.
@@ -104,7 +104,7 @@ and revision you want to use:
 
 ```toml
 [dependencies]
-cfs = { git = "https://git.psu.edu/BlackCAT/fsw/cfs-rs.git", rev = "0123456789abcdef0123456789abcdef01234567" }
+n2o4 = { git = "https://git.psu.edu/BlackCAT/fsw/n2o4.git", rev = "0123456789abcdef0123456789abcdef01234567" }
 ```
 
 Any functions that will be called from C code, _including any application entry points_,
@@ -119,7 +119,7 @@ pub extern "C" fn RUSTFSW_AppMain() {
 ```
 
 The cFS CMake build system assumes your application has at least one C source file.
-If all your logic is in Rust, you can use the `placebo.c` file from `etc/` to
+If all your logic is in Rust, you can use the [`placebo.c`](etc/placebo.c) file from `etc/` to
 satisfy that assumption.
 
 Finally, to tie everything together, use the `cfe_rust_crate` function in your
@@ -144,7 +144,7 @@ target_link_options(rustfsw PUBLIC LINKER:--require-defined=RUSTFSW_AppMain)
 
 ## Example
 
-You can find a fully worked-out example of a Rust-using cFS application at &lt;TBD&gt;.
+You can find a fully worked-out example of a Rust-using cFS application at **&lt;TBD&gt;**.
 
 [install rust]: https://www.rust-lang.org/tools/install
 [1]: https://rust-lang.github.io/rustup/concepts/channels.html

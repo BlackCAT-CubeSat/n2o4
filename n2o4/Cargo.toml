@@ -1,5 +1,5 @@
 [package]
-name = "cfs"
+name = "n2o4"
 version = "0.0.0"
 description = "Idiomatic, safe Rust bindings to cFE and OSAL APIs"
 license = "Apache-2.0"

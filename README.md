@@ -1,6 +1,6 @@
-# `cfs` Crate
+# n2o4
 
-The `cfs` crate provides safe, (ideally) idiomatic Rust bindings
+The `n2o4` crate provides safe, (ideally) idiomatic Rust bindings
 to [cFE](https://github.com/nasa/cFE)
 and [OSAL](https://github.com/nasa/osal) APIs.
 
@@ -10,7 +10,7 @@ and bindings for many APIs don't currently exist.
 ## Using this crate in your cFS app
 
 See [USING.md](USING.md) for how to set everything up to
-use `cfs` (and Rust in general) in your cFS application.
+use `n2o4` (and Rust in general) in your cFS application.
 
 ## Contributing
 
