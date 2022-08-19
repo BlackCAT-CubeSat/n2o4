@@ -1,0 +1,8 @@
+[package]
+name = "n204"
+description = "Placeholder crate to avoid confusion with 'n2o4'"
+version = "0.0.0"
+edition = "2021"
+readme = "README.md"
+repository = "https://github.com/BlackCAT-CubeSat/n2o4"
+license = "Unlicense"

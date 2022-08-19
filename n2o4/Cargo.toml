@@ -1,0 +1,10 @@
+[package]
+name = "n2o4"
+description = "Idiomatic, safe Rust bindings to cFE and OSAL APIs (placeholder for off-crates.io project)"
+version = "0.0.0"
+edition = "2021"
+readme = "README.md"
+repository = "https://github.com/BlackCAT-CubeSat/n2o4"
+license = "Apache-2.0"
+keywords = ["cFS", "cFE", "OSAL", "flight-software", "no_std"]
+categories = ["aerospace", "api-bindings", "no-std"]
