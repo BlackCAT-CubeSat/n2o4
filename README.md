@@ -1,4 +1,4 @@
-# n2o4
+# `n2o4`
 
 The `n2o4` crate provides safe, idiomatic Rust bindings
 to the APIs of [cFE] and [OSAL],
@@ -18,6 +18,8 @@ consider [helping](#contrib) to flesh out the crate!
 See [USING.md](USING.md) for how to set everything up to
 use `n2o4` (and Rust in general) in your cFS application.
 
+Also, take a look at [a sample app] demonstrating the use of `n2o4`.
+
 ## <span id="contrib" />Contributing
 
 * Found a bug or have a feature request?
@@ -28,13 +30,13 @@ use `n2o4` (and Rust in general) in your cFS application.
 
 ## `cfs-sys`
 
-Under the hood, `n2o4` uses [`cfs-sys`]
+Under the hood, `n2o4` uses [`cfs-sys`](cfs-sys)
 (not to be confused with the [crate of the same name] on crates.io),
 which provides mostly machine-generated, `unsafe` bindings to the cFS and OSAL APIs.
 
 ## License
 
-This crate is licensed under the [Apache License version 2.0].
+This crate is licensed under the [Apache License version 2.0](LICENSE).
 This is the same license cFE and OSAL are released under.
 
 ## About the name
@@ -54,11 +56,10 @@ it seems appropriate to give this crate the name of a rocket propellant&mdash;on
 [cFE]: https://github.com/nasa/cFE
 [OSAL]: https://github.com/nasa/osal
 [Core Flight System]: https://cfs.gsfc.nasa.gov/
+[a sample app]: https://github.com/BlackCAT-CubeSat/rust_sample_app
 [hasn't been created already]: https://github.com/BlackCAT-CubeSat/n2o4/issues
 [create an issue]: https://github.com/BlackCAT-CubeSat/n2o4/issues/new
 [Start a discussion]: https://github.com/BlackCAT-CubeSat/n2o4/discussions
 [pull request]: https://github.com/BlackCAT-CubeSat/n2o4/pulls
-[`cfs-sys`]: cfs-sys
 [crate of the same name]: https://crates.io/crates/cfs-sys
-[Apache License version 2.0]: LICENSE
 [dinitrogen tetroxide]: https://en.wikipedia.org/wiki/Dinitrogen_tetroxide

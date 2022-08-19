@@ -104,7 +104,7 @@ and revision you want to use:
 
 ```toml
 [dependencies]
-n2o4 = { git = "https://git.psu.edu/BlackCAT/fsw/n2o4.git", rev = "<commit ID>" }
+n2o4 = { git = "https://github.com/BlackCAT-CubeSat/n2o4.git", rev = "<commit ID>" }
 ```
 
 Any functions that will be called directly from C code,
@@ -145,7 +145,8 @@ target_link_options(rustfsw PUBLIC LINKER:--require-defined=RUSTFSW_AppMain)
 
 ## Example
 
-You can find a fully worked-out example of a Rust-using cFS application at **&lt;TBD&gt;**.
+You can find a fully worked-out example of a Rust-using cFS application at
+<https://github.com/BlackCAT-CubeSat/rust_sample_app>.
 
 [install rust]: https://www.rust-lang.org/tools/install
 [1]: https://rust-lang.github.io/rustup/concepts/channels.html
