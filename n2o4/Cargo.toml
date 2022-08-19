@@ -7,6 +7,8 @@ edition = "2021"
 readme = "README.md"
 publish = false
 workspace = ".."
+keywords = ["cFS", "cFE", "OSAL", "flight-software", "no_std"]
+categories = ["aerospace", "api-bindings", "no-std"]
 
 [dependencies]
 cfs-sys = { path = "../cfs-sys" }

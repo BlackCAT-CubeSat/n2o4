@@ -2,7 +2,7 @@
 
 cFS and its build system are strongly oriented towards C.
 However, with some finagling, you can write a cFS application in Rust
-the `n2o4` crate.
+using the `n2o4` crate.
 
 This is what you need to do:
 
@@ -12,7 +12,7 @@ First off, you need to [install Rust], if you haven't done so already.
 Make sure the `cargo` tool is in your `$PATH`.
 
 For the time being, we need the `nightly` release channel
-(ref [1], [2]) for a couple of features that aren't stable yet.
+(refs [1], [2]) for a couple of features that aren't stable yet.
 If you're using `rustup` to manage your Rust installation, this will add
 that channel:
 
@@ -83,8 +83,8 @@ As such, you'll need to set the crate type to `"staticlib"` in `rust-fsw/Cargo.t
 crate-type = ["staticlib"]
 ```
 
-The default panic behavior on Rust is to unwind the stack... which doesn't work
-well if you end up unwinding into C code like your cFS application is called from.
+The default panic behavior on Rust is to unwind the stack&#8230;
+which doesn't work well if you end up unwinding into C code like that your cFS application is called from.
 As such, at least for now, we need to use the `abort` panic behavior:
 
 ```toml
@@ -104,10 +104,11 @@ and revision you want to use:
 
 ```toml
 [dependencies]
-n2o4 = { git = "https://git.psu.edu/BlackCAT/fsw/n2o4.git", rev = "0123456789abcdef0123456789abcdef01234567" }
+n2o4 = { git = "https://git.psu.edu/BlackCAT/fsw/n2o4.git", rev = "<commit ID>" }
 ```
 
-Any functions that will be called from C code, _including any application entry points_,
+Any functions that will be called directly from C code,
+_including any application entry points_,
 need to be made `extern "C"` and should have name mangling disabled:
 
 ```rust
