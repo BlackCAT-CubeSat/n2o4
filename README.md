@@ -13,6 +13,15 @@ bindings for many parts of the API don't currently exist.
 If you need or want to use some part of the API for which a binding doesn't exist yet,
 consider [helping](#contrib) to flesh out the crate!
 
+## Limitations
+
+Currently, `n2o4` only supports the following:
+
+* cFE tag `v7.0.0-rc4`
+* OSAL tag `v6.0.0-rc4`
+
+Extending support to other versions is an open issue (BlackCAT-Cubesat/n2o4#1).
+
 ## Using this crate in your cFS app
 
 See [USING.md](USING.md) for how to set everything up to
