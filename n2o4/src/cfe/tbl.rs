@@ -840,7 +840,7 @@ macro_rules! table_validation_fn {
         unsafe { $crate::cfe::tbl::TableValidationFn::<$t>::new(vf) }
     }};
     (^ $t:ty, $f_wrapped:expr) => {{
-        const F_WRAP: fn(&$t) -> ::core::result::Result<(), $crate::cfe::tbl::NegativeI32 = $f_wrapped;
+        const F_WRAP: fn(&$t) -> ::core::result::Result<(), $crate::cfe::tbl::NegativeI32> = $f_wrapped;
         unsafe extern "C" fn vf(tbl_ptr: *mut ::core::ffi::c_void) -> i32 {
             use ::core::{option::Option, option::Option::*, result::Result::*};
 
