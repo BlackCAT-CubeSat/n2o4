@@ -3,8 +3,8 @@
 
 //! Table system.
 
-use super::time::SysTime;
-use super::Status;
+use crate::cfe::time::SysTime;
+use crate::cfe::Status;
 use cfs_sys::*;
 use core::ffi::c_void;
 use core::marker::PhantomData;
@@ -42,7 +42,8 @@ pub struct TblHandle<T: TableType> {
 }
 
 impl<T: TableType> TblHandle<T> {
-    /// Tries to register a table with cFE, returning a handle if successful.
+    /// Tries to register a loadable table with cFE,
+    /// returning a handle if successful.
     ///
     /// Wraps `CFE_TBL_Register`.
     #[doc(alias = "CFE_TBL_Register")]
@@ -146,8 +147,8 @@ impl<T: TableType> TblHandle<T> {
     /// has modified the contents of this table.
     ///
     /// Generally, applications using this crate won't need to call this explicitly.
-    /// The only mutable access to the table contents this crate provides is through
-    /// [`UserDefTblHandle::get_mut`], which calls `CFE_TBL_Modified` itself after
+    /// The only mutable access to table contents this crate provides is through
+    /// [`DumpOnlyTblHandle::get_mut`], which calls `CFE_TBL_Modified` itself after
     /// any modification occurs.
     ///
     /// Wraps `CFE_TBL_Modified`.
@@ -296,47 +297,56 @@ impl<T: TableType> TblHandle<T> {
     }
 }
 
-/// A handle to a table registered with a user-defined address.
+/// A handle to a dump-only table.
 ///
 /// Wraps a `CFE_TBL_Handle_t`.
 ///
-/// # Concurrency
+/// # Safety and Concurrency
 ///
-/// This creates a table backed by a `static mut T`. As this application
-/// is the only mutator of the `static mut T`, so long as the app
-/// is single-threaded (or correctly manages concurrent mutations by
-/// different threads), it is safe for the application to do this.
-/// Other applications, however, may not necessarily see a consistent
-/// copy of the data unless additional precautions are taken
-/// (use of atomics, use of [`core::sync::atomic::fence`], etc.).
+/// As the only writer to the table will be the owner of
+/// the `DumpOnlyTblHandle`, this is safe for the owner to use.
+/// Other applications with a handle to the table may have
+/// concurrency-related problems reading out data unless
+/// care is taken; that care is _not_ automatically provided
+/// in full by `DumpOnlyTblHandle` (there is some non-comprehensive
+/// assistance in [`get_mut`](Self::get_mut)).
 #[doc(alias = "CFE_TBL_Handle_t")]
-pub struct UserDefTblHandle<T: TableType> {
+pub struct DumpOnlyTblHandle<T: TableType> {
     th:  TblHandle<T>,
-    buf: &'static mut T,
+    buf: Option<&'static mut T>,
 }
 
-impl<T: TableType> UserDefTblHandle<T> {
-    /// Tries to register a table (with user-defined location `tbl_buffer`)
+impl<T: TableType> DumpOnlyTblHandle<T> {
+    /// Tries to register a dump-only table
+    /// (with optional user-defined address `tbl_buffer`)
     /// with cFE, returning a handle if successful.
     ///
-    /// Wraps `CFE_TBL_Register` and `CFE_TBL_Load`.
+    /// Wraps `CFE_TBL_Register`
+    /// (and for tables with a user-defined address, `CFE_TBL_Load`).
     #[doc(alias("CFE_TBL_Register", "CFE_TBL_Load"))]
     #[inline]
     pub fn register_user_def(
         tbl_name: NullString,
-        tbl_buffer: &'static mut T,
+        tbl_buffer: Option<&'static mut T>,
         validation_fn: Option<TableValidationFn<T>>,
     ) -> Result<Self, Status> {
         let mut hdl: CFE_TBL_Handle_t = X_CFE_TBL_BAD_TABLE_HANDLE;
         let struct_size = core::mem::size_of::<T>();
         let validation_func_ptr = validation_fn.as_cfe_val();
 
+        let tbl_options = match tbl_buffer {
+            Some(_) => CFE_TBL_OPT_USR_DEF_ADDR as u16,
+            None => {
+                (CFE_TBL_OPT_DUMP_ONLY | CFE_TBL_OPT_SNGL_BUFFER | CFE_TBL_OPT_NOT_CRITICAL) as u16
+            }
+        };
+
         let status: Status = unsafe {
             CFE_TBL_Register(
                 &mut hdl,
                 tbl_name.as_ptr(),
                 struct_size,
-                CFE_TBL_OPT_USR_DEF_ADDR as u16,
+                tbl_options,
                 validation_func_ptr,
             )
         }
@@ -353,40 +363,81 @@ impl<T: TableType> UserDefTblHandle<T> {
             }
         };
 
-        // NOTE: it is safe for the app to use a `&'static mut T` as the address here,
-        // as tables with user-defined addresses are dump-only;
-        // there may be concurrency issues for any would-be sharers,
-        // but that's not a problem for the current app.
+        let mut tbl_buffer = tbl_buffer;
 
-        let s: Status = unsafe {
-            CFE_TBL_Load(
-                hdl,
-                CFE_TBL_SrcEnum_CFE_TBL_SRC_ADDRESS,
-                tbl_buffer as *mut T as *mut c_void,
-            )
+        if let Some(_) = tbl_buffer {
+            let buf_ptr: *mut T =
+                tbl_buffer.as_mut().map_or(core::ptr::null_mut(), |x| (*x) as *mut T);
+
+            // NOTE: it is safe for the app to use a `&'static mut T` as the address here,
+            // as tables with user-defined addresses are dump-only;
+            // there may be concurrency issues for any would-be sharers,
+            // but that's not a problem for the current app.
+
+            let s: Status = unsafe {
+                CFE_TBL_Load(hdl, CFE_TBL_SrcEnum_CFE_TBL_SRC_ADDRESS, buf_ptr as *mut c_void)
+            }
+            .into();
+
+            drop(buf_ptr);
+            s.as_result(|| ())?;
         }
-        .into();
 
-        s.as_result(|| Self {
+        Ok(Self {
             th:  TblHandle { hdl, _x: PhantomData },
             buf: tbl_buffer,
         })
     }
 
-    /// Provides `closure` with a mutable reference to the data backing
-    /// the table, returning `closure`'s return value.
+    /// Attempts to obtain the current address of the table contents.
+    /// If successful, provides `closure` with a mutable reference
+    /// to the data backing the table, returning `closure`'s return value.
     ///
     /// Calls `CFE_TBL_Modified` after `closure` finishes to let Table Services
     /// know the table has been modified.
-    #[doc(alias = "CFE_TBL_Modified")]
+    ///
+    /// In the case when the table doesn't have a user-defined address, also
+    /// wraps `CFE_TBL_GetAddress` and `CFE_TBL_ReleaseAddress`.
+    #[doc(alias("CFE_TBL_Modified", "CFE_TBL_GetAddress", "CFE_TBL_ReleaseAddress"))]
     #[inline]
-    pub fn get_mut<F, V>(&mut self, closure: F) -> V
+    pub fn get_mut<F, V>(&mut self, closure: F) -> Result<V, Status>
     where
         F: for<'a> FnOnce(&'a mut T) -> V,
     {
-        let return_val = closure(self.buf);
+        use core::sync::atomic::{fence, Ordering::SeqCst};
 
-        core::sync::atomic::fence(core::sync::atomic::Ordering::SeqCst);
+        let buf_ref: Option<&'static mut T> = core::mem::replace(&mut self.buf, None);
+
+        let return_val = if let Some(buf) = buf_ref {
+            let rv = closure(buf);
+            fence(SeqCst);
+            self.buf = Some(buf);
+            Ok(rv)
+        } else {
+            let mut tbl_ptr: *mut c_void = core::ptr::null_mut();
+
+            let status: Status = unsafe { CFE_TBL_GetAddress(&mut tbl_ptr, self.th.hdl) }.into();
+
+            match status {
+                Status::SUCCESS | Status::TBL_INFO_UPDATED => (),
+                _ => {
+                    return Err(status);
+                }
+            }
+
+            let rv = match unsafe { (tbl_ptr as *mut T).as_mut() } {
+                None => Err(Status::TBL_ERR_INVALID_HANDLE),
+                Some(tbl_mut) => {
+                    let val = Ok(closure(tbl_mut));
+                    fence(SeqCst);
+                    val
+                }
+            };
+
+            let _ = unsafe { CFE_TBL_ReleaseAddress(self.th.hdl) };
+
+            rv
+        };
 
         let _ = unsafe { CFE_TBL_Modified(self.th.hdl) };
 
@@ -399,7 +450,8 @@ impl<T: TableType> UserDefTblHandle<T> {
     /// as cFE automatically unregisters all tables owned by
     /// an application when that application exits.
     ///
-    /// This consciously does _not_ return the `&'static mut T`
+    /// In the case of a table with user-defined address,
+    /// this consciously does _not_ return the `&'static mut T`
     /// to the backing data, as other applications may still
     /// have handles to the table.
     ///
@@ -413,7 +465,7 @@ impl<T: TableType> UserDefTblHandle<T> {
     }
 }
 
-impl<T: TableType> Deref for UserDefTblHandle<T> {
+impl<T: TableType> Deref for DumpOnlyTblHandle<T> {
     type Target = TblHandle<T>;
 
     fn deref(&self) -> &Self::Target {
@@ -421,7 +473,7 @@ impl<T: TableType> Deref for UserDefTblHandle<T> {
     }
 }
 
-impl<T: TableType> DerefMut for UserDefTblHandle<T> {
+impl<T: TableType> DerefMut for DumpOnlyTblHandle<T> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.th
     }
@@ -505,35 +557,21 @@ pub enum RegisterInfo {
 
 /// Options available when registering a table using [`TblHandle::register`].
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-pub enum TblOptions {
-    /// Loads will not be permitted to the table, only dumps.
-    DumpOnly,
-
-    /// Both loads and dumps of the table will be permitted.
-    ///
-    /// Options are available with regard to update buffering
-    /// and whether the table is stored in the Critical Data Store.
-    LoadDump(TblBuffering, TblCriticality),
-}
+pub struct TblOptions(TblBuffering, TblCriticality);
 
 impl TblOptions {
     /// Returns the `u16` corresponding to `self` for use
     /// as the `TblOptionFlags` parameter to the `CFE_TBL_Register` function.
     #[inline]
     const fn as_u16(&self) -> u16 {
-        match *self {
-            Self::DumpOnly => {
-                (CFE_TBL_OPT_DUMP_ONLY | CFE_TBL_OPT_SNGL_BUFFER | CFE_TBL_OPT_NOT_CRITICAL) as u16
-            }
-            Self::LoadDump(buffering, criticality) => (buffering as u16) | (criticality as u16),
-        }
+        (self.0 as u16) | (self.1 as u16)
     }
 }
 
 /// A good set of options for most tables: loadable, single-buffered, and not critical.
 impl Default for TblOptions {
     fn default() -> Self {
-        Self::LoadDump(TblBuffering::SingleBuffered, TblCriticality::NotCritical)
+        Self(TblBuffering::SingleBuffered, TblCriticality::NotCritical)
     }
 }
 
@@ -544,7 +582,7 @@ pub enum TblBuffering {
     /// Modifications to the table will use a shared memory space,
     /// copying to the actual table buffer when the table update occurs.
     ///
-    /// This uses less space than [`DoubleBuffered`], but may be blocking.
+    /// This uses less space than [`DoubleBuffered`](Self::DoubleBuffered), but may be blocking.
     ///
     /// Corresponds to `CFE_TBL_OPT_SNGL_BUFFER`.
     #[doc(alias = "CFE_TBL_OPT_SNGL_BUFFER")]
@@ -555,7 +593,7 @@ pub enum TblBuffering {
     /// buffers when the table update occurs.
     ///
     /// This is non-blocking (unless the table [`is critical`](TblCriticality::Critical)),
-    /// but uses more space than [`SingleBuffered`].
+    /// but uses more space than [`SingleBuffered`](Self::SingleBuffered).
     ///
     /// Corresponds to `CFE_TBL_OPT_DBL_BUFFER`.
     #[doc(alias = "CFE_TBL_OPT_DBL_BUFFER")]
@@ -749,7 +787,7 @@ impl<const SIZE: usize> AsRef<CStr> for CStrBuf<SIZE> {
 /// is in a valid state.
 ///
 /// Users of this crate should not create these directly,
-/// but should use the [`table_validation_fn`] macro,
+/// but should use the [`table_validation_fn`](crate::table_validation_fn) macro,
 /// which expands to a `const`able `TableValidationFn<$t>`.
 ///
 /// Wraps `CFE_TBL_CallbackFuncPtr_t`.
@@ -793,7 +831,7 @@ impl<T: TableType> OptionExt for Option<TableValidationFn<T>> {
     }
 }
 
-/// This is only exported for the use of [`table_validation_fn`].
+/// This is only exported for the use of [`table_validation_fn`](crate::table_validation_fn).
 #[doc(hidden)]
 pub const CFE_SUCCESS: i32 = cfs_sys::S_CFE_SUCCESS;
 
