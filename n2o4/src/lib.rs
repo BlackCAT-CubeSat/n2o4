@@ -15,5 +15,6 @@ extern crate printf_wrap;
 
 pub mod cfe;
 pub mod osal;
+pub mod utils;
 
 pub(crate) mod sealed_traits;
