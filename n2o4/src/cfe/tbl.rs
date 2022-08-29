@@ -307,7 +307,7 @@ impl<T: TableType> TblHandle<T> {
 /// As the only writer to the table will be the owner of
 /// the `DumpOnlyTblHandle`, this is safe for the owner to use.
 /// Other applications with a handle to the table may have
-/// concurrency-related problems reading out data unless
+/// concurrency-related problems reading data unless
 /// care is taken; that care is _not_ automatically provided
 /// in full by `DumpOnlyTblHandle` (there is some non-comprehensive
 /// assistance in [`get_mut`](Self::get_mut)).
@@ -558,7 +558,7 @@ pub enum RegisterInfo {
 
 /// Options available when registering a table using [`TblHandle::register`].
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-pub struct TblOptions(TblBuffering, TblCriticality);
+pub struct TblOptions(pub TblBuffering, pub TblCriticality);
 
 impl TblOptions {
     /// Returns the `u16` corresponding to `self` for use
