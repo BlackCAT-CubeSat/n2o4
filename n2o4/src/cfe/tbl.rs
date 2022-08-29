@@ -5,6 +5,7 @@
 
 use crate::cfe::time::SysTime;
 use crate::cfe::Status;
+use crate::utils::CStrBuf;
 use cfs_sys::*;
 use core::ffi::c_void;
 use core::marker::PhantomData;
@@ -592,7 +593,7 @@ pub enum TblBuffering {
     /// specific to this table, swapping "active" and "inactive"
     /// buffers when the table update occurs.
     ///
-    /// This is non-blocking (unless the table [`is critical`](TblCriticality::Critical)),
+    /// This is non-blocking (unless the table is [critical](TblCriticality::Critical)),
     /// but uses more space than [`SingleBuffered`](Self::SingleBuffered).
     ///
     /// Corresponds to `CFE_TBL_OPT_DBL_BUFFER`.
@@ -715,73 +716,6 @@ const DEFAULT_TBL_INFO: CFE_TBL_Info_t = CFE_TBL_Info_t {
     LastFileLoaded: [b'\0' as c_char; MAX_PATH_LEN],
 };
 
-/// A null-terminated C-compatible string of at most `SIZE` bytes
-/// (including null terminator).
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
-pub struct CStrBuf<const SIZE: usize> {
-    buf: [c_char; SIZE],
-}
-
-impl<const SIZE: usize> CStrBuf<SIZE> {
-    /// Creates a new `CStrBuf<SIZE>` from `src`;
-    /// if `src` is longer than `SIZE - 1` bytes,
-    /// only the first `SIZE - 1` bytes of `src`
-    /// are copied over.
-    ///
-    /// # Panics
-    ///
-    /// Panics if and only if `SIZE` is `0`.
-    #[inline]
-    pub const fn new(src: &[c_char]) -> Self {
-        if SIZE == 0 {
-            panic!("CStrBuf instances of length 0 not allowed")
-        }
-
-        let mut buf = ['\0' as c_char; SIZE];
-
-        const fn min(a: usize, b: usize) -> usize {
-            if a < b {
-                a
-            } else {
-                b
-            }
-        }
-        let copy_len = min(src.len(), SIZE - 1);
-
-        let mut i = 0usize;
-        while i < copy_len {
-            buf[i] = src[i];
-            i += 1;
-        }
-
-        Self { buf }
-    }
-
-    /// Returns a pointer to the start of the string.
-    #[inline]
-    pub const fn as_ptr(&self) -> *const c_char {
-        self.buf.as_ptr()
-    }
-}
-
-impl<const SIZE: usize> Deref for CStrBuf<SIZE> {
-    type Target = [c_char; SIZE];
-
-    fn deref(&self) -> &Self::Target {
-        &self.buf
-    }
-}
-
-/*
-TODO: enable this once CStr makes its way into core
-
-impl<const SIZE: usize> AsRef<CStr> for CStrBuf<SIZE> {
-    fn as_ref(&self) -> &CStr {
-        unsafe { CStr::from_ptr(self.buf.as_ptr()) }
-    }
-}
-*/
-
 /// A wrapped version of a static `fn` to
 /// verify that a table (with contents of type `T`)
 /// is in a valid state.
@@ -851,6 +785,8 @@ pub const CFE_SUCCESS: i32 = cfs_sys::S_CFE_SUCCESS;
 ///
 /// const NEG_VALIDATOR: TableValidationFn<i64> = table_validation_fn!(i64, |x| if *x < 0 { Ok(()) } else { Err(-5) });
 /// ```
+///
+/// [`NegativeI32`]: crate::utils::NegativeI32
 #[macro_export]
 macro_rules! table_validation_fn {
     ($t:ty, $f_wrapped:expr) => {{
@@ -878,7 +814,8 @@ macro_rules! table_validation_fn {
         unsafe { $crate::cfe::tbl::TableValidationFn::<$t>::new(vf) }
     }};
     (^ $t:ty, $f_wrapped:expr) => {{
-        const F_WRAP: fn(&$t) -> ::core::result::Result<(), $crate::cfe::tbl::NegativeI32> = $f_wrapped;
+        const F_WRAP: fn(&$t) -> ::core::result::Result<(), $crate::utils::NegativeI32> =
+            $f_wrapped;
         unsafe extern "C" fn vf(tbl_ptr: *mut ::core::ffi::c_void) -> i32 {
             use ::core::{option::Option, option::Option::*, result::Result::*};
 
@@ -889,63 +826,9 @@ macro_rules! table_validation_fn {
                 Some(rt) => match F_WRAP(rt) {
                     Ok(()) => $crate::cfe::tbl::CFE_SUCCESS,
                     Err(result) => result.as_i32(),
-                }
+                },
             }
         }
         unsafe { $crate::cfe::tbl::TableValidationFn::<$t>::new(vf) }
     }};
-}
-
-/// A wrapper for [`i32`] that guarantees its value is always negative.
-#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Debug)]
-#[repr(transparent)]
-pub struct NegativeI32 {
-    n: i32,
-}
-
-impl NegativeI32 {
-    /// If `n` is negative, returns a [`NegativeI32`] with value `n`.
-    ///
-    /// Otherwise, returns [`None`].
-    #[inline]
-    pub const fn new(n: i32) -> Option<Self> {
-        if n < 0 {
-            Some(Self { n })
-        } else {
-            None
-        }
-    }
-
-    /// If `n` is negative, returns a [`NegativeI32`] with value `n`.
-    ///
-    /// This variant of [`new()`](Self::new) is especially useful
-    /// for creating compile-time constants.
-    ///
-    /// # Panics
-    ///
-    /// If `n` is non-negative, this function will panic.
-    #[inline]
-    pub const fn new_or_panic(n: i32) -> Self {
-        match Self::new(n) {
-            Some(ni32) => ni32,
-            None => {
-                panic!("Tried to create a NegativeI32 using a non-negative i32!");
-            }
-        }
-    }
-
-    /// Returns the value of `self` as an [`i32`].
-    #[inline]
-    pub const fn as_i32(self) -> i32 {
-        self.n
-    }
-}
-
-impl Deref for NegativeI32 {
-    type Target = i32;
-
-    #[inline]
-    fn deref(&self) -> &i32 {
-        &self.n
-    }
 }
