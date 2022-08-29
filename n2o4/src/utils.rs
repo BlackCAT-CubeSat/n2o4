@@ -123,6 +123,24 @@ impl<const SIZE: usize> CStrBuf<SIZE> {
         Self { buf }
     }
 
+    /// Creates a new `CStrBuf<SIZE>` using `src`.
+    ///
+    /// `src` is modified to ensure null-termination.
+    ///
+    /// # Panics
+    ///
+    /// Panics if and only if `SIZE` is `0`.
+    #[inline]
+    pub const fn new_into(src: [c_char; SIZE]) -> Self {
+        if SIZE == 0 {
+            panic!("CStrBuf instances of length 0 not allowed")
+        }
+
+        let mut src = src;
+        src[SIZE - 1] = b'\0' as c_char;
+        Self { buf: src }
+    }
+
     /// Returns a pointer to the start of the string.
     #[inline]
     pub const fn as_ptr(&self) -> *const c_char {
