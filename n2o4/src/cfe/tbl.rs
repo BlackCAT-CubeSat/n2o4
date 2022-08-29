@@ -309,8 +309,10 @@ impl<T: TableType> TblHandle<T> {
 /// Other applications with a handle to the table may have
 /// concurrency-related problems reading data unless
 /// care is taken; that care is _not_ automatically provided
-/// in full by `DumpOnlyTblHandle` (there is some non-comprehensive
-/// assistance in [`get_mut`](Self::get_mut)).
+/// in full by `DumpOnlyTblHandle`. [^1]
+///
+/// [^1]: There is some&mdash;non-comprehensive!&mdash;assistance
+/// in [`get_mut`](#method.get_mut).
 #[doc(alias = "CFE_TBL_Handle_t")]
 pub struct DumpOnlyTblHandle<T: TableType> {
     th:  TblHandle<T>,
@@ -326,7 +328,7 @@ impl<T: TableType> DumpOnlyTblHandle<T> {
     /// (and for tables with a user-defined address, `CFE_TBL_Load`).
     #[doc(alias("CFE_TBL_Register", "CFE_TBL_Load"))]
     #[inline]
-    pub fn register_user_def(
+    pub fn register(
         tbl_name: NullString,
         tbl_buffer: Option<&'static mut T>,
         validation_fn: Option<TableValidationFn<T>>,
@@ -469,12 +471,14 @@ impl<T: TableType> DumpOnlyTblHandle<T> {
 impl<T: TableType> Deref for DumpOnlyTblHandle<T> {
     type Target = TblHandle<T>;
 
+    #[inline]
     fn deref(&self) -> &Self::Target {
         &self.th
     }
 }
 
 impl<T: TableType> DerefMut for DumpOnlyTblHandle<T> {
+    #[inline]
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.th
     }
@@ -571,6 +575,7 @@ impl TblOptions {
 
 /// A good set of options for most tables: loadable, single-buffered, and not critical.
 impl Default for TblOptions {
+    #[inline]
     fn default() -> Self {
         Self(TblBuffering::SingleBuffered, TblCriticality::NotCritical)
     }

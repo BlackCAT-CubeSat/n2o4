@@ -103,7 +103,7 @@ impl<const SIZE: usize> CStrBuf<SIZE> {
             panic!("CStrBuf instances of length 0 not allowed")
         }
 
-        let mut buf = ['\0' as c_char; SIZE];
+        let mut buf = [b'\0' as c_char; SIZE];
 
         const fn min(a: usize, b: usize) -> usize {
             if a < b {
@@ -133,6 +133,7 @@ impl<const SIZE: usize> CStrBuf<SIZE> {
 impl<const SIZE: usize> Deref for CStrBuf<SIZE> {
     type Target = [c_char; SIZE];
 
+    #[inline]
     fn deref(&self) -> &Self::Target {
         &self.buf
     }
@@ -143,6 +144,7 @@ TODO: enable this once CStr makes its way into core
 (see https://github.com/BlackCAT-CubeSat/n2o4/issues/3)
 
 impl<const SIZE: usize> AsRef<CStr> for CStrBuf<SIZE> {
+    #[inline]
     fn as_ref(&self) -> &CStr {
         unsafe { CStr::from_ptr(self.buf.as_ptr()) }
     }
