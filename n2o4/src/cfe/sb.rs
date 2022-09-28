@@ -3,12 +3,12 @@
 
 //! Software Bus system.
 
+use core::ffi::CStr;
 use core::marker::PhantomData;
 
 use super::msg::{Message, MsgType};
 use super::Status;
 use cfs_sys::*;
-use printf_wrap::NullString;
 
 /// The numeric value of a [message ID](`MsgId`).
 ///
@@ -212,10 +212,11 @@ impl Pipe {
     /// Wraps `CFE_SB_CreatePipe`.
     #[doc(alias = "CFG_SB_CreatePipe")]
     #[inline]
-    pub fn new(depth: u16, pipe_name: NullString) -> Result<Pipe, Status> {
+    pub fn new<S: AsRef<CStr>>(depth: u16, pipe_name: &S) -> Result<Pipe, Status> {
         let mut p: CFE_SB_PipeId_t = super::ResourceId::UNDEFINED.id;
 
-        let s: Status = unsafe { CFE_SB_CreatePipe(&mut p, depth, pipe_name.as_ptr()) }.into();
+        let s: Status =
+            unsafe { CFE_SB_CreatePipe(&mut p, depth, pipe_name.as_ref().as_ptr()) }.into();
 
         if p == super::ResourceId::UNDEFINED.id {
             return Err(Status::SB_PIPE_CR_ERR);
