@@ -9,9 +9,9 @@ publish = false
 workspace = ".."
 keywords = ["cFS", "cFE", "OSAL", "flight-software", "no_std"]
 categories = ["aerospace", "external-ffi-bindings", "no-std"]
+rust-version = "1.64.0"
 
 [dependencies]
-libc = { version = "^0.2.107", default-features = false }
 
 [build-dependencies]
 bindgen = "^0.59.1"
