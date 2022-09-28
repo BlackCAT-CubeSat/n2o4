@@ -4,7 +4,7 @@
 //! cFE APIs.
 
 use cfs_sys::*;
-use libc::c_ulong;
+use core::ffi::c_ulong;
 
 pub mod es;
 pub mod evs;

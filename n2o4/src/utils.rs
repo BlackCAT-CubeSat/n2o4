@@ -7,8 +7,8 @@
 //! but which turn out to be useful in APIs and not big
 //! enough to spin out into their own crates.
 
+use core::ffi::{c_char, CStr};
 use core::ops::Deref;
-use libc::c_char;
 
 /// A wrapper for [`i32`] that guarantees its value is always negative.
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Debug)]
@@ -157,14 +157,9 @@ impl<const SIZE: usize> Deref for CStrBuf<SIZE> {
     }
 }
 
-/*
-TODO: enable this once CStr makes its way into core
-(see https://github.com/BlackCAT-CubeSat/n2o4/issues/3)
-
 impl<const SIZE: usize> AsRef<CStr> for CStrBuf<SIZE> {
     #[inline]
     fn as_ref(&self) -> &CStr {
         unsafe { CStr::from_ptr(self.buf.as_ptr()) }
     }
 }
-*/

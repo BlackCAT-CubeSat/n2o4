@@ -7,11 +7,9 @@ use crate::cfe::time::SysTime;
 use crate::cfe::Status;
 use crate::utils::CStrBuf;
 use cfs_sys::*;
-use core::ffi::c_void;
+use core::ffi::{c_char, c_void, CStr};
 use core::marker::PhantomData;
 use core::ops::{Deref, DerefMut};
-use libc::c_char;
-use printf_wrap::NullString;
 
 /// A convenience trait for referring to which types can be
 /// used as the contents of cFE tables.
@@ -25,10 +23,10 @@ impl<T: Copy + Sync + Sized + 'static> TableType for T {}
 /// Wraps `CFE_TBL_GetInfo`.
 #[doc(alias = "CFE_TBL_GetInfo")]
 #[inline]
-pub fn info(table_name: NullString) -> Result<TblInfo, Status> {
+pub fn info<S: AsRef<CStr>>(table_name: &S) -> Result<TblInfo, Status> {
     let mut info: CFE_TBL_Info_t = DEFAULT_TBL_INFO;
 
-    let status: Status = unsafe { CFE_TBL_GetInfo(&mut info, table_name.as_ptr()) }.into();
+    let status: Status = unsafe { CFE_TBL_GetInfo(&mut info, table_name.as_ref().as_ptr()) }.into();
 
     status.as_result(|| (&info).into())
 }
@@ -49,8 +47,8 @@ impl<T: TableType> TblHandle<T> {
     /// Wraps `CFE_TBL_Register`.
     #[doc(alias = "CFE_TBL_Register")]
     #[inline]
-    pub fn register(
-        tbl_name: NullString,
+    pub fn register<S: AsRef<CStr>>(
+        tbl_name: &S,
         options: TblOptions,
         validation_fn: Option<TableValidationFn<T>>,
     ) -> Result<(Self, RegisterInfo), Status> {
@@ -64,7 +62,7 @@ impl<T: TableType> TblHandle<T> {
         let status: Status = unsafe {
             CFE_TBL_Register(
                 &mut hdl,
-                tbl_name.as_ptr(),
+                tbl_name.as_ref().as_ptr(),
                 struct_size,
                 table_opts,
                 validation_func_ptr,
@@ -328,8 +326,8 @@ impl<T: TableType> DumpOnlyTblHandle<T> {
     /// (and for tables with a user-defined address, `CFE_TBL_Load`).
     #[doc(alias("CFE_TBL_Register", "CFE_TBL_Load"))]
     #[inline]
-    pub fn register(
-        tbl_name: NullString,
+    pub fn register<S: AsRef<CStr>>(
+        tbl_name: &S,
         tbl_buffer: Option<&'static mut T>,
         validation_fn: Option<TableValidationFn<T>>,
     ) -> Result<Self, Status> {
@@ -347,7 +345,7 @@ impl<T: TableType> DumpOnlyTblHandle<T> {
         let status: Status = unsafe {
             CFE_TBL_Register(
                 &mut hdl,
-                tbl_name.as_ptr(),
+                tbl_name.as_ref().as_ptr(),
                 struct_size,
                 tbl_options,
                 validation_func_ptr,
@@ -504,10 +502,10 @@ impl<T: TableType> SharedTblHandle<T> {
     /// is; this fact must be verified by the programmer.
     #[doc(alias = "CFE_TBL_Share")]
     #[inline]
-    pub unsafe fn share(tbl_name: NullString) -> Result<Self, Status> {
+    pub unsafe fn share<S: AsRef<CStr>>(tbl_name: &S) -> Result<Self, Status> {
         let mut hdl: CFE_TBL_Handle_t = X_CFE_TBL_BAD_TABLE_HANDLE;
 
-        let status: Status = CFE_TBL_Share(&mut hdl, tbl_name.as_ptr()).into();
+        let status: Status = CFE_TBL_Share(&mut hdl, tbl_name.as_ref().as_ptr()).into();
 
         if hdl == X_CFE_TBL_BAD_TABLE_HANDLE {
             return Err(status);
@@ -632,7 +630,7 @@ pub enum TblLoadSource<'a, T> {
     Ref(&'a T),
 
     /// Update the table using the table file at this filename.
-    FileName(NullString),
+    FileName(&'a CStr),
 }
 
 /// A pending action for a table.

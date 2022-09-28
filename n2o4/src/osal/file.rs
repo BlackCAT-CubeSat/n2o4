@@ -5,9 +5,8 @@
 
 use cfs_sys::*;
 use core::convert::TryFrom;
-use core::ffi::c_void;
+use core::ffi::{c_void, CStr};
 use core::ops::{BitOr, BitOrAssign, Deref, DerefMut};
-use printf_wrap::NullString;
 
 use super::*;
 
@@ -26,15 +25,16 @@ impl File {
     /// Wraps `OS_OpenCreate`.
     #[doc(alias = "OS_OpenCreate")]
     #[inline]
-    pub fn open_create(
-        path: NullString,
+    pub fn open_create<S: AsRef<CStr>>(
+        path: &S,
         flags: FileFlags,
         access_mode: AccessMode,
     ) -> Result<Self, i32> {
         let mut id: osal_id_t = X_OS_OBJECT_ID_UNDEFINED;
 
-        let retval =
-            unsafe { OS_OpenCreate(&mut id, path.as_ptr(), flags.flag as i32, access_mode as i32) };
+        let retval = unsafe {
+            OS_OpenCreate(&mut id, path.as_ref().as_ptr(), flags.flag as i32, access_mode as i32)
+        };
 
         if retval >= 0 && (ObjectId { id }).obj_type() == OS_OBJECT_TYPE_OS_STREAM {
             Ok(File { id })
@@ -142,8 +142,8 @@ impl OwnedFile {
     /// Like [`File::open_create`], but returning an [`OwnedFile`] on success instead.
     #[doc(alias = "OS_OpenCreate")]
     #[inline]
-    pub fn open_create(
-        path: NullString,
+    pub fn open_create<S: AsRef<CStr>>(
+        path: &S,
         flags: FileFlags,
         access_mode: AccessMode,
     ) -> Result<Self, i32> {

@@ -8,9 +8,8 @@ use crate::cfe::{es::AppId, time::SysTime};
 use crate::sealed_traits;
 use cfs_sys::*;
 use core::convert::TryFrom;
-use core::ffi::c_void;
+use core::ffi::{c_char, c_void};
 use core::marker::PhantomData;
-use libc::c_char;
 use printf_wrap::{PrintfArgument, PrintfFmt};
 
 /// A marker type to ensure you [`register`] before sending events.

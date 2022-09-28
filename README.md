@@ -22,6 +22,10 @@ Currently, `n2o4` only supports the following:
 
 Extending support to other versions is an open issue (BlackCAT-Cubesat/n2o4#1).
 
+## Minimum Rust version
+
+`n2o4` requires Rust 1.64.0 or newer.
+
 ## Using this crate in your cFS app
 
 See [USING.md](USING.md) for how to set everything up to

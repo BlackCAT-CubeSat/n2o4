@@ -9,8 +9,8 @@ publish = false
 workspace = ".."
 keywords = ["cFS", "cFE", "OSAL", "flight-software", "no_std"]
 categories = ["aerospace", "api-bindings", "no-std"]
+rust-version = "1.64.0"
 
 [dependencies]
 cfs-sys = { path = "../cfs-sys" }
-printf-wrap = { version = "^0.1", default-features = false }
-libc = { version = "^0.2.107", default-features = false }
+printf-wrap = { version = "^0.2", default-features = false }

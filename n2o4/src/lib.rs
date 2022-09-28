@@ -10,7 +10,6 @@
 #![warn(missing_docs)]
 
 extern crate cfs_sys;
-extern crate libc;
 extern crate printf_wrap;
 
 pub mod cfe;
