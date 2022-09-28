@@ -12,5 +12,5 @@ categories = ["aerospace", "api-bindings", "no-std"]
 
 [dependencies]
 cfs-sys = { path = "../cfs-sys" }
-printf-wrap = { version = "^0.1", default-features = false }
+printf-wrap = { version = "^0.2", default-features = false }
 libc = { version = "^0.2.107", default-features = false }
