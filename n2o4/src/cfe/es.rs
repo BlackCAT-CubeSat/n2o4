@@ -5,7 +5,7 @@
 
 use super::{ResourceId, Status};
 use cfs_sys::*;
-use libc::c_char;
+use core::ffi::c_char;
 use printf_wrap::{NullString, PrintfArgument, PrintfFmt};
 
 /// The status (or requested status) of a cFE application.

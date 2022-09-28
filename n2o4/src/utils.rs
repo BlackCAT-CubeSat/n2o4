@@ -7,8 +7,8 @@
 //! but which turn out to be useful in APIs and not big
 //! enough to spin out into their own crates.
 
+use core::ffi::c_char;
 use core::ops::Deref;
-use libc::c_char;
 
 /// A wrapper for [`i32`] that guarantees its value is always negative.
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Debug)]

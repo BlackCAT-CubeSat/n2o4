@@ -7,10 +7,9 @@ use crate::cfe::time::SysTime;
 use crate::cfe::Status;
 use crate::utils::CStrBuf;
 use cfs_sys::*;
-use core::ffi::c_void;
+use core::ffi::{c_char, c_void};
 use core::marker::PhantomData;
 use core::ops::{Deref, DerefMut};
-use libc::c_char;
 use printf_wrap::NullString;
 
 /// A convenience trait for referring to which types can be
