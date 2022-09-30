@@ -261,7 +261,7 @@ pub fn restart_app(app_id: AppId) -> Result<(), Status> {
 /// Wraps `CFE_ES_ReloadApp`.
 #[doc(alias = "CFE_ES_ReloadApp")]
 #[inline]
-pub fn reload_app<S: AsRef<CStr>>(app_id: AppId, app_file_name: &S) -> Result<(), Status> {
+pub fn reload_app<S: AsRef<CStr> + ?Sized>(app_id: AppId, app_file_name: &S) -> Result<(), Status> {
     let s: Status = unsafe { CFE_ES_ReloadApp(app_id.id, app_file_name.as_ref().as_ptr()) }.into();
     s.as_result(|| ())
 }

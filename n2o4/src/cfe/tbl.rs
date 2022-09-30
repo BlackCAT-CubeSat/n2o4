@@ -23,7 +23,7 @@ impl<T: Copy + Sync + Sized + 'static> TableType for T {}
 /// Wraps `CFE_TBL_GetInfo`.
 #[doc(alias = "CFE_TBL_GetInfo")]
 #[inline]
-pub fn info<S: AsRef<CStr>>(table_name: &S) -> Result<TblInfo, Status> {
+pub fn info<S: AsRef<CStr> + ?Sized>(table_name: &S) -> Result<TblInfo, Status> {
     let mut info: CFE_TBL_Info_t = DEFAULT_TBL_INFO;
 
     let status: Status = unsafe { CFE_TBL_GetInfo(&mut info, table_name.as_ref().as_ptr()) }.into();
@@ -47,7 +47,7 @@ impl<T: TableType> TblHandle<T> {
     /// Wraps `CFE_TBL_Register`.
     #[doc(alias = "CFE_TBL_Register")]
     #[inline]
-    pub fn register<S: AsRef<CStr>>(
+    pub fn register<S: AsRef<CStr> + ?Sized>(
         tbl_name: &S,
         options: TblOptions,
         validation_fn: Option<TableValidationFn<T>>,
@@ -326,7 +326,7 @@ impl<T: TableType> DumpOnlyTblHandle<T> {
     /// (and for tables with a user-defined address, `CFE_TBL_Load`).
     #[doc(alias("CFE_TBL_Register", "CFE_TBL_Load"))]
     #[inline]
-    pub fn register<S: AsRef<CStr>>(
+    pub fn register<S: AsRef<CStr> + ?Sized>(
         tbl_name: &S,
         tbl_buffer: Option<&'static mut T>,
         validation_fn: Option<TableValidationFn<T>>,
@@ -502,7 +502,7 @@ impl<T: TableType> SharedTblHandle<T> {
     /// is; this fact must be verified by the programmer.
     #[doc(alias = "CFE_TBL_Share")]
     #[inline]
-    pub unsafe fn share<S: AsRef<CStr>>(tbl_name: &S) -> Result<Self, Status> {
+    pub unsafe fn share<S: AsRef<CStr> + ?Sized>(tbl_name: &S) -> Result<Self, Status> {
         let mut hdl: CFE_TBL_Handle_t = X_CFE_TBL_BAD_TABLE_HANDLE;
 
         let status: Status = CFE_TBL_Share(&mut hdl, tbl_name.as_ref().as_ptr()).into();

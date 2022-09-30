@@ -25,7 +25,7 @@ impl File {
     /// Wraps `OS_OpenCreate`.
     #[doc(alias = "OS_OpenCreate")]
     #[inline]
-    pub fn open_create<S: AsRef<CStr>>(
+    pub fn open_create<S: AsRef<CStr> + ?Sized>(
         path: &S,
         flags: FileFlags,
         access_mode: AccessMode,
@@ -142,7 +142,7 @@ impl OwnedFile {
     /// Like [`File::open_create`], but returning an [`OwnedFile`] on success instead.
     #[doc(alias = "OS_OpenCreate")]
     #[inline]
-    pub fn open_create<S: AsRef<CStr>>(
+    pub fn open_create<S: AsRef<CStr> + ?Sized>(
         path: &S,
         flags: FileFlags,
         access_mode: AccessMode,
