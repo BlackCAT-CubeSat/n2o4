@@ -212,7 +212,7 @@ impl Pipe {
     /// Wraps `CFE_SB_CreatePipe`.
     #[doc(alias = "CFG_SB_CreatePipe")]
     #[inline]
-    pub fn new<S: AsRef<CStr>>(depth: u16, pipe_name: &S) -> Result<Pipe, Status> {
+    pub fn new<S: AsRef<CStr> + ?Sized>(depth: u16, pipe_name: &S) -> Result<Pipe, Status> {
         let mut p: CFE_SB_PipeId_t = super::ResourceId::UNDEFINED.id;
 
         let s: Status =
