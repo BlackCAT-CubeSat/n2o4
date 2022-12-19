@@ -88,6 +88,14 @@ pub struct CStrBuf<const SIZE: usize> {
     buf: [c_char; SIZE],
 }
 
+const fn min(a: usize, b: usize) -> usize {
+    if a <= b {
+        a
+    } else {
+        b
+    }
+}
+
 impl<const SIZE: usize> CStrBuf<SIZE> {
     /// Creates a new `CStrBuf<SIZE>` from `src`;
     /// if `src` is longer than `SIZE - 1` bytes,
@@ -100,18 +108,11 @@ impl<const SIZE: usize> CStrBuf<SIZE> {
     #[inline]
     pub const fn new(src: &[c_char]) -> Self {
         if SIZE == 0 {
-            panic!("CStrBuf instances of length 0 not allowed")
+            panic!("CStrBuf instances of length 0 not allowed");
         }
 
         let mut buf = [b'\0' as c_char; SIZE];
 
-        const fn min(a: usize, b: usize) -> usize {
-            if a < b {
-                a
-            } else {
-                b
-            }
-        }
         let copy_len = min(src.len(), SIZE - 1);
 
         let mut i = 0usize;
@@ -133,12 +134,42 @@ impl<const SIZE: usize> CStrBuf<SIZE> {
     #[inline]
     pub const fn new_into(src: [c_char; SIZE]) -> Self {
         if SIZE == 0 {
-            panic!("CStrBuf instances of length 0 not allowed")
+            panic!("CStrBuf instances of length 0 not allowed");
         }
 
         let mut src = src;
         src[SIZE - 1] = b'\0' as c_char;
         Self { buf: src }
+    }
+
+    /// Creates a new `CStrBuf<SIZE>` from the string `src`.
+    ///
+    /// If `src` is longer than `SIZE` (including null-terminator),
+    /// only the first `SIZE-1` characters will be copied over.
+    ///
+    /// # Panics
+    ///
+    /// Panics if and only if `SIZE` is `0`.
+    #[inline]
+    pub const fn from_cstr(src: &CStr) -> Self {
+        if SIZE == 0 {
+            panic!("CStrBuf instances of length 0 not allowed");
+        }
+
+        let mut buf: [c_char; SIZE] = [b'\0' as c_char; SIZE];
+        let ptr = src.as_ptr();
+
+        let mut i = 0;
+        while i < SIZE - 1 {
+            let next_char = unsafe { *(ptr.add(i)) };
+            buf[i] = next_char;
+            if next_char == (b'\0' as c_char) {
+                break;
+            }
+            i += 1;
+        }
+
+        Self { buf }
     }
 
     /// Returns a pointer to the start of the string.
