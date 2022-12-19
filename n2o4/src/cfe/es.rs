@@ -175,8 +175,11 @@ pub fn write_to_syslog_str(msg: &str) -> Status {
 /// Wraps `CFE_ES_ExitApp`.
 #[doc(alias = "CFE_ES_ExitApp")]
 #[inline]
-pub fn exit_app(exit_status: RunStatus) {
+pub fn exit_app(exit_status: RunStatus) -> ! {
     unsafe { CFE_ES_ExitApp(exit_status as u32) };
+
+    // If we get here, something's gone wrong with cFE:
+    panic!("CFE_ES_ExitApp returned, somehow");
 }
 
 /// Checks for exit requests from the cFE system
