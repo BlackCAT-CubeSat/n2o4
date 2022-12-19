@@ -49,9 +49,14 @@ impl BinSem {
     pub fn find_by_name<S: AsRef<CStr>>(name: &S) -> Result<Option<Self>, i32> {
         let mut id: osal_id_t = X_OS_OBJECT_ID_UNDEFINED;
 
-        match unsafe { OS_BinSemGetIdByName(&mut id, name.as_ref().as_ptr())} {
-            I_OS_SUCCESS =>
-                if id != X_OS_OBJECT_ID_UNDEFINED { Ok(Some(Self {id}))} else {Err(I_OS_SUCCESS)},
+        match unsafe { OS_BinSemGetIdByName(&mut id, name.as_ref().as_ptr()) } {
+            I_OS_SUCCESS => {
+                if id != X_OS_OBJECT_ID_UNDEFINED {
+                    Ok(Some(Self { id }))
+                } else {
+                    Err(I_OS_SUCCESS)
+                }
+            }
             OS_ERR_NAME_NOT_FOUND => Ok(None),
             err => Err(err),
         }
@@ -63,7 +68,7 @@ impl BinSem {
     #[doc(alias = "OS_BinSemTake")]
     #[inline]
     pub fn take(&self) -> Result<(), i32> {
-        match unsafe { OS_BinSemTake(self.id)} {
+        match unsafe { OS_BinSemTake(self.id) } {
             I_OS_SUCCESS => Ok(()),
             err => Err(err),
         }
@@ -79,7 +84,7 @@ impl BinSem {
     #[doc(alias = "OS_BinSemTimedWait")]
     #[inline]
     pub fn timed_wait(&self, timeout_ms: u32) -> Result<bool, i32> {
-        match unsafe { OS_BinSemTimedWait(self.id, timeout_ms)} {
+        match unsafe { OS_BinSemTimedWait(self.id, timeout_ms) } {
             I_OS_SUCCESS => Ok(true),
             OS_SEM_TIMEOUT => Ok(false),
             err => Err(err),
@@ -128,13 +133,17 @@ impl BinSem {
     #[doc(alias = "OS_BinSemGetInfo")]
     #[inline]
     pub fn info(&self) -> Result<BinSemProperties, i32> {
-        let mut props = OS_bin_sem_prop_t { name: [b'\0' as c_char; MAX_NAME_LEN], creator: X_OS_OBJECT_ID_UNDEFINED, value: 0 };
+        let mut props = OS_bin_sem_prop_t {
+            name:    [b'\0' as c_char; MAX_NAME_LEN],
+            creator: X_OS_OBJECT_ID_UNDEFINED,
+            value:   0,
+        };
 
         match unsafe { OS_BinSemGetInfo(self.id, &mut props) } {
             I_OS_SUCCESS => Ok(BinSemProperties {
-                name: CStrBuf::new(&props.name),
+                name:    CStrBuf::new(&props.name),
                 creator: ObjectId { id: props.creator },
-                value: props.value,
+                value:   props.value,
             }),
             err => Err(err),
         }
