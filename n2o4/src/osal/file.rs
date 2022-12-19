@@ -116,6 +116,12 @@ impl File {
             Err(retval)
         }
     }
+
+    /// Returns the [`ObjectId`] for the file.
+    #[inline]
+    pub fn as_id(&self) -> ObjectId {
+        ObjectId { id: self.id }
+    }
 }
 
 /// Converts an `ObjectId` to a `File` if sensible.
