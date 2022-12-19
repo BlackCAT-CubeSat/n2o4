@@ -6,6 +6,7 @@
 use super::{ResourceId, Status};
 use cfs_sys::*;
 use core::ffi::{c_char, CStr};
+use core::marker::PhantomData;
 use printf_wrap::{PrintfArgument, PrintfFmt};
 
 /// The status (or requested status) of a cFE application.
@@ -289,4 +290,77 @@ pub fn wait_for_system_state(min_system_state: SystemState, timeout_ms: u32) -> 
     let s: Status =
         unsafe { CFE_ES_WaitForSystemState(min_system_state as u32, timeout_ms) }.into();
     s.as_result(|| ())
+}
+
+/// An identifier for cFE tasks.
+///
+/// Wraps `CFE_ES_TaskId_t`.
+#[doc(alias = "CFE_ES_TaskId_t")]
+#[derive(Clone, Copy, Debug)]
+pub struct TaskId {
+    pub(crate) id: CFE_ES_TaskId_t,
+}
+
+impl From<TaskId> for ResourceId {
+    #[inline]
+    fn from(app_id: TaskId) -> Self {
+        ResourceId { id: app_id.id }
+    }
+}
+
+/// A task priority; used for task scheduling.
+///
+/// Wraps `CFE_ES_TaskPriority_Atom_t`.
+#[doc(alias = "CFE_ES_TaskPriority_Atom_t")]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[repr(transparent)]
+pub struct TaskPriority {
+    prio: CFE_ES_TaskPriority_Atom_t,
+}
+
+impl TaskPriority {
+    /// Creates a new [`TaskPriority`] with the given numerical priority.
+    #[inline]
+    pub fn new(priority: u8) -> Self {
+        // per the Users Guide, only values 0-255 are allowed for the priority, hence the u8 argument.
+        Self {
+            prio: priority as CFE_ES_TaskPriority_Atom_t,
+        }
+    }
+
+    /// Returns the numeric value of this [`TaskPriority`].
+    #[inline]
+    pub fn val(self) -> u8 {
+        self.prio as u8
+    }
+}
+
+/// Flags for task creation, as used by [`create_child_task`].
+///
+/// At time of writing, no flags are defined, so we only have a default constructor.
+#[derive(Clone, Copy, Debug)]
+pub struct TaskFlags {
+    _x: PhantomData<u8>,
+}
+
+impl TaskFlags {
+    /// Creates a new [`TaskFlags`] with an empty set of flags.
+    #[inline]
+    pub fn new_empty() -> Self {
+        Self { _x: PhantomData }
+    }
+}
+
+impl Default for TaskFlags {
+    #[inline]
+    fn default() -> Self {
+        Self::new_empty()
+    }
+}
+
+impl From<TaskFlags> for u32 {
+    #[inline]
+    fn from(_: TaskFlags) -> u32 {
+        0
+    }
 }
