@@ -180,7 +180,7 @@ pub fn exit_app(exit_status: RunStatus) -> ! {
     unsafe { CFE_ES_ExitApp(exit_status as u32) };
 
     // If we get here, something's gone wrong with cFE:
-    panic!("CFE_ES_ExitApp returned, somehow");
+    unreachable!("CFE_ES_ExitApp returned, somehow");
 }
 
 /// Checks for exit requests from the cFE system
