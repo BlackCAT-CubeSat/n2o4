@@ -62,7 +62,7 @@ impl BinSem {
         }
     }
 
-    /// Decrements the semaphore value, blocking until it is non-zero to do so.
+    /// Decrements the semaphore value, blocking until it is non-zero if needed.
     ///
     /// Wraps `OS_BinSemTake`.
     #[doc(alias = "OS_BinSemTake")]
@@ -183,7 +183,172 @@ pub enum BinSemState {
 ///
 /// Substitutes for `OS_bin_sem_prop_t`.
 #[doc(alias = "OS_bin_sem_prop_t")]
+#[derive(Debug)]
 pub struct BinSemProperties {
+    /// The semaphore's name.
+    pub name: CStrBuf<{ MAX_NAME_LEN }>,
+
+    /// The semaphore's creator.
+    pub creator: ObjectId,
+
+    /// The semaphore's value.
+    pub value: i32,
+}
+
+/// A handle for a counting semaphore.
+///
+/// Wraps `osal_id_t`.
+#[doc(alias = "osal_id_t")]
+#[derive(Clone, Debug)]
+pub struct CountSem {
+    id: osal_id_t,
+}
+
+impl CountSem {
+    /// Attempts to create a new counting semaphore with name `sem_name`,
+    /// initial value `initial_value`, and default options;
+    /// if successful, returns a handle to it.
+    ///
+    /// Wraps `OS_CountSemCreate`.
+    #[doc(alias = "OS_CountSemCreate")]
+    #[inline]
+    pub fn new<S: AsRef<CStr>>(sem_name: &S, initial_value: u32) -> Result<Self, i32> {
+        let mut id: osal_id_t = X_OS_OBJECT_ID_UNDEFINED;
+
+        let retval =
+            unsafe { OS_CountSemCreate(&mut id, sem_name.as_ref().as_ptr(), initial_value, 0) };
+
+        if retval == I_OS_SUCCESS && id != X_OS_OBJECT_ID_UNDEFINED {
+            Ok(Self { id })
+        } else {
+            Err(retval)
+        }
+    }
+
+    /// If a counting semaphore with the name `name` exists, returns `Ok(Some(`a handle to it`))`.
+    ///
+    /// If no counting semaphore with the name exists, returns `Ok(None)`.
+    /// If an error occurred, returns `Err(err_code)`.
+    ///
+    /// Wraps `OS_CountSemGetIdByName`.
+    #[doc(alias = "OS_CountSemGetIdByName")]
+    #[inline]
+    pub fn find_by_name<S: AsRef<CStr>>(name: &S) -> Result<Option<Self>, i32> {
+        let mut id: osal_id_t = X_OS_OBJECT_ID_UNDEFINED;
+
+        match unsafe { OS_CountSemGetIdByName(&mut id, name.as_ref().as_ptr()) } {
+            I_OS_SUCCESS => {
+                if id != X_OS_OBJECT_ID_UNDEFINED {
+                    Ok(Some(Self { id }))
+                } else {
+                    Err(I_OS_SUCCESS)
+                }
+            }
+            OS_ERR_NAME_NOT_FOUND => Ok(None),
+            err => Err(err),
+        }
+    }
+
+    /// Decrements the semaphore value, blocking until it is non-zero if needed.
+    ///
+    /// Wraps `OS_CountSemTake`.
+    #[doc(alias = "OS_CountSemTake")]
+    #[inline]
+    pub fn take(&self) -> Result<(), i32> {
+        match unsafe { OS_CountSemTake(self.id) } {
+            I_OS_SUCCESS => Ok(()),
+            err => Err(err),
+        }
+    }
+
+    /// Decrements the semaphore value; if it is non-zero, waits for up to `timeout_ms` milliseconds to be able to decrement.
+    ///
+    /// Returns `Ok(true)` if a lock was obtained before timing out,
+    /// `Ok(false)` if the request timed out,
+    /// or `Err(err_code)` if an error occurred.
+    ///
+    /// Wraps `OS_CountSemTimedWait`.
+    #[doc(alias = "OS_CountSemTimedWait")]
+    #[inline]
+    pub fn timed_wait(&self, timeout_ms: u32) -> Result<bool, i32> {
+        match unsafe { OS_CountSemTimedWait(self.id, timeout_ms) } {
+            I_OS_SUCCESS => Ok(true),
+            OS_SEM_TIMEOUT => Ok(false),
+            err => Err(err),
+        }
+    }
+
+    /// Increments the semaphore value, waking up a blocked thread (if any).
+    ///
+    /// Wraps `OS_CountSemGive`.
+    #[doc(alias = "OS_CountSemGive")]
+    #[inline]
+    pub fn give(&self) -> Result<(), i32> {
+        match unsafe { OS_CountSemGive(self.id) } {
+            I_OS_SUCCESS => Ok(()),
+            err => Err(err),
+        }
+    }
+
+    /// Deletes the counting semaphore.
+    ///
+    /// Wraps `OS_CountSemDelete`.
+    #[doc(alias = "OS_CountSemDelete")]
+    #[inline]
+    pub fn delete(self) -> Result<(), i32> {
+        match unsafe { OS_CountSemDelete(self.id) } {
+            I_OS_SUCCESS => Ok(()),
+            err => Err(err),
+        }
+    }
+
+    /// If successful, returns details about the counting semaphore.
+    ///
+    /// Wraps `OS_CountSemGetInfo`.
+    #[doc(alias = "OS_CountSemGetInfo")]
+    #[inline]
+    pub fn info(&self) -> Result<CountSemProperties, i32> {
+        let mut props = OS_count_sem_prop_t {
+            name:    [b'\0' as c_char; MAX_NAME_LEN],
+            creator: X_OS_OBJECT_ID_UNDEFINED,
+            value:   0,
+        };
+
+        match unsafe { OS_CountSemGetInfo(self.id, &mut props) } {
+            I_OS_SUCCESS => Ok(CountSemProperties {
+                name:    CStrBuf::new(&props.name),
+                creator: ObjectId { id: props.creator },
+                value:   props.value,
+            }),
+            err => Err(err),
+        }
+    }
+
+    /// Returns the [`ObjectId`] for the mutex.
+    #[inline]
+    pub fn as_id(&self) -> ObjectId {
+        ObjectId { id: self.id }
+    }
+}
+
+impl TryFrom<ObjectId> for CountSem {
+    type Error = ObjectTypeConvertError;
+
+    #[inline]
+    fn try_from(value: ObjectId) -> Result<Self, Self::Error> {
+        match value.obj_type() {
+            OS_OBJECT_TYPE_OS_COUNTSEM => Ok(CountSem { id: value.id }),
+            _ => Err(ObjectTypeConvertError {}),
+        }
+    }
+}
+
+/// The properties associated with a [`CountSem`].
+///
+/// Substitutes for `OS_count_sem_prop_t`.
+#[doc(alias = "OS_count_sem_prop_t")]
+#[derive(Debug)]
+pub struct CountSemProperties {
     /// The semaphore's name.
     pub name: CStrBuf<{ MAX_NAME_LEN }>,
 
@@ -355,6 +520,7 @@ impl TryFrom<ObjectId> for MutSem {
 ///
 /// Substitutes for `OS_mut_sem_prop_t`.
 #[doc(alias = "OS_mut_sem_prop_t")]
+#[derive(Debug)]
 pub struct MutSemProperties {
     /// The mutex's name.
     pub name: CStrBuf<{ super::MAX_NAME_LEN }>,
@@ -410,4 +576,5 @@ macro_rules! owned_sem_variant {
 }
 
 owned_sem_variant!(OwnedBinSem, BinSem, OS_BinSemDelete, OS_BinSemCreate; initial_value: BinSemState);
+owned_sem_variant!(OwnedCountSem, CountSem, OS_CountSemDelete, OS_CountSemCreate; initial_value: u32);
 owned_sem_variant!(OwnedMutSem, MutSem, OS_MutSemDelete, OS_MutSemCreate);
