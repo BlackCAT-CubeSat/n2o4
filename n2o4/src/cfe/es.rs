@@ -540,3 +540,64 @@ macro_rules! get_shared_sem {
 
 get_shared_sem!(child_mutex, crate::osal::sync::MutSem, CHILD_MUTEX_ID, 42);
 get_shared_sem!(child_signal_sem, crate::osal::sync::BinSem, CHILD_SIGNAL_SEM_ID, 143; crate::osal::sync::BinSemState::Empty);
+
+/// Tries to create a new child task. See [`create_child_task`] for details about the arguments.
+///
+/// This is a little faster than [`create_child_task`] and uses less resources,
+/// but unlike [`create_child_task`], this does not accept Rust-style closures as values of `function`.
+///
+/// `function` should call `CFE_ES_ExitChildTask` (or [`exit_child_task`] if written in Rust)
+/// at the end of its execution.
+///
+/// Wraps `CFE_ES_CreateChildTask`.
+#[doc(alias = "CFE_ES_CreateChildTask")]
+#[inline]
+pub fn create_child_task_c<S: AsRef<CStr>>(
+    function: unsafe extern "C" fn(),
+    task_name: &S,
+    stack_size: usize,
+    priority: TaskPriority,
+    flags: TaskFlags,
+) -> Result<TaskId, Status> {
+    let mut task_id = TaskId { id: X_CFE_RESOURCEID_UNDEFINED };
+
+    let s: Status = unsafe {
+        CFE_ES_CreateChildTask(
+            &mut task_id.id,
+            task_name.as_ref().as_ptr(),
+            Some(function),
+            X_CFE_ES_TASK_STACK_ALLOCATE,
+            stack_size,
+            priority.prio,
+            flags.into(),
+        )
+    }
+    .into();
+
+    match s.as_result(|| task_id) {
+        Ok(task) => match task.id {
+            X_CFE_RESOURCEID_UNDEFINED => Err(Status::ES_ERR_RESOURCEID_NOT_VALID),
+            _ => Ok(task),
+        },
+        Err(e) => Err(e),
+    }
+}
+
+/// When called from a child task, causes the child task to exit and be deleted by cFE.
+///
+/// Unless an error occurs, this does not return.
+///
+/// Tasks created by [`create_child_task`] already call this automatically at the end
+/// of their execution, so functions passed to [`create_child_task`] do not need to
+/// manually call this function.
+///
+/// Wraps `CFE_ES_ExitChildTask`.
+#[doc(alias = "CFE_ES_ExitChildTask")]
+#[inline]
+pub fn exit_child_task() -> Result<crate::utils::Unconstructable, Status> {
+    unsafe {
+        CFE_ES_ExitChildTask();
+    }
+
+    Err(Status::ES_BAD_ARGUMENT)
+}

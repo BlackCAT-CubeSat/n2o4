@@ -222,3 +222,6 @@ mod atomic_version_impls {
     atom!(i64, AtomicI64);
     atom!(isize, AtomicIsize);
 }
+
+/// A type for which no values can possibly exist.
+pub enum Unconstructable {}
