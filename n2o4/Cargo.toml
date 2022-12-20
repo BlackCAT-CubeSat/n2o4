@@ -14,3 +14,4 @@ rust-version = "1.64.0"
 [dependencies]
 cfs-sys = { path = "../cfs-sys" }
 printf-wrap = { version = "^0.2", default-features = false }
+psm = "^0.1.21"

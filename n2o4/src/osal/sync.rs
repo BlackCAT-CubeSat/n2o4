@@ -15,7 +15,7 @@ use core::ffi::{c_char, CStr};
 #[doc(alias = "osal_id_t")]
 #[derive(Clone, Debug)]
 pub struct BinSem {
-    id: osal_id_t,
+    pub(crate) id: osal_id_t,
 }
 
 impl BinSem {
@@ -201,7 +201,7 @@ pub struct BinSemProperties {
 #[doc(alias = "osal_id_t")]
 #[derive(Clone, Debug)]
 pub struct CountSem {
-    id: osal_id_t,
+    pub(crate) id: osal_id_t,
 }
 
 impl CountSem {
@@ -365,7 +365,7 @@ pub struct CountSemProperties {
 #[doc(alias = "osal_id_t")]
 #[derive(Clone, Debug)]
 pub struct MutSem {
-    id: osal_id_t,
+    pub(crate) id: osal_id_t,
 }
 
 impl MutSem {

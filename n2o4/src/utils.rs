@@ -194,3 +194,31 @@ impl<const SIZE: usize> AsRef<CStr> for CStrBuf<SIZE> {
         unsafe { CStr::from_ptr(self.buf.as_ptr()) }
     }
 }
+
+/// A way to get the `Atomic*` type associated with a given integer type.
+pub(crate) trait AtomicVersion {
+    /// The atomic type of the same size and signedness as `Self`.
+    type Atomic;
+}
+
+mod atomic_version_impls {
+    macro_rules! atom {
+        ($base:ty, $atomic:ident) => {
+            impl super::AtomicVersion for $base {
+                type Atomic = core::sync::atomic::$atomic;
+            }
+        };
+    }
+
+    atom!(u8, AtomicU8);
+    atom!(u16, AtomicU16);
+    atom!(u32, AtomicU32);
+    atom!(u64, AtomicU64);
+    atom!(usize, AtomicUsize);
+
+    atom!(i8, AtomicI8);
+    atom!(i16, AtomicI16);
+    atom!(i32, AtomicI32);
+    atom!(i64, AtomicI64);
+    atom!(isize, AtomicIsize);
+}

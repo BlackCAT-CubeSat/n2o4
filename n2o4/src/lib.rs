@@ -11,6 +11,7 @@
 
 extern crate cfs_sys;
 extern crate printf_wrap;
+extern crate psm;
 
 pub mod cfe;
 pub mod osal;
