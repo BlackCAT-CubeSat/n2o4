@@ -7,8 +7,16 @@ use cfs_sys::*;
 use core::ffi::c_ulong;
 
 pub mod file;
+pub mod sync;
 
 // NOTE: much of the following will probably get moved to submodules as `osal` gets flushed out.
+
+/// The maximum length of strings for names of many OSAL objects.
+///
+/// The length includes the null terminator.
+pub const MAX_NAME_LEN: usize = OS_MAX_API_NAME as usize;
+
+const I_OS_SUCCESS: i32 = OS_SUCCESS as i32;
 
 /// An instant in time.
 ///

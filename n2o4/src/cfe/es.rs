@@ -5,7 +5,8 @@
 
 use super::{ResourceId, Status};
 use cfs_sys::*;
-use core::ffi::{c_char, CStr};
+use core::ffi::{c_char, c_void, CStr};
+use core::marker::PhantomData;
 use printf_wrap::{PrintfArgument, PrintfFmt};
 
 /// The status (or requested status) of a cFE application.
@@ -175,8 +176,11 @@ pub fn write_to_syslog_str(msg: &str) -> Status {
 /// Wraps `CFE_ES_ExitApp`.
 #[doc(alias = "CFE_ES_ExitApp")]
 #[inline]
-pub fn exit_app(exit_status: RunStatus) {
+pub fn exit_app(exit_status: RunStatus) -> ! {
     unsafe { CFE_ES_ExitApp(exit_status as u32) };
+
+    // If we get here, something's gone wrong with cFE:
+    unreachable!("CFE_ES_ExitApp returned, somehow");
 }
 
 /// Checks for exit requests from the cFE system
@@ -286,4 +290,314 @@ pub fn wait_for_system_state(min_system_state: SystemState, timeout_ms: u32) -> 
     let s: Status =
         unsafe { CFE_ES_WaitForSystemState(min_system_state as u32, timeout_ms) }.into();
     s.as_result(|| ())
+}
+
+/// An identifier for cFE tasks.
+///
+/// Wraps `CFE_ES_TaskId_t`.
+#[doc(alias = "CFE_ES_TaskId_t")]
+#[derive(Clone, Copy, Debug)]
+pub struct TaskId {
+    pub(crate) id: CFE_ES_TaskId_t,
+}
+
+impl From<TaskId> for ResourceId {
+    #[inline]
+    fn from(app_id: TaskId) -> Self {
+        ResourceId { id: app_id.id }
+    }
+}
+
+/// A task priority; used for task scheduling.
+///
+/// Wraps `CFE_ES_TaskPriority_Atom_t`.
+#[doc(alias = "CFE_ES_TaskPriority_Atom_t")]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[repr(transparent)]
+pub struct TaskPriority {
+    prio: CFE_ES_TaskPriority_Atom_t,
+}
+
+impl TaskPriority {
+    /// Creates a new [`TaskPriority`] with the given numerical priority.
+    #[inline]
+    pub fn new(priority: u8) -> Self {
+        // Per the Users Guide, only values 0-255 are allowed for the priority, hence the u8 argument.
+        Self {
+            prio: priority as CFE_ES_TaskPriority_Atom_t,
+        }
+    }
+
+    /// Returns the numeric value of this [`TaskPriority`].
+    #[inline]
+    pub fn val(self) -> u8 {
+        self.prio as u8
+    }
+}
+
+/// Flags for task creation, as used by [`create_child_task`].
+///
+/// At time of writing, no flags are defined, so we only have a default constructor.
+#[derive(Clone, Copy, Debug)]
+pub struct TaskFlags {
+    _x: PhantomData<u8>,
+}
+
+impl TaskFlags {
+    /// Creates a new [`TaskFlags`] with a default set of flags.
+    #[inline]
+    pub fn new_empty() -> Self {
+        Self { _x: PhantomData }
+    }
+}
+
+impl Default for TaskFlags {
+    #[inline]
+    fn default() -> Self {
+        Self::new_empty()
+    }
+}
+
+impl From<TaskFlags> for u32 {
+    #[inline]
+    fn from(_: TaskFlags) -> u32 {
+        0
+    }
+}
+
+/// A pointer used for cross-task transfer of data
+/// by [`create_child_task`] and [`task_main_func`].
+static mut TASK_FUNC_PTR: *const c_void = core::ptr::null();
+
+/// Wrapper for a Rust [`FnOnce`] to run said function in a new task.
+///
+/// Handles the calling of `CFE_ES_ExitChildTask` so you don't have to!
+#[doc(alias = "CFE_ES_ExitChildTask")]
+extern "C" fn task_main_func<F: FnOnce() + Send + Sized + 'static>() {
+    use core::ptr::read_volatile;
+    use core::sync::atomic;
+
+    let copy_completed_semaphore = match child_signal_sem() {
+        Ok(sem) => sem,
+        Err(_) => {
+            unreachable!("The semaphore should have been created already!");
+        }
+    };
+
+    // Before the parent task called us, it acquired a lock to use TASK_FUNC_PTR
+    // and stored a pointer to the closure there. We copy it over:
+    atomic::fence(atomic::Ordering::Acquire);
+    let f: F = unsafe { read_volatile(TASK_FUNC_PTR as *const F) };
+
+    // The parent task has been blocking in order to allow us to copy over `f`.
+    // Now that we've completed that, we signal for it to continue.
+    let _ = copy_completed_semaphore.give();
+
+    // And, now that all that has been completed:
+    f();
+
+    // The thread closure has finished executing, so clean up:
+    unsafe {
+        CFE_ES_ExitChildTask();
+    }
+
+    unreachable!("CFE_ES_ExitChildTask didn't stop a child task, somehow");
+}
+
+/// Tries to create a new child task.
+/// If successful, runs `function` in the child task and returns the child task's ID.
+///
+/// The child task will have name `task_name`, run on a stack with `stack_size` bytes,
+/// run with priority `priority`, and have task flags `flags`.
+///
+/// Wraps `CFE_ES_CreateChildTask` (and `CFE_ES_ExitChildTask` in the child task).
+#[doc(alias("CFE_ES_CreateChildTask", "CFE_ES_ExitChildTask"))]
+#[inline]
+pub fn create_child_task<F: FnOnce() + Send + Sized + 'static, S: AsRef<CStr>>(
+    function: F,
+    task_name: &S,
+    stack_size: usize,
+    priority: TaskPriority,
+    flags: TaskFlags,
+) -> Result<TaskId, Status> {
+    use core::sync::atomic;
+
+    let mut task_id = TaskId { id: X_CFE_RESOURCEID_UNDEFINED };
+    let fptr: &F = &function;
+
+    let copy_completed_semaphore = child_signal_sem()?;
+
+    let s = child_mutex()?
+        .lock(|| {
+            // OK, we have the lock. Time to write a pointer to the closure into the shared space:
+            unsafe {
+                TASK_FUNC_PTR = (fptr as *const F) as *const c_void;
+            }
+            atomic::fence(atomic::Ordering::Release);
+
+            let s: Status = unsafe {
+                CFE_ES_CreateChildTask(
+                    &mut task_id.id,
+                    task_name.as_ref().as_ptr(),
+                    Some(task_main_func::<F>),
+                    X_CFE_ES_TASK_STACK_ALLOCATE,
+                    stack_size,
+                    priority.prio,
+                    flags.into(),
+                )
+            }
+            .into();
+
+            if s.severity() != super::StatusSeverity::Success {
+                return s;
+            }
+
+            // Wait for the child task to finish copying the closure, then return the status:
+            let _ = copy_completed_semaphore.take();
+            s
+        })
+        .map_err(|_| Status::STATUS_EXTERNAL_RESOURCE_FAIL)?;
+
+    s.as_result(|| ())?;
+    core::mem::drop(fptr);
+
+    if task_id.id == X_CFE_RESOURCEID_UNDEFINED {
+        return Err(Status::ES_ERR_RESOURCEID_NOT_VALID);
+    }
+
+    // If (and only if) we get here, the child task was successfully created
+    // and has copied over the closure. As it has been logically moved over to
+    // the new thread, we do *not* want to drop it here. As such:
+    core::mem::forget(function);
+
+    Ok(task_id)
+}
+
+type AtomicOsalId = <osal_id_t as crate::utils::AtomicVersion>::Atomic;
+const BASE32_SYMBOLS: &[u8; 32] = b"0123456789abcdfghjklmnpqrstvwxyz";
+
+/// Creates an atomic variable to hold an OSAL ID for some semaphore type
+/// and a wrapper function for getting a handle to said semaphore.
+macro_rules! get_shared_sem {
+    ($fn_name:ident, $sem_type:ty, $atomic_id:ident, $initial_iter_value:expr $( ; $constructor_arg:expr )*) => {
+        static $atomic_id: AtomicOsalId = AtomicOsalId::new(X_OS_OBJECT_ID_UNDEFINED);
+
+        fn $fn_name() -> Result<$sem_type, Status> {
+            use crate::utils::CStrBuf;
+            use crate::osal::MAX_NAME_LEN;
+            use core::sync::atomic::Ordering::{AcqRel, Acquire};
+            type Sem = $sem_type;
+
+            // First, check to see if someone's already created the semaphore in question:
+            let old_id = $atomic_id.load(Acquire);
+            if old_id != X_OS_OBJECT_ID_UNDEFINED {
+                return Ok(Sem { id: old_id });
+            }
+
+            // If not, create it, and write its ID to the atomic variable
+            // (if someone else doesn't write an ID first, in which case, use *that* ID).
+
+            // First off, start work on a name:
+            let mut name: [c_char; MAX_NAME_LEN] = [b'\0' as c_char; MAX_NAME_LEN];
+            b"n2o4-".into_iter().enumerate().for_each(|(i, val)| name[i] = *val as c_char);
+            let sp = psm::stack_pointer() as usize;
+            let mut num_iter: usize = $initial_iter_value;
+
+            let sem = loop {
+                // Generate a name likely to be unique:
+                let now = super::time::get_time();
+                let mut pseudo_hash = sp
+                    .wrapping_add(now.seconds() as usize)
+                    .wrapping_add(now.subseconds().rotate_right(4) as usize)
+                    .wrapping_add(num_iter);
+
+                for i in 5..(MAX_NAME_LEN - 1) {
+                    name[i] = BASE32_SYMBOLS[pseudo_hash % 32] as c_char;
+                    pseudo_hash /= 32;
+                }
+
+                match Sem::new(&CStrBuf::<{MAX_NAME_LEN - 1}>::new(&name) $(, $constructor_arg)*) {
+                    Ok(sem) => { break sem; }
+                    Err(OS_ERR_NAME_TAKEN) => (), // go around for another attempt
+                    Err(_) => { return Err(Status::STATUS_EXTERNAL_RESOURCE_FAIL); }
+                }
+
+                num_iter = num_iter.wrapping_add(0x5ed3_53bb); // random, largeish odd number
+            };
+
+            Ok(match $atomic_id.compare_exchange(X_OS_OBJECT_ID_UNDEFINED, sem.id, AcqRel, Acquire) {
+                Ok(_) => sem,
+                Err(first_sem_id) => {
+                    // Someone beat us to writing a semaphore ID.
+                    // We should use that one instead:
+                    let _ = sem.delete();
+                    Sem { id: first_sem_id }
+                }
+            })
+        }
+    };
+}
+
+get_shared_sem!(child_mutex, crate::osal::sync::MutSem, CHILD_MUTEX_ID, 42);
+get_shared_sem!(child_signal_sem, crate::osal::sync::BinSem, CHILD_SIGNAL_SEM_ID, 143; crate::osal::sync::BinSemState::Empty);
+
+/// Tries to create a new child task. See [`create_child_task`] for details about the arguments.
+///
+/// This is a little faster than [`create_child_task`] and uses less resources,
+/// but unlike [`create_child_task`], this does not accept Rust-style closures as values of `function`.
+///
+/// `function` should call `CFE_ES_ExitChildTask` (or [`exit_child_task`] if written in Rust)
+/// at the end of its execution.
+///
+/// Wraps `CFE_ES_CreateChildTask`.
+#[doc(alias = "CFE_ES_CreateChildTask")]
+#[inline]
+pub fn create_child_task_c<S: AsRef<CStr>>(
+    function: unsafe extern "C" fn(),
+    task_name: &S,
+    stack_size: usize,
+    priority: TaskPriority,
+    flags: TaskFlags,
+) -> Result<TaskId, Status> {
+    let mut task_id = TaskId { id: X_CFE_RESOURCEID_UNDEFINED };
+
+    let s: Status = unsafe {
+        CFE_ES_CreateChildTask(
+            &mut task_id.id,
+            task_name.as_ref().as_ptr(),
+            Some(function),
+            X_CFE_ES_TASK_STACK_ALLOCATE,
+            stack_size,
+            priority.prio,
+            flags.into(),
+        )
+    }
+    .into();
+
+    match s.as_result(|| task_id) {
+        Ok(task) => match task.id {
+            X_CFE_RESOURCEID_UNDEFINED => Err(Status::ES_ERR_RESOURCEID_NOT_VALID),
+            _ => Ok(task),
+        },
+        Err(e) => Err(e),
+    }
+}
+
+/// When called from a child task, causes the child task to exit and be deleted by cFE.
+///
+/// Unless an error occurs, this does not return.
+///
+/// Tasks created by [`create_child_task`] already call this automatically at the end
+/// of their execution, so functions passed to [`create_child_task`] do not need to
+/// manually call this function.
+///
+/// Wraps `CFE_ES_ExitChildTask`.
+#[doc(alias = "CFE_ES_ExitChildTask")]
+#[inline]
+pub fn exit_child_task() -> Result<crate::utils::Unconstructable, Status> {
+    unsafe {
+        CFE_ES_ExitChildTask();
+    }
+
+    Err(Status::ES_BAD_ARGUMENT)
 }
