@@ -601,3 +601,18 @@ pub fn exit_child_task() -> Result<crate::utils::Unconstructable, Status> {
 
     Err(Status::ES_BAD_ARGUMENT)
 }
+
+/// Increment ES's internal counter for the current task.
+///
+/// This is done automatically by [`CFE_ES_RunLoop`](`run_loop`),
+/// so this typically doesn't need to be called in the main application task.
+/// It may be useful to call it in a child task's main loop.
+///
+/// Wraps `CFE_ES_IncrementTaskCounter`.
+#[doc(alias = "CFE_ES_IncrementTaskCounter")]
+#[inline]
+pub fn increment_task_counter() {
+    unsafe {
+        CFE_ES_IncrementTaskCounter();
+    }
+}
