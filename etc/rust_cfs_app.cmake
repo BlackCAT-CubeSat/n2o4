@@ -1,4 +1,4 @@
-# Copyright (c) 2021-2022 The Pennsylvania State University and the project contributors.
+# Copyright (c) 2021-2023 The Pennsylvania State University and the project contributors.
 # SPDX-License-Identifier: Apache-2.0
 #
 # Build configuration for Rust code in cFS applications. This is used in
@@ -113,7 +113,7 @@ function(cfe_rust_crate CFS_APP CRATE_NAME)
     WORKING_DIRECTORY ${RUST_SOURCE_DIR}
     COMMAND ${CMAKE_COMMAND} -E env
       ${CARGO_ENV_VARIABLES}
-      cargo +nightly build -Z build-std=std,panic_abort
+      cargo +nightly build --jobs 1 -Z build-std=std,panic_abort
       ${CARGO_OUTPUT_FLAGS}
     DEPFILE ${LIB_BUILD_DIR}/lib${CRATE_FILE_STEM}.d
     DEPENDS ${RUST_SOURCE_DIR}/Cargo.toml
@@ -137,7 +137,7 @@ function(cfe_rust_crate CFS_APP CRATE_NAME)
   add_custom_target(${CFS_APP}_run_rust_tests
     COMMAND ${CMAKE_COMMAND} -E env
       ${CARGO_ENV_VARIABLES}
-      cargo +nightly test
+      cargo +nightly test --jobs 1
       ${CARGO_OUTPUT_FLAGS}
     WORKING_DIRECTORY ${RUST_SOURCE_DIR}
     VERBATIM
@@ -151,7 +151,7 @@ function(cfe_rust_crate CFS_APP CRATE_NAME)
   add_custom_target(${CFS_APP}_rustdocs_build
     COMMAND ${CMAKE_COMMAND} -E env
       ${CARGO_ENV_VARIABLES}
-      cargo +nightly doc --document-private-items
+      cargo +nightly doc --jobs 1 --document-private-items
       ${CARGO_OUTPUT_FLAGS}
     WORKING_DIRECTORY ${RUST_SOURCE_DIR}
     VERBATIM
