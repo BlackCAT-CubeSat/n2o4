@@ -149,6 +149,29 @@ macro_rules! time_methods {
                 Self { $field: tm }
             }
         }
+
+        impl core::cmp::PartialOrd for $t {
+            #[inline]
+            fn partial_cmp(&self, other: &Self) -> Option<core::cmp::Ordering> {
+                Some(self.cmp(other))
+            }
+        }
+
+        impl core::cmp::Ord for $t {
+            #[inline]
+            fn cmp(&self, other: &Self) -> core::cmp::Ordering {
+                self.total_nanoseconds().cmp(&other.total_nanoseconds())
+            }
+        }
+
+        impl core::cmp::PartialEq for $t {
+            #[inline]
+            fn eq(&self, other: &Self) -> bool {
+                self.total_nanoseconds() == other.total_nanoseconds()
+            }
+        }
+
+        impl core::cmp::Eq for $t {}
     };
 }
 
