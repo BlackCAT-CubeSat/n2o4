@@ -68,6 +68,25 @@ SET(RUST_BINDGEN_CFLAGS "-I/an/include/dir" "-DC_DEFINE" "-I/another/include_dir
 You can find a couple of example toolchain files in this repository
 at `etc/toolchain-*.cmake.example`.
 
+## Build caching (optional)
+
+Each Rust-based cFS application is compiled separately,
+by default not sharing compilation artifacts
+even when they use the same version of the same crate.
+This can lead to fresh builds taking some
+time&mdash;a couple of minutes per app on a 2021-vintage laptop
+(though incremental rebuilds are typically much faster).
+
+With [a little configuration], Cargo can support [shared compile caches], notably with [sccache].
+You can set the `RUSTC_WRAPPER_CMD` environment variable when CMake is run to enable its use, e.g.:
+
+```sh
+# From the top-level FSW directory, using the default cFS Makefile:
+make RUSTC_WRAPPER_CMD=sccache prep
+```
+
+In practice, this can greatly reduce fresh build times for projects with many Rust-based cFS apps.
+
 ## Application layout
 
 `rust_cfs_app.cmake` requires that the Rust code for the application be
@@ -98,7 +117,8 @@ panic = "abort"
 The `n2o4` crate isn't published on [crates.io] (at least for now)
 as its ability to work is tightly bound to
 `{rust_cfs_app,rust_mission_build}.cmake`
-and a specific version of cFE and OSAL.
+and a specific version of cFE and OSAL,
+and there's many bindings still to add.
 As such, you'll need to specify the crate using the Git repository
 and revision you want to use:
 
@@ -151,4 +171,7 @@ You can find a fully worked-out example of a Rust-using cFS application at
 [install rust]: https://www.rust-lang.org/tools/install
 [1]: https://rust-lang.github.io/rustup/concepts/channels.html
 [2]: https://doc.rust-lang.org/book/appendix-07-nightly-rust.html
+[a little configuration]: https://doc.rust-lang.org/cargo/reference/environment-variables.html#environment-variables-cargo-reads
+[shared compile caches]: https://doc.rust-lang.org/cargo/guide/build-cache.html#shared-cache
+[sccache]: https://github.com/mozilla/sccache
 [crates.io]: https://crates.io/

@@ -50,6 +50,12 @@ if(NOT DEFINED RUST_TARGET)
   )
 endif()
 
+# This can be used to make use of Cargo's RUSTC_WRAPPER feature,
+# which allows us to, e.g., use sccache to speed up builds.
+if((NOT DEFINED RUSTC_WRAPPER_CMD) AND NOT ("$ENV{RUSTC_WRAPPER_CMD}" STREQUAL ""))
+  set(RUSTC_WRAPPER_CMD "$ENV{RUSTC_WRAPPER_CMD}")
+endif()
+
 # Sets the variable CARGO_ENV_VARIABLES in the caller's scope
 # to a list of environment-variable settings for use in invocations of
 # Cargo. Takes the cFS app name as a required first argument.
@@ -74,6 +80,10 @@ function(generate_cargo_vars CFS_APP)
   if(DEFINED RUST_BINDGEN_CFLAGS)
     list(JOIN RUST_BINDGEN_CFLAGS " " RBCF)
     list(APPEND CEV "BINDGEN_EXTRA_CLANG_ARGS=${RBCF}")
+  endif()
+
+  if(DEFINED RUSTC_WRAPPER_CMD)
+    list(APPEND CEV "RUSTC_WRAPPER=${RUSTC_WRAPPER_CMD}")
   endif()
 
   set(CARGO_ENV_VARIABLES ${CEV} PARENT_SCOPE)
