@@ -8,7 +8,7 @@ use core::cmp::Ordering;
 use core::ops::{Add, Sub};
 
 macro_rules! cfe_time_type {
-    ($name:ident : $type_docstring:literal, $accessor_docstring:literal) => {
+    ($name:ident : $type_docstring:literal, $accessor_docstring:literal, $osal:ty) => {
         #[doc = $type_docstring]
         ///
         /// Wraps `CFE_TIME_SysTime_t`.
@@ -32,10 +32,20 @@ macro_rules! cfe_time_type {
             }
 
             #[doc = concat!("Returns the fractional number of seconds ", $accessor_docstring)]
-            /// (in units of 2<sup>&#8722;32</sup>&nbsp;seconds).
+            /// (in type-native units of 2<sup>&#8722;32</sup>&nbsp;seconds).
             #[inline]
             pub const fn subseconds(self) -> u32 {
                 self.tm.Subseconds
+            }
+
+            #[doc = concat!("Returns the fractional number of seconds ", $accessor_docstring)]
+            /// (in units of microseconds).
+            ///
+            /// Wraps `CFE_TIME_Sub2MicroSecs`.
+            #[doc(alias = "CFE_TIME_Sub2MicroSecs")]
+            #[inline]
+            pub fn microseconds(self) -> u32 {
+                unsafe { CFE_TIME_Sub2MicroSecs(self.tm.Subseconds) }
             }
         }
 
@@ -71,16 +81,39 @@ macro_rules! cfe_time_type {
                 Some(self.cmp(other))
             }
         }
+
+        /// Wraps `OS_TimeGetTotalSeconds`, `OS_TimeGetMicrosecondsPart`, and `CFE_TIME_Micro2SubSecs`.
+        impl TryFrom<$osal> for $name {
+            type Error = core::num::TryFromIntError;
+
+            #[inline]
+            fn try_from(value: $osal) -> Result<Self, Self::Error> {
+                let seconds: u32 = value.total_seconds().try_into()?;
+                let subseconds = unsafe { CFE_TIME_Micro2SubSecs(value.microseconds_part()) };
+                Ok(Self::new(seconds, subseconds))
+            }
+        }
+
+        /// Wraps `OS_TimeAssembleFromMicroseconds` and `CFE_TIME_Sub2MicroSecs`.
+        impl From<$name> for $osal {
+            #[inline]
+            fn from(value: $name) -> Self {
+                let microseconds = unsafe { CFE_TIME_Sub2MicroSecs(value.subseconds()) };
+                <$osal>::from_microseconds(value.seconds() as i64, microseconds)
+            }
+        }
     };
 }
 
 cfe_time_type!(SysTime:
     "A system time value, represented as seconds/subseconds since some epoch.",
-    "since the relevant epoch"
+    "since the relevant epoch",
+    crate::osal::OSTime
 );
 cfe_time_type!(DeltaTime:
     "An increment in time, represented in seconds/subseconds.",
-    "in the time delta"
+    "in the time delta",
+    crate::osal::OSTimeInterval
 );
 
 macro_rules! cfe_time_op {
@@ -114,6 +147,25 @@ cfe_time_op! {
     SysTime   , SysTime   => DeltaTime,
     SysTime   , DeltaTime => SysTime,
     DeltaTime , DeltaTime => DeltaTime
+}
+
+/// Converts `microseconds` &mu;s to units of cFE sub-seconds (2<sup>&#8722;32</sup>&nbsp;seconds),
+/// or returns `!0` if `microseconds` is over `999_999`.
+///
+/// Wraps `CFE_TIME_Micro2SubSecs`.
+#[doc(alias = "CFE_TIME_Micro2SubSecs")]
+#[inline]
+pub fn micro_to_subsecs(microseconds: u32) -> u32 {
+    unsafe { CFE_TIME_Micro2SubSecs(microseconds) }
+}
+
+/// Converts `subseconds` cFE sub-seconds (2<sup>&#8722;32</sup>&nbsp;seconds) to microseconds.
+///
+/// Wraps `CFE_TIME_Sub2MicroSecs`.
+#[doc(alias = "CFE_TIME_Sub2MicroSecs")]
+#[inline]
+pub fn sub_to_microsecs(subseconds: u32) -> u32 {
+    unsafe { CFE_TIME_Sub2MicroSecs(subseconds) }
 }
 
 /// Returns the current spacecraft time,
