@@ -1,10 +1,10 @@
-name: 'Build and publish docs'
+name: Build and publish docs
 
 on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build-rustdoc:
@@ -13,12 +13,20 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: Swatinem/rust-cache@v2.4.0
-      - run: pwd
-      - run: env | sort
       - run: tar xjf .github/include-files.tar.bz2
       - env:
           RUST_CFS_SYS_COMPILE_DEFINITIONS: _LINUX_OS_@_XOPEN_SOURCE=600
           RUST_CFS_SYS_COMPILE_OPTIONS: -std=c99@-pedantic@-Wall@-Wstrict-prototypes@-Wwrite-strings@-Wpointer-arith@-Wcast-align@-Werror
           CC: /usr/bin/gcc
         run: env RUST_CFS_SYS_INCLUDE_DIRECTORIES=${GITHUB_WORKSPACE}/inc cargo doc --release
-      - run: ls -R target/ || true
+      - name: Push to gh-pages (main branch)
+        uses: peaceiris/actions-gh-pages@v3.9.3
+        if: ${{ github.ref == 'refs/heads/main' }}
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: ./target/doc
+          destination_dir: main
+          enable_jekyll: false
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions@users.noreply.github.com'
