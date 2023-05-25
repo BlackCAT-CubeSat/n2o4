@@ -1,7 +1,11 @@
 name: Build and publish docs
+run-name: Build docs for ${{ github.ref_name }}
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - 'main'
 
 permissions:
   contents: write
@@ -15,7 +19,8 @@ jobs:
       - run: rustup toolchain install nightly --profile minimal
       - uses: Swatinem/rust-cache@v2.4.0
       - run: tar xjf .github/include-files.tar.bz2
-      - env:
+      - name: Run 'cargo doc'
+        env:
           RUST_CFS_SYS_COMPILE_DEFINITIONS: _LINUX_OS_@_XOPEN_SOURCE=600
           RUST_CFS_SYS_COMPILE_OPTIONS: -std=c99@-pedantic@-Wall@-Wstrict-prototypes@-Wwrite-strings@-Wpointer-arith@-Wcast-align@-Werror
           CC: /usr/bin/gcc
