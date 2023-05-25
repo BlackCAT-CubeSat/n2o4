@@ -18,7 +18,7 @@ jobs:
           RUST_CFS_SYS_COMPILE_DEFINITIONS: _LINUX_OS_@_XOPEN_SOURCE=600
           RUST_CFS_SYS_COMPILE_OPTIONS: -std=c99@-pedantic@-Wall@-Wstrict-prototypes@-Wwrite-strings@-Wpointer-arith@-Wcast-align@-Werror
           CC: /usr/bin/gcc
-        run: env RUST_CFS_SYS_INCLUDE_DIRECTORIES=${GITHUB_WORKSPACE}/inc cargo doc --release
+        run: env RUST_CFS_SYS_INCLUDE_DIRECTORIES=${GITHUB_WORKSPACE}/inc cargo doc --release --no-deps --lib
       - name: Push to gh-pages (main branch)
         uses: peaceiris/actions-gh-pages@v3.9.3
         if: ${{ github.ref == 'refs/heads/main' }}
