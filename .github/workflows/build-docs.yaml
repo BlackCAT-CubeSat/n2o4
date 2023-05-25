@@ -1,0 +1,17 @@
+name: 'Build and publish docs'
+
+on:
+  workflow_dispatch:
+
+permissions:
+
+jobs:
+  build-rustdoc:
+    name: Build Rustdocs, then publish to gh-pages
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - run: pwd
+      - run: ls -R ..
+      - run: cargo doc --release
+      - run: ls -R build/
