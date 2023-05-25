@@ -118,6 +118,20 @@ function(cfe_rust_crate CFS_APP CRATE_NAME)
     --release --target ${RUST_TARGET} --target-dir ${CARGO_TARGET_DIR} --quiet
   )
 
+  # Use the variable <app_name>_CARGO_FEATURES to set the features to activate
+  # on the app's top-level crate. Prefix the feature list with "*" to disable
+  # automatic activation of default features.
+  if(DEFINED ${CFS_APP}_CARGO_FEATURES)
+    set(FEATURES "${${CFS_APP}_CARGO_FEATURES}")
+    if(FEATURES MATCHES "^[*].*")
+      string(SUBSTRING "${FEATURES}" 1 -1 FEATURES)
+      list(APPEND CARGO_OUTPUT_FLAGS --no-default-features)
+    endif()
+    if(NOT ("${FEATURES}" MATCHES "^ *$"))
+      list(APPEND CARGO_OUTPUT_FLAGS --features "${FEATURES}")
+    endif()
+  endif()
+
   add_custom_command(
     OUTPUT ${LIB_FILE}
     WORKING_DIRECTORY ${RUST_SOURCE_DIR}
