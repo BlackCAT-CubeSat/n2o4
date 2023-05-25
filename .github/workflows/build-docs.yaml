@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
+      - uses: Swatinem/rust-cache@v2.4.0
       - run: pwd
       - run: env | sort
       - run: tar xjf .github/include-files.tar.bz2
@@ -20,4 +21,4 @@ jobs:
           RUST_CFS_SYS_COMPILE_OPTIONS: -std=c99@-pedantic@-Wall@-Wstrict-prototypes@-Wwrite-strings@-Wpointer-arith@-Wcast-align@-Werror
           CC: /usr/bin/gcc
         run: env RUST_CFS_SYS_INCLUDE_DIRECTORIES=${GITHUB_WORKSPACE}/inc cargo doc --release
-      - run: ls -R build/
+      - run: ls -R target/ || true
