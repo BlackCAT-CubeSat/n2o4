@@ -1,0 +1,38 @@
+name: Build and publish docs
+run-name: Build docs for ${{ github.ref_name }}
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'main'
+
+permissions:
+  contents: write
+
+jobs:
+  build-rustdoc:
+    name: Build Rustdocs, then publish to gh-pages
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - run: rustup toolchain install nightly --profile minimal
+      - uses: Swatinem/rust-cache@v2.4.0
+      - run: tar xjf .github/include-files.tar.bz2
+      - name: Run 'cargo doc'
+        env:
+          RUST_CFS_SYS_COMPILE_DEFINITIONS: _LINUX_OS_@_XOPEN_SOURCE=600
+          RUST_CFS_SYS_COMPILE_OPTIONS: -std=c99@-pedantic@-Wall@-Wstrict-prototypes@-Wwrite-strings@-Wpointer-arith@-Wcast-align@-Werror
+          CC: /usr/bin/gcc
+        run: env RUST_CFS_SYS_INCLUDE_DIRECTORIES=${GITHUB_WORKSPACE}/inc cargo +nightly doc --release --no-deps --lib -Zrustdoc-map
+      - name: Push to gh-pages (main branch)
+        uses: peaceiris/actions-gh-pages@v3.9.3
+        if: ${{ github.ref == 'refs/heads/main' }}
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: ./target/doc
+          destination_dir: main
+          enable_jekyll: false
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions@users.noreply.github.com'
