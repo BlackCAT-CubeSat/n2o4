@@ -163,6 +163,20 @@ cfe_rust_crate(rustfsw thecratename)
 target_link_options(rustfsw PUBLIC LINKER:--require-defined=RUSTFSW_AppMain)
 ```
 
+## Cargo features
+
+One can set which [Cargo features] are enabled for your app by setting the `<app-name>_CARGO_FEATURES` variable in `targets.cmake`, where you set which apps are used.
+Specify the set of features as a comma-separated list; prefix the list with `*` to disable the [default feature].
+To give an example of what this looks like in `targets.cmake`:
+
+```cmake
+list(APPEND MISSION_GLOBAL_APPLIST rustfsw another_rust_app)
+# enable features feature1 and feature2 for application rustfsw
+set(rustfsw_CARGO_FEATURES "feature1,feature2")
+# disable the default feature, and enable feature no-std for application another_rust_app
+set(another_rust_app_CARGO_FEATURES "*no-std")
+```
+
 ## Example
 
 You can find a fully worked-out example of a Rust-using cFS application at
@@ -175,3 +189,5 @@ You can find a fully worked-out example of a Rust-using cFS application at
 [shared compile caches]: https://doc.rust-lang.org/cargo/guide/build-cache.html#shared-cache
 [sccache]: https://github.com/mozilla/sccache
 [crates.io]: https://crates.io/
+[Cargo features]: https://doc.rust-lang.org/cargo/reference/features.html
+[default feature]: https://doc.rust-lang.org/cargo/reference/features.html#the-default-feature
