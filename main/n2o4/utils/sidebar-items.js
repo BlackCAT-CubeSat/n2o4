@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Unconstructable"],"struct":["CStrBuf","NegativeI32","NotNegativeError"]};

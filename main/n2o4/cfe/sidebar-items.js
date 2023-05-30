@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["StatusServiceId","StatusSeverity"],"mod":["es","evs","fs","msg","sb","tbl","time"],"struct":["ResourceId","Status"],"type":["CFE_Status"]};
