@@ -483,7 +483,7 @@ impl<D: SocketDomain> Socket<D, Stream, Bound> {
         &self,
         timeout_ms: Option<u32>,
     ) -> Result<(Socket<D, Stream, Connected>, SockAddr<D>), i32> {
-        let mut connsock_id: osal_id_t = 0;
+        let mut connsock_id: osal_id_t = X_OS_OBJECT_ID_UNDEFINED;
         let mut conn_addr = dummy_sock_addr();
         let timeout = super::as_timeout(timeout_ms);
 
