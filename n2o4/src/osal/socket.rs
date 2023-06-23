@@ -322,6 +322,7 @@ impl<D: SocketDomain, T: SocketType> EarlySocket<D, T> {
 
 /// Wraps `OS_close`.
 impl<D: SocketDomain, T: SocketType> Drop for EarlySocket<D, T> {
+    #[inline]
     fn drop(&mut self) {
         unsafe {
             let _ = OS_close(self.sock_id);
