@@ -452,6 +452,8 @@ impl<D: SocketDomain> Socket<D, Datagram, Connected> {
     /// waiting up to `timeout_ms.min(`[`i32::MAX`]`)` to complete the operation.
     ///
     /// Wraps `OS_SocketConnect`.
+    #[doc(alias = "OS_SocketConnect")]
+    #[inline]
     pub fn connect(&self, addr: &SockAddr<D>, timeout_ms: Option<u32>) -> Result<(), i32> {
         let timeout = super::as_timeout(timeout_ms);
 
