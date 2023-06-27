@@ -176,7 +176,7 @@ impl<T: SocketDomain> SockAddr<T> {
         }
     }
 
-    /// Gets the address's port number.
+    /// Returns the address's port number.
     ///
     /// Wraps `OS_SocketAddrGetPort`.
     #[doc(alias = "OS_SocketAddrGetPort")]
@@ -296,6 +296,25 @@ impl<D: SocketDomain, T: SocketType> EarlySocket<D, T> {
         ObjectId { id: self.sock_id }
     }
 
+    /// Unconditionally creates an [`EarlySocket`] from an OSAL ID.
+    ///
+    /// # Safety
+    ///
+    /// This function does **no** checking that the ID in question
+    /// corresponds to a socket, much less one of the correct
+    /// [domain](SocketDomain), [type](SocketType), or point in socket lifecycle.
+    ///
+    /// It is the programmer's responsibility to ensure that any OSAL ID passed
+    /// to `from_id` corresponds to a socket
+    /// with the correct socket domain, type, and state.
+    #[inline]
+    pub unsafe fn from_id(id: ObjectId) -> Self {
+        Self {
+            sock_id: id.id,
+            phantom: PhantomData,
+        }
+    }
+
     /// If successful, returns information about the socket.
     ///
     /// Wraps `OS_SocketGetInfo`.
@@ -330,8 +349,8 @@ impl<D: SocketDomain, T: SocketType> Drop for EarlySocket<D, T> {
     }
 }
 
-/// A network socket that is ready to send/receive data with a peer ([`Connected`])
-/// or accept new connections ([`Bound`]).
+/// A network socket that is ready to send/receive data with a single peer ([`Connected`])
+/// or accept new connections from/exchange datagrams with many peers ([`Bound`]).
 ///
 /// A [`Socket`] is either (1) created from an [`EarlySocket`]
 /// using [`connect`](EarlySocket::connect) or [`bind`](EarlySocket::bind)
@@ -354,12 +373,60 @@ impl<D: SocketDomain, T: SocketType, R: SocketRole> Socket<D, T, R> {
         ObjectId { id: self.sock_id }
     }
 
+    /// Unconditionally creates a [`Socket`] from an OSAL ID.
+    ///
+    /// # Safety
+    ///
+    /// This function does **no** checking that the ID in question
+    /// corresponds to a socket, much less one of the correct
+    /// [domain](SocketDomain), [type](SocketType), or point in socket lifecycle.
+    ///
+    /// It is the programmer's responsibility to ensure that any OSAL ID passed
+    /// to `from_id` corresponds to a socket
+    /// with the correct socket domain, type, and state.
+    #[inline]
+    pub unsafe fn from_id(id: ObjectId) -> Self {
+        Self {
+            sock_id: id.id,
+            phantom: PhantomData,
+        }
+    }
+
     /// Closes the socket.
     ///
     /// Wraps `OS_close`.
     #[doc(alias = "OS_close")]
     #[inline]
     pub fn close(self) -> Result<(), i32> {
+        let status = unsafe { OS_close(self.sock_id) };
+
+        if status >= 0 {
+            Ok(())
+        } else {
+            Err(status)
+        }
+    }
+
+    /// Closes the socket.
+    ///
+    /// This variant is intended to be used in [`Drop`] `impl`s only;
+    /// typically you want to use [`close`](Socket::close) instead.
+    ///
+    /// Wraps `OS_close`.
+    ///
+    /// # Safety
+    ///
+    /// This releases the underlying OSAL ID without necessarily
+    /// destroying all references to the [`Socket`]. Any use
+    /// of this [`Socket`] after calling `close_mut` on it has
+    /// potentially undesirable results&mdash;notably, there's
+    /// the possibility of the OSAL ID being reused for a different
+    /// socket, leading to unintended use of another OSAL socket.
+    /// As such, callers must make sure this [`Socket`]
+    /// is never used after calling `close_mut`.
+    #[doc(alias = "OS_close")]
+    #[inline]
+    pub unsafe fn close_mut(&mut self) -> Result<(), i32> {
         let status = unsafe { OS_close(self.sock_id) };
 
         if status >= 0 {
