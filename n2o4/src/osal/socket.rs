@@ -100,6 +100,7 @@ impl SocketRole for Bound {}
 ///
 /// Wraps `OS_SockAddr_t`.
 #[doc(alias = "OS_SockAddr_t")]
+#[derive(Clone)]
 pub struct SockAddr<T> {
     inner:   OS_SockAddr_t,
     phantom: PhantomData<T>,
@@ -361,6 +362,7 @@ impl<D: SocketDomain, T: SocketType> Drop for EarlySocket<D, T> {
 ///
 /// Wraps `osal_id_t`.
 #[doc(alias = "osal_id_t")]
+#[derive(Clone)]
 pub struct Socket<D: SocketDomain, T: SocketType, R: SocketRole> {
     sock_id: osal_id_t,
     phantom: PhantomData<(D, T, R)>,
@@ -418,11 +420,13 @@ impl<D: SocketDomain, T: SocketType, R: SocketRole> Socket<D, T, R> {
     ///
     /// This releases the underlying OSAL ID without necessarily
     /// destroying all references to the [`Socket`]. Any use
-    /// of this [`Socket`] after calling `close_mut` on it has
+    /// of this [`Socket`] (or other [`Socket`] referring to
+    /// the same underlying OSAL socket) after calling `close_mut` on it has
     /// potentially undesirable results&mdash;notably, there's
     /// the possibility of the OSAL ID being reused for a different
     /// socket, leading to unintended use of another OSAL socket.
     /// As such, callers must make sure this [`Socket`]
+    /// (and anything else using the same OSAL ID)
     /// is never used after calling `close_mut`.
     #[doc(alias = "OS_close")]
     #[inline]
@@ -646,10 +650,18 @@ impl<D: SocketDomain> Socket<D, Datagram, Bound> {
     }
 }
 
+impl<D: SocketDomain, T: SocketType, R: SocketRole> PartialEq<Self> for Socket<D, T, R> {
+    #[inline]
+    fn eq(&self, other: &Self) -> bool {
+        self.as_id() == other.as_id()
+    }
+}
+
 /// The possible [shutdown modes](`Socket::shutdown`) for a stream connection.
 ///
 /// Corresponds to `OS_SocketShutdownMode_t`.
 #[doc(alias = "OS_SocketShutdownMode_t")]
+#[derive(Clone, Copy, PartialEq, Eq)]
 #[repr(u32)]
 pub enum SocketShutdownMode {
     /// Shut down the read direction of the session.
@@ -669,6 +681,7 @@ pub enum SocketShutdownMode {
 ///
 /// Corresponds to `OS_socket_prop_t`.
 #[doc(alias = "OS_socket_prop_t")]
+#[derive(Clone, PartialEq, Eq)]
 pub struct SocketProperties {
     /// The socket's name.
     pub name: CStrBuf<{ OS_MAX_API_NAME as usize }>,
