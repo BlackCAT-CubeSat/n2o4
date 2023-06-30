@@ -4,6 +4,7 @@
 //! Types and methods for interacting with network sockets.
 
 use cfs_sys::*;
+use core::cell::Cell;
 use core::ffi::{c_char, c_void, CStr};
 use core::marker::PhantomData;
 use core::mem::ManuallyDrop;
@@ -261,8 +262,9 @@ impl<D: SocketDomain, T: SocketType> EarlySocket<D, T> {
 
         if status >= 0 {
             let sock = Socket {
-                sock_id: self.sock_id,
-                phantom: PhantomData,
+                sock_id:   self.sock_id,
+                is_cloned: Cell::new(false),
+                phantom:   PhantomData,
             };
             let _ = ManuallyDrop::new(self);
             Ok(sock)
@@ -281,8 +283,9 @@ impl<D: SocketDomain, T: SocketType> EarlySocket<D, T> {
 
         if status >= 0 {
             let sock = Socket {
-                sock_id: self.sock_id,
-                phantom: PhantomData,
+                sock_id:   self.sock_id,
+                is_cloned: Cell::new(false),
+                phantom:   PhantomData,
             };
             let _ = ManuallyDrop::new(self);
             Ok(sock)
@@ -362,10 +365,22 @@ impl<D: SocketDomain, T: SocketType> Drop for EarlySocket<D, T> {
 ///
 /// Wraps `osal_id_t`.
 #[doc(alias = "osal_id_t")]
-#[derive(Clone)]
 pub struct Socket<D: SocketDomain, T: SocketType, R: SocketRole> {
-    sock_id: osal_id_t,
-    phantom: PhantomData<(D, T, R)>,
+    sock_id:   osal_id_t,
+    is_cloned: Cell<bool>,
+    phantom:   PhantomData<(D, T, R)>,
+}
+
+impl<D: SocketDomain, T: SocketType, R: SocketRole> Clone for Socket<D, T, R> {
+    fn clone(&self) -> Self {
+        self.is_cloned.set(true);
+
+        Self {
+            sock_id:   self.sock_id,
+            is_cloned: Cell::new(true),
+            phantom:   PhantomData,
+        }
+    }
 }
 
 impl<D: SocketDomain, T: SocketType, R: SocketRole> Socket<D, T, R> {
@@ -375,7 +390,13 @@ impl<D: SocketDomain, T: SocketType, R: SocketRole> Socket<D, T, R> {
         ObjectId { id: self.sock_id }
     }
 
-    /// Unconditionally creates a [`Socket`] from an OSAL ID.
+    /// Unconditionally creates a [`Socket`] from an OSAL ID,
+    /// presumed to be that of an OSAL-managed socket.
+    ///
+    /// `exclusive` indicates whether the generated [`Socket`]
+    /// is the only possessor of the OSAL ID
+    /// that might [`close`](Self::close)
+    /// or [`close_mut`](Self::close_mut) the OSAL socket.
     ///
     /// # Safety
     ///
@@ -385,21 +406,31 @@ impl<D: SocketDomain, T: SocketType, R: SocketRole> Socket<D, T, R> {
     ///
     /// It is the programmer's responsibility to ensure that any OSAL ID passed
     /// to `from_id` corresponds to a socket
-    /// with the correct socket domain, type, and state.
+    /// with the correct socket domain, type, state, and exclusivity.
     #[inline]
-    pub unsafe fn from_id(id: ObjectId) -> Self {
+    pub unsafe fn from_id(id: ObjectId, exclusive: bool) -> Self {
         Self {
-            sock_id: id.id,
-            phantom: PhantomData,
+            sock_id:   id.id,
+            is_cloned: Cell::new(!exclusive),
+            phantom:   PhantomData,
         }
     }
 
-    /// Closes the socket.
+    /// If the [`Socket`] hasn't been [`Clone`]d, closes the socket.
+    ///
+    /// If the socket has been cloned, returns `Err(OS_ERR_OBJECT_IN_USE)`.
     ///
     /// Wraps `OS_close`.
     #[doc(alias = "OS_close")]
     #[inline]
     pub fn close(self) -> Result<(), i32> {
+        // Closing isn't necessarily safe to do
+        // if we've cloned the [`Socket`] (use-after-release),
+        // so we check:
+        if self.is_cloned.get() == true {
+            return Err(cfs_sys::OS_ERR_OBJECT_IN_USE);
+        }
+
         let status = unsafe { OS_close(self.sock_id) };
 
         if status >= 0 {
@@ -565,8 +596,9 @@ impl<D: SocketDomain> Socket<D, Stream, Bound> {
         if status >= 0 && (ObjectId { id: connsock_id }).is_defined() {
             Ok((
                 Socket {
-                    sock_id: connsock_id,
-                    phantom: PhantomData,
+                    sock_id:   connsock_id,
+                    is_cloned: Cell::new(false),
+                    phantom:   PhantomData,
                 },
                 SockAddr {
                     inner:   conn_addr,
