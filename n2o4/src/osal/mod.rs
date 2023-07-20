@@ -1,4 +1,4 @@
-// Copyright (c) 2021-2022 The Pennsylvania State University and the project contributors.
+// Copyright (c) 2021-2023 The Pennsylvania State University and the project contributors.
 // SPDX-License-Identifier: Apache-2.0
 
 //! OSAL APIs.
@@ -7,6 +7,7 @@ use cfs_sys::*;
 use core::ffi::c_ulong;
 
 pub mod file;
+pub mod socket;
 pub mod sync;
 
 // NOTE: much of the following will probably get moved to submodules as `osal` gets flushed out.
@@ -283,3 +284,11 @@ impl Eq for ObjectId {}
 /// more-specialized type.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub struct ObjectTypeConvertError {}
+
+/// Utility function to convert a "timeout or `None`" option into an `i32`,
+/// as used by multiple OSAL functions as a timeout value
+/// (where negative values mean "wait indefinitely").
+#[inline]
+pub(crate) fn as_timeout(timeout: Option<u32>) -> i32 {
+    timeout.map(|t| t.min(i32::MAX as u32) as i32).unwrap_or(-1)
+}
