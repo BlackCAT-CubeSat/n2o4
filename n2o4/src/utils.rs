@@ -83,7 +83,7 @@ impl TryFrom<i32> for NegativeI32 {
 
 /// An owned null-terminated C-compatible string of at most `SIZE` bytes
 /// (including null terminator).
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub struct CStrBuf<const SIZE: usize> {
     buf: [c_char; SIZE],
 }
@@ -194,6 +194,18 @@ impl<const SIZE: usize> AsRef<CStr> for CStrBuf<SIZE> {
         unsafe { CStr::from_ptr(self.buf.as_ptr()) }
     }
 }
+
+impl<const SIZE: usize, const OTHER: usize> PartialEq<CStrBuf<OTHER>> for CStrBuf<SIZE> {
+    #[inline]
+    fn eq(&self, other: &CStrBuf<OTHER>) -> bool {
+        let s: &CStr = self.as_ref();
+        let o: &CStr = other.as_ref();
+
+        *s == *o
+    }
+}
+
+impl<const SIZE: usize> Eq for CStrBuf<SIZE> {}
 
 /// A way to get the `Atomic*` type associated with a given integer type.
 pub(crate) trait AtomicVersion {
