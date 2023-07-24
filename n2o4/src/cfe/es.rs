@@ -85,6 +85,20 @@ pub enum SystemState {
     Shutdown    = CFE_ES_SystemState_CFE_ES_SystemState_SHUTDOWN,
 }
 
+/// The type of cFE system reset desired in a call to [`reset_cfe`].
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[repr(u32)]
+pub enum ResetType {
+    /// A reset that causes all memory to be cleared.
+    #[doc(alias = "CFE_PSP_RST_TYPE_POWERON")]
+    PowerOn   = CFE_PSP_RST_TYPE_POWERON,
+
+    /// A reset that attempts to retain volatile disk, critical data store,
+    /// and user reserved memory.
+    #[doc(alias = "CFE_PSP_RST_TYPE_PROCESSOR")]
+    Processor = CFE_PSP_RST_TYPE_PROCESSOR,
+}
+
 /// Logs an entry/exit marker for a specified ID
 /// for use by
 /// [the Software Performance Analysis tool](https://github.com/nasa/perfutils-java).
@@ -169,6 +183,19 @@ pub fn write_to_syslog_str(msg: &str) -> Status {
         CFE_ES_WriteToSysLog(super::RUST_STR_FMT.as_ptr(), msg.len(), msg.as_ptr() as *const c_char)
     }
     .into()
+}
+
+/// Immediately resets the cFE core and all cFE applications.
+///
+/// Wraps `CFE_ES_ResetCFE`.
+#[doc(alias = "CFE_ES_ResetCFE")]
+#[inline]
+pub fn reset_cfe(reset_type: ResetType) -> Result<crate::utils::Unconstructable, Status> {
+    let reset_type = reset_type as u32;
+
+    // Upon success, CFE_ES_ResetCFE doesn't return, so any return value
+    // is an error:
+    Err(unsafe { CFE_ES_ResetCFE(reset_type) }.into())
 }
 
 /// Exits from the current application.
