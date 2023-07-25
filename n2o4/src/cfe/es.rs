@@ -1,4 +1,4 @@
-// Copyright (c) 2021-2022 The Pennsylvania State University and the project contributors.
+// Copyright (c) 2021-2023 The Pennsylvania State University and the project contributors.
 // SPDX-License-Identifier: Apache-2.0
 
 //! Executive Services system.
@@ -13,6 +13,7 @@ use printf_wrap::{PrintfArgument, PrintfFmt};
 #[doc(alias = "CFE_ES_RunStatus")]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[repr(u32)]
+#[non_exhaustive]
 pub enum RunStatus {
     /// Application is exiting with an error.
     #[doc(alias = "CFE_ES_RunStatus_APP_ERROR")]
@@ -59,6 +60,7 @@ pub enum RunStatus {
 #[doc(alias = "CFE_ES_SystemState")]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[repr(u32)]
+#[non_exhaustive]
 pub enum SystemState {
     /// Single-threaded mode while setting up CFE itself.
     #[doc(alias = "CFE_ES_SystemState_EARLY_INIT")]
@@ -88,6 +90,7 @@ pub enum SystemState {
 /// The type of cFE system reset desired in a call to [`reset_cfe`].
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[repr(u32)]
+#[non_exhaustive]
 pub enum ResetType {
     /// A reset that causes all memory to be cleared.
     #[doc(alias = "CFE_PSP_RST_TYPE_POWERON")]

@@ -1,4 +1,4 @@
-// Copyright (c) 2022 The Pennsylvania State University and the project contributors.
+// Copyright (c) 2022-2023 The Pennsylvania State University and the project contributors.
 // SPDX-License-Identifier: Apache-2.0
 
 //! Types and methods for interacting with files.
@@ -197,6 +197,7 @@ impl From<OwnedFile> for File {
 /// Used with [`File::open_create`].
 #[repr(i32)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[non_exhaustive]
 pub enum AccessMode {
     /// Read-only access.
     ///
@@ -275,6 +276,7 @@ impl BitOrAssign for FileFlags {
 /// Used as the `whence` argument of [`File::lseek`].
 #[repr(u32)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[non_exhaustive]
 pub enum SeekReference {
     /// Seek from the beginning of the file.
     ///

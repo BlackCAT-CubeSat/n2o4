@@ -1,4 +1,4 @@
-// Copyright (c) 2021-2022 The Pennsylvania State University and the project contributors.
+// Copyright (c) 2021-2023 The Pennsylvania State University and the project contributors.
 // SPDX-License-Identifier: Apache-2.0
 
 //! Software Bus system.
@@ -98,6 +98,7 @@ impl From<MsgId> for MsgId_Atom {
 #[doc(alias = "CFG_SB_QosPriority")]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(u8)]
+#[non_exhaustive]
 pub enum QosPriority {
     /// High priority.
     #[doc(alias = "CFG_SB_QosPriority_HIGH")]
@@ -112,6 +113,7 @@ pub enum QosPriority {
 #[doc(alias = "CFG_SB_QosReliability")]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(u8)]
+#[non_exhaustive]
 pub enum QosReliability {
     /// High reliability.
     #[doc(alias = "CFG_SB_QosReliability_HIGH")]
