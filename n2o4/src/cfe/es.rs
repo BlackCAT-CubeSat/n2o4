@@ -443,7 +443,7 @@ extern "C" fn task_main_func<F: FnOnce() + Send + Sized + 'static>() {
 /// Wraps `CFE_ES_CreateChildTask` (and `CFE_ES_ExitChildTask` in the child task).
 #[doc(alias("CFE_ES_CreateChildTask", "CFE_ES_ExitChildTask"))]
 #[inline]
-pub fn create_child_task<F: FnOnce() + Send + Sized + 'static, S: AsRef<CStr>>(
+pub fn create_child_task<F: FnOnce() + Send + Sized + 'static, S: AsRef<CStr> + ?Sized>(
     function: F,
     task_name: &S,
     stack_size: usize,
@@ -582,7 +582,7 @@ get_shared_sem!(child_signal_sem, crate::osal::sync::BinSem, CHILD_SIGNAL_SEM_ID
 /// Wraps `CFE_ES_CreateChildTask`.
 #[doc(alias = "CFE_ES_CreateChildTask")]
 #[inline]
-pub fn create_child_task_c<S: AsRef<CStr>>(
+pub fn create_child_task_c<S: AsRef<CStr> + ?Sized>(
     function: unsafe extern "C" fn(),
     task_name: &S,
     stack_size: usize,

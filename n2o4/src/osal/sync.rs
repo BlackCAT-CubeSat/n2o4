@@ -25,7 +25,7 @@ impl BinSem {
     /// Wraps `OS_BinSemCreate`.
     #[doc(alias = "OS_BinSemCreate")]
     #[inline]
-    pub fn new<S: AsRef<CStr>>(name: &S, initial_value: BinSemState) -> Result<Self, i32> {
+    pub fn new<S: AsRef<CStr> + ?Sized>(name: &S, initial_value: BinSemState) -> Result<Self, i32> {
         let mut id: osal_id_t = X_OS_OBJECT_ID_UNDEFINED;
 
         let retval =
@@ -46,7 +46,7 @@ impl BinSem {
     /// Wraps `OS_BinSemGetIdByName`.
     #[doc(alias = "OS_BinSemGetIdByName")]
     #[inline]
-    pub fn find_by_name<S: AsRef<CStr>>(name: &S) -> Result<Option<Self>, i32> {
+    pub fn find_by_name<S: AsRef<CStr> + ?Sized>(name: &S) -> Result<Option<Self>, i32> {
         let mut id: osal_id_t = X_OS_OBJECT_ID_UNDEFINED;
 
         match unsafe { OS_BinSemGetIdByName(&mut id, name.as_ref().as_ptr()) } {
@@ -213,7 +213,7 @@ impl CountSem {
     /// Wraps `OS_CountSemCreate`.
     #[doc(alias = "OS_CountSemCreate")]
     #[inline]
-    pub fn new<S: AsRef<CStr>>(sem_name: &S, initial_value: u32) -> Result<Self, i32> {
+    pub fn new<S: AsRef<CStr> + ?Sized>(sem_name: &S, initial_value: u32) -> Result<Self, i32> {
         let mut id: osal_id_t = X_OS_OBJECT_ID_UNDEFINED;
 
         let retval =
@@ -234,7 +234,7 @@ impl CountSem {
     /// Wraps `OS_CountSemGetIdByName`.
     #[doc(alias = "OS_CountSemGetIdByName")]
     #[inline]
-    pub fn find_by_name<S: AsRef<CStr>>(name: &S) -> Result<Option<Self>, i32> {
+    pub fn find_by_name<S: AsRef<CStr> + ?Sized>(name: &S) -> Result<Option<Self>, i32> {
         let mut id: osal_id_t = X_OS_OBJECT_ID_UNDEFINED;
 
         match unsafe { OS_CountSemGetIdByName(&mut id, name.as_ref().as_ptr()) } {
@@ -378,7 +378,7 @@ impl MutSem {
     /// Wraps `OS_MutSemCreate`.
     #[doc(alias = "OS_MutSemCreate")]
     #[inline]
-    pub fn new<S: AsRef<CStr>>(sem_name: &S) -> Result<Self, i32> {
+    pub fn new<S: AsRef<CStr> + ?Sized>(sem_name: &S) -> Result<Self, i32> {
         let mut id: osal_id_t = X_OS_OBJECT_ID_UNDEFINED;
 
         let retval = unsafe { OS_MutSemCreate(&mut id, sem_name.as_ref().as_ptr(), 0) };
@@ -398,7 +398,7 @@ impl MutSem {
     /// Wraps `OS_MutSemGetIdByName`.
     #[doc(alias = "OS_MutSemGetIdByName")]
     #[inline]
-    pub fn find_by_name<S: AsRef<CStr>>(name: &S) -> Result<Option<Self>, i32> {
+    pub fn find_by_name<S: AsRef<CStr> + ?Sized>(name: &S) -> Result<Option<Self>, i32> {
         let mut id: osal_id_t = X_OS_OBJECT_ID_UNDEFINED;
 
         match unsafe { OS_MutSemGetIdByName(&mut id, name.as_ref().as_ptr()) } {
@@ -542,7 +542,7 @@ macro_rules! owned_sem_variant {
             #[doc = "\n\n"]
             #[doc = concat!("Wraps `", stringify!($constructor), "`.")]
             #[inline]
-            pub fn new<S: AsRef<CStr>>(sem_name: &S $(, $cparam: $ctype )*) -> Result<Self, i32> {
+            pub fn new<S: AsRef<CStr> + ?Sized>(sem_name: &S $(, $cparam: $ctype )*) -> Result<Self, i32> {
                 <$wrapped_type>::new(sem_name $(, $cparam)*).map(|sem| $type_name { sem })
             }
         }
