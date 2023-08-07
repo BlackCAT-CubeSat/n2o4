@@ -1,4 +1,4 @@
-// Copyright (c) 2021-2022 The Pennsylvania State University and the project contributors.
+// Copyright (c) 2021-2023 The Pennsylvania State University and the project contributors.
 // SPDX-License-Identifier: Apache-2.0
 
 //! Message utilities.
@@ -487,6 +487,7 @@ impl<T: Copy> DerefMut for Telemetry<T> {
 #[doc(alias = "CFG_MSG_Type")]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(u32)]
+#[non_exhaustive]
 pub enum MsgType {
     /// Command message.
     #[doc(alias = "CFG_MSG_Type_Cmd")]

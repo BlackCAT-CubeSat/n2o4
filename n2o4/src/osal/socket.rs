@@ -695,6 +695,7 @@ impl<D: SocketDomain, T: SocketType, R: SocketRole> PartialEq<Self> for Socket<D
 #[doc(alias = "OS_SocketShutdownMode_t")]
 #[derive(Clone, Copy, PartialEq, Eq)]
 #[repr(u32)]
+#[non_exhaustive]
 pub enum SocketShutdownMode {
     /// Shut down the read direction of the session.
     #[doc(alias = "OS_SocketShutdownMode_SHUT_READ")]

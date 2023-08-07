@@ -1,4 +1,4 @@
-// Copyright (c) 2021-2022 The Pennsylvania State University and the project contributors.
+// Copyright (c) 2021-2023 The Pennsylvania State University and the project contributors.
 // SPDX-License-Identifier: Apache-2.0
 
 //! Event system.
@@ -131,6 +131,7 @@ pub fn register<T: FilterScheme>(filters: &[T]) -> Result<EventSender, Status> {
 #[doc(alias = "CFE_EVS_EventType")]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[repr(u16)]
+#[non_exhaustive]
 pub enum EventType {
     /// Events that are intended only for debugging, not nominal operations.
     #[doc(alias = "CFE_EVS_EventType_DEBUG")]

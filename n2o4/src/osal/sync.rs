@@ -1,4 +1,4 @@
-// Copyright (c) 2022 The Pennsylvania State University and the project contributors.
+// Copyright (c) 2022-2023 The Pennsylvania State University and the project contributors.
 // SPDX-License-Identifier: Apache-2.0
 
 //! Synchronization primitives.
@@ -171,6 +171,7 @@ impl TryFrom<ObjectId> for BinSem {
 /// The initial state of a semaphore.
 #[repr(u32)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[non_exhaustive]
 pub enum BinSemState {
     /// Full state.
     Full  = OS_SEM_FULL,

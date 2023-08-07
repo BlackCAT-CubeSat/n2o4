@@ -1,4 +1,4 @@
-// Copyright (c) 2021-2022 The Pennsylvania State University and the project contributors.
+// Copyright (c) 2021-2023 The Pennsylvania State University and the project contributors.
 // SPDX-License-Identifier: Apache-2.0
 
 //! Executive Services system.
@@ -13,6 +13,7 @@ use printf_wrap::{PrintfArgument, PrintfFmt};
 #[doc(alias = "CFE_ES_RunStatus")]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[repr(u32)]
+#[non_exhaustive]
 pub enum RunStatus {
     /// Application is exiting with an error.
     #[doc(alias = "CFE_ES_RunStatus_APP_ERROR")]
@@ -59,6 +60,7 @@ pub enum RunStatus {
 #[doc(alias = "CFE_ES_SystemState")]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[repr(u32)]
+#[non_exhaustive]
 pub enum SystemState {
     /// Single-threaded mode while setting up CFE itself.
     #[doc(alias = "CFE_ES_SystemState_EARLY_INIT")]
@@ -83,6 +85,21 @@ pub enum SystemState {
     /// Reserved for future use; all apps would be stopped.
     #[doc(alias = "CFE_ES_SystemState_SHUTDOWN")]
     Shutdown    = CFE_ES_SystemState_CFE_ES_SystemState_SHUTDOWN,
+}
+
+/// The type of cFE system reset desired in a call to [`reset_cfe`].
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[repr(u32)]
+#[non_exhaustive]
+pub enum ResetType {
+    /// A reset that causes all memory to be cleared.
+    #[doc(alias = "CFE_PSP_RST_TYPE_POWERON")]
+    PowerOn   = CFE_PSP_RST_TYPE_POWERON,
+
+    /// A reset that attempts to retain volatile disk, critical data store,
+    /// and user reserved memory.
+    #[doc(alias = "CFE_PSP_RST_TYPE_PROCESSOR")]
+    Processor = CFE_PSP_RST_TYPE_PROCESSOR,
 }
 
 /// Logs an entry/exit marker for a specified ID
@@ -169,6 +186,19 @@ pub fn write_to_syslog_str(msg: &str) -> Status {
         CFE_ES_WriteToSysLog(super::RUST_STR_FMT.as_ptr(), msg.len(), msg.as_ptr() as *const c_char)
     }
     .into()
+}
+
+/// Immediately resets the cFE core and all cFE applications.
+///
+/// Wraps `CFE_ES_ResetCFE`.
+#[doc(alias = "CFE_ES_ResetCFE")]
+#[inline]
+pub fn reset_cfe(reset_type: ResetType) -> Result<crate::utils::Unconstructable, Status> {
+    let reset_type = reset_type as u32;
+
+    // Upon success, CFE_ES_ResetCFE doesn't return, so any return value
+    // is an error:
+    Err(unsafe { CFE_ES_ResetCFE(reset_type) }.into())
 }
 
 /// Exits from the current application.

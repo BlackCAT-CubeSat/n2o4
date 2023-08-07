@@ -1,4 +1,4 @@
-// Copyright (c) 2021-2022 The Pennsylvania State University and the project contributors.
+// Copyright (c) 2021-2023 The Pennsylvania State University and the project contributors.
 // SPDX-License-Identifier: Apache-2.0
 
 //! Table system.
@@ -544,6 +544,7 @@ impl<T: TableType> Drop for SharedTblHandle<T> {
 
 /// Alternative successful or partially-successful outcomes of [`TblHandle::register`].
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[non_exhaustive]
 pub enum RegisterInfo {
     /// Normal successful registration.
     Normal,
@@ -582,6 +583,7 @@ impl Default for TblOptions {
 /// Options regarding buffer use on table modifications.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[repr(u16)]
+#[non_exhaustive]
 pub enum TblBuffering {
     /// Modifications to the table will use a shared memory space,
     /// copying to the actual table buffer when the table update occurs.
@@ -608,6 +610,7 @@ pub enum TblBuffering {
 /// stored in the Critical Data Store (CDS).
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[repr(u16)]
+#[non_exhaustive]
 pub enum TblCriticality {
     /// Not critical; no copy of the table will be stored in the CDS.
     ///
@@ -635,6 +638,7 @@ pub enum TblLoadSource<'a, T> {
 
 /// A pending action for a table.
 #[derive(Clone, Copy, Debug)]
+#[non_exhaustive]
 pub enum PendingAction {
     /// An update is pending.
     Update,
