@@ -22,3 +22,6 @@
     }
 
 #include "cfs-shims.h"
+
+/* Bindgen *really* doesn't want to handle pointer constants. This is a workaround for that. */
+CFE_ES_StackPointer_t X_CFE_ES_TASK_STACK_ALLOCATE = CFE_ES_TASK_STACK_ALLOCATE;

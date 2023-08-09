@@ -4,6 +4,7 @@
 //! Executive Services system.
 
 use super::{ResourceId, Status};
+use crate::utils::CStrBuf;
 use cfs_sys::*;
 use core::ffi::{c_char, c_void, CStr};
 use core::marker::PhantomData;
@@ -443,7 +444,7 @@ extern "C" fn task_main_func<F: FnOnce() + Send + Sized + 'static>() {
 /// Wraps `CFE_ES_CreateChildTask` (and `CFE_ES_ExitChildTask` in the child task).
 #[doc(alias("CFE_ES_CreateChildTask", "CFE_ES_ExitChildTask"))]
 #[inline]
-pub fn create_child_task<F: FnOnce() + Send + Sized + 'static, S: AsRef<CStr>>(
+pub fn create_child_task<F: FnOnce() + Send + Sized + 'static, S: AsRef<CStr> + ?Sized>(
     function: F,
     task_name: &S,
     stack_size: usize,
@@ -582,7 +583,7 @@ get_shared_sem!(child_signal_sem, crate::osal::sync::BinSem, CHILD_SIGNAL_SEM_ID
 /// Wraps `CFE_ES_CreateChildTask`.
 #[doc(alias = "CFE_ES_CreateChildTask")]
 #[inline]
-pub fn create_child_task_c<S: AsRef<CStr>>(
+pub fn create_child_task_c<S: AsRef<CStr> + ?Sized>(
     function: unsafe extern "C" fn(),
     task_name: &S,
     stack_size: usize,
@@ -645,4 +646,196 @@ pub fn increment_task_counter() {
     unsafe {
         CFE_ES_IncrementTaskCounter();
     }
+}
+
+/// A handle to a block in the Critical Data Store (CDS).
+///
+/// Wraps `CFE_ES_CDSHandle_t`.
+#[doc(alias = "CFE_ES_CDSHandle_t")]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub struct CdsHandle<T: Copy + Sized + 'static> {
+    handle: CFE_ES_CDSHandle_t,
+    _pd:    PhantomData<T>,
+}
+
+/// A buffer size that is longer than any CDS block name.
+const CDS_NAME_BUF_LEN: usize = (CFE_MISSION_ES_CDS_MAX_NAME_LENGTH as usize) + 1;
+
+impl<T: Copy + Sized + 'static> CdsHandle<T> {
+    /// The backend of [`register`](CdsHandle::register),
+    /// [`register_with`](CdsHandle::register_with),
+    /// and [`register_with_default`](CdsHandle::register_with_default).
+    #[inline]
+    fn register_gen<S: AsRef<CStr> + ?Sized, F: FnOnce() -> T>(
+        name: &S,
+        initial_closure: F,
+    ) -> Result<(Self, CdsRegisterResult), Status> {
+        let mut cds_handle: CFE_ES_CDSHandle_t = X_CFE_ES_CDS_BAD_HANDLE;
+        let s: Status = unsafe {
+            CFE_ES_RegisterCDS(&mut cds_handle, core::mem::size_of::<T>(), name.as_ref().as_ptr())
+        }
+        .into();
+
+        // make sure a valid handle was stored in cds_handle:
+        if cds_handle == X_CFE_ES_CDS_BAD_HANDLE {
+            return Err(s);
+        }
+
+        match s {
+            Status::ES_CDS_ALREADY_EXISTS => Ok((
+                Self {
+                    handle: cds_handle,
+                    _pd:    PhantomData,
+                },
+                CdsRegisterResult::AlreadyExists,
+            )),
+            Status::SUCCESS => {
+                let initial_value = initial_closure();
+                let s2: Status = unsafe {
+                    CFE_ES_CopyToCDS(cds_handle, &initial_value as *const T as *const c_void)
+                }
+                .into();
+                s2.as_result(|| ())?;
+                Ok((
+                    Self {
+                        handle: cds_handle,
+                        _pd:    PhantomData,
+                    },
+                    CdsRegisterResult::Created,
+                ))
+            }
+            _ => Err(s),
+        }
+    }
+
+    /// Requests that a block of memory be allocated from the CDS, where the block has name `name` and is sized to hold a `T`,
+    /// or retrieves the block if a block with the correct name and size already exists.
+    ///
+    /// On success, a handle for the block is returned.
+    /// If the block is created by this call, it is initialized with `initial_value`.
+    ///
+    /// Wraps `CFE_ES_RegisterCDS` (and `CFE_ES_CopyToCDS` if the block doesn't already exist).
+    ///
+    /// # Safety
+    ///
+    /// This function does not check if, when the CDS block already exists, its contents represent a valid `T`.
+    /// The programmer and/or system operator must ensure that by, e.g., either making sure all versions of
+    /// the calling application use the same `#[repr(C)]` type, never rebuilding the application and hot-upgrading
+    /// it in a running cFS system, etc.
+    #[doc(alias = "CFE_ES_RegisterCDS")]
+    #[inline]
+    pub unsafe fn register<S: AsRef<CStr> + ?Sized>(
+        name: &S,
+        initial_value: T,
+    ) -> Result<(Self, CdsRegisterResult), Status> {
+        Self::register_gen(name, || initial_value)
+    }
+
+    /// Requests that a block of memory be allocated from the CDS, where the block has name `name` and is sized to hold a `T`,
+    /// or retrieves the block if a block with the correct name and size already exists.
+    ///
+    /// On success, a handle for the block is returned.
+    /// If the block is created by this call, it is initialized with the result of calling `initial_value_fn`.
+    ///
+    /// Wraps `CFE_ES_RegisterCDS` (and `CFE_ES_CopyToCDS` if the block doesn't already exist).
+    ///
+    /// # Safety
+    ///
+    /// This function does not check if, when the CDS block already exists, its contents represent a valid `T`.
+    /// The programmer and/or system operator must ensure that by, e.g., either making sure all versions of
+    /// the calling application use the same `#[repr(C)]` type, never rebuilding the application and hot-upgrading
+    /// it in a running cFS system, etc.
+    ///
+    /// `initial_value_fn` must not panic; otherwise the CDS block will not be properly initialized with a valid value.
+    #[doc(alias = "CFE_ES_RegisterCDS")]
+    #[inline]
+    pub unsafe fn register_with<S: AsRef<CStr> + ?Sized, F: FnOnce() -> T>(
+        name: &S,
+        initial_value_fn: F,
+    ) -> Result<(Self, CdsRegisterResult), Status> {
+        Self::register_gen(name, initial_value_fn)
+    }
+
+    /// Requests that a block of memory be allocated from the CDS, where the block has name `name` and is sized to hold a `T`,
+    /// or retrieves the block if a block with the correct name and size already exists.
+    ///
+    /// On success, a handle for the block is returned.
+    /// If the block is created by this call, it is initialized with the result of calling [`Default::default`].
+    ///
+    /// Wraps `CFE_ES_RegisterCDS` (and `CFE_ES_CopyToCDS` if the block doesn't already exist).
+    ///
+    /// # Safety
+    ///
+    /// This function does not check if, when the CDS block already exists, its contents represent a valid `T`.
+    /// The programmer and/or system operator must ensure that by, e.g., either making sure all versions of
+    /// the calling application use the same `#[repr(C)]` type, never rebuilding the application and hot-upgrading
+    /// it in a running cFS system, etc.
+    ///
+    /// `Default::default` must not panic; otherwise the CDS block will not be properly initialized with a valid value.
+    #[doc(alias = "CFE_ES_RegisterCDS")]
+    #[inline]
+    pub unsafe fn register_with_default<S: AsRef<CStr> + ?Sized>(
+        name: &S,
+    ) -> Result<(Self, CdsRegisterResult), Status>
+    where
+        T: Default,
+    {
+        Self::register_gen(name, Default::default)
+    }
+
+    /// Retrieves the name of the CDS block.
+    ///
+    /// Wraps `CFE_ES_GetCDSBlockName`.
+    #[doc(alias = "CFE_ES_GetCDSBlockName")]
+    #[inline]
+    pub fn block_name(&self) -> Result<crate::utils::CStrBuf<CDS_NAME_BUF_LEN>, Status> {
+        let mut name = [b'\0' as c_char; CDS_NAME_BUF_LEN];
+
+        let status: Status =
+            unsafe { CFE_ES_GetCDSBlockName(name.as_mut_ptr(), self.handle, CDS_NAME_BUF_LEN) }
+                .into();
+
+        status.as_result(|| CStrBuf::new_into(name))
+    }
+
+    /// Copies `data_to_copy` into the CDS block.
+    ///
+    /// Wraps `CFE_ES_CopyToCDS`.
+    #[doc(alias = "CFE_ES_CopyToCDS")]
+    #[inline]
+    pub fn copy_to_cds(&self, data_to_copy: &T) -> Result<(), Status> {
+        let status: Status =
+            unsafe { CFE_ES_CopyToCDS(self.handle, data_to_copy as *const T as *const c_void) }
+                .into();
+
+        status.as_result(|| ())
+    }
+
+    /// Fetches the contents of the CDS block.
+    ///
+    /// Wraps `CFE_ES_RestoreFromCDS`.
+    #[doc(alias = "CFE_ES_RestoreFromCDS")]
+    #[inline]
+    pub fn restore_from_cds(&self) -> Result<T, Status> {
+        use core::mem::MaybeUninit;
+
+        let mut value = MaybeUninit::uninit();
+
+        let status: Status =
+            unsafe { CFE_ES_RestoreFromCDS(value.as_mut_ptr() as *mut c_void, self.handle) }.into();
+
+        // Safety: the only non-error return value for this is "successful exection", in which case
+        // a value was copied into `value`.
+        status.as_result(|| unsafe { value.assume_init() })
+    }
+}
+
+/// The possible varieties of successful outcome of [`CdsHandle::register`]/[`register_with`](CdsHandle::register_with)/[`register_with_default`](CdsHandle::register_with_default).
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum CdsRegisterResult {
+    /// No CDS block with that name existed, and one was created.
+    Created,
+
+    /// A CDS block with that name already existed, with the same size as requested.
+    AlreadyExists,
 }
