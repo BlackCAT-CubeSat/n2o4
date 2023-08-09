@@ -14,8 +14,9 @@ fn main() {
     let api_header = pb(&[&in_dir, "cfs-api.h"]).to_string_unwrap();
     let shims_header = pb(&[&in_dir, "cfs-shims.h"]).to_string_unwrap();
     let out_file = pb(&[&out_dir, "cfs-all.rs"]).to_string_unwrap();
+    let shims_c = pb(&[&out_dir, "cfs-shims.c"]).to_string_unwrap();
 
-    for f in [&api_header, &shims_header] {
+    for f in [&api_header, &shims_header, &shims_c] {
         println!("cargo:rerun-if-changed={}", f);
     }
 
