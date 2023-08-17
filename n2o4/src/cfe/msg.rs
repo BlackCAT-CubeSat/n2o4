@@ -331,6 +331,12 @@ impl<T: Copy + Sized> Command<T> {
 
         cmd.set_fcn_code(fcn_code)?;
 
+        // Set the payload again, as it might have gotten nuked by one of the API calls.
+        // Safe due to payload being Copy.
+        unsafe {
+            core::ptr::write(core::ptr::addr_of_mut!(cmd.payload), payload);
+        }
+
         Ok(cmd)
     }
 }
@@ -427,6 +433,12 @@ impl<T: Copy + Sized> Telemetry<T> {
         }
 
         unsafe { Message::from_cfe_mut(&mut tlm.header.Msg).init(msg_id, sz) }?;
+
+        // Set the payload again, as it might have gotten nuked by the API calls.
+        // Safe due to payload being Copy.
+        unsafe {
+            core::ptr::write(core::ptr::addr_of_mut!(tlm.payload), payload);
+        }
 
         Ok(tlm)
     }
