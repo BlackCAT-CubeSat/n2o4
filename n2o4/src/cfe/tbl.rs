@@ -115,8 +115,6 @@ impl<T: TableType> TblHandle<T> {
             Some(tbl_ref) => Ok(closure(tbl_ref, updated_recently)),
         };
 
-        drop(tbl_ptr);
-
         let _ = unsafe { CFE_TBL_ReleaseAddress(self.hdl) };
 
         return_val
@@ -380,7 +378,6 @@ impl<T: TableType> DumpOnlyTblHandle<T> {
             }
             .into();
 
-            drop(buf_ptr);
             s.as_result(|| ())?;
         }
 
