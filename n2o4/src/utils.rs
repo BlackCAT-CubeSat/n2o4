@@ -204,6 +204,12 @@ impl<const SIZE: usize> CStrBuf<SIZE> {
     pub const fn as_ptr(&self) -> *const c_char {
         self.buf.as_ptr()
     }
+
+    /// Returns a reference to the underlying array.
+    #[inline]
+    pub const fn as_array(&self) -> &[c_char; SIZE] {
+        &self.buf
+    }
 }
 
 impl<const SIZE: usize> Deref for CStrBuf<SIZE> {
