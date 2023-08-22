@@ -490,7 +490,6 @@ pub fn create_child_task<F: FnOnce() + Send + Sized + 'static, S: AsRef<CStr> + 
         .map_err(|_| Status::STATUS_EXTERNAL_RESOURCE_FAIL)?;
 
     s.as_result(|| ())?;
-    core::mem::drop(fptr);
 
     if task_id.id == X_CFE_RESOURCEID_UNDEFINED {
         return Err(Status::ES_ERR_RESOURCEID_NOT_VALID);

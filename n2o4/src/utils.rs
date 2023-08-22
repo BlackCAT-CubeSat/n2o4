@@ -124,6 +124,33 @@ impl<const SIZE: usize> CStrBuf<SIZE> {
         Self { buf }
     }
 
+    /// Creates a new `CStrBuf<SIZE>` from `src`, handling conversion from [`u8`] to [`c_char`];
+    /// if `src` is longer than `SIZE - 1` bytes,
+    /// only the first `SIZE - 1` bytes of `src`
+    /// are copied over.
+    ///
+    /// # Panics
+    ///
+    /// Panics if and only if `SIZE` is `0`.
+    #[inline]
+    pub const fn new_u8(src: &[u8]) -> Self {
+        if SIZE == 0 {
+            panic!("CStrBuf instances of length 0 not allowed");
+        }
+
+        let mut buf = [b'\0' as c_char; SIZE];
+
+        let copy_len = min(src.len(), SIZE - 1);
+
+        let mut i = 0usize;
+        while i < copy_len {
+            buf[i] = src[i] as c_char;
+            i += 1;
+        }
+
+        Self { buf }
+    }
+
     /// Creates a new `CStrBuf<SIZE>` using `src`.
     ///
     /// `src` is modified to ensure null-termination.
@@ -176,6 +203,12 @@ impl<const SIZE: usize> CStrBuf<SIZE> {
     #[inline]
     pub const fn as_ptr(&self) -> *const c_char {
         self.buf.as_ptr()
+    }
+
+    /// Returns a reference to the underlying array.
+    #[inline]
+    pub const fn as_array(&self) -> &[c_char; SIZE] {
+        &self.buf
     }
 }
 
