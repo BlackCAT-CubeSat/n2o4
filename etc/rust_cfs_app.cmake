@@ -50,6 +50,11 @@ if(NOT DEFINED RUST_TARGET)
   )
 endif()
 
+# If set, we build using debug settings; if not set, we build using release settings.
+if((NOT DEFINED RUST_DEBUG) AND NOT ("$ENV{RUST_DEBUG}" STREQUAL ""))
+  set(RUST_DEBUG "true")
+endif()
+
 # This can be used to make use of Cargo's RUSTC_WRAPPER feature,
 # which allows us to, e.g., use sccache to speed up builds.
 if((NOT DEFINED RUSTC_WRAPPER_CMD) AND NOT ("$ENV{RUSTC_WRAPPER_CMD}" STREQUAL ""))
@@ -109,14 +114,21 @@ function(cfe_rust_crate CFS_APP CRATE_NAME)
 
   # Build the crate as a static library, to be linked into the cFS application:
 
-  set(LIB_BUILD_DIR ${CARGO_TARGET_DIR}/${RUST_TARGET}/release)
+  if(NOT DEFINED RUST_DEBUG)
+    set(LIB_BUILD_DIR ${CARGO_TARGET_DIR}/${RUST_TARGET}/release)
+  else()
+    set(LIB_BUILD_DIR ${CARGO_TARGET_DIR}/${RUST_TARGET}/debug)
+  endif()
   set(LIB_FILE ${LIB_BUILD_DIR}/lib${CRATE_FILE_STEM}.a)
 
   generate_cargo_vars(${CFS_APP})
 
   set(CARGO_OUTPUT_FLAGS
-    --release --target ${RUST_TARGET} --target-dir ${CARGO_TARGET_DIR} --quiet
+    --target ${RUST_TARGET} --target-dir ${CARGO_TARGET_DIR} --quiet
   )
+  if(NOT DEFINED RUST_DEBUG)
+    list(APPEND CARGO_OUTPUT_FLAGS --release)
+  endif()
 
   # Use the variable <app_name>_CARGO_FEATURES to set the features to activate
   # on the app's top-level crate. Prefix the feature list with "*" to disable
