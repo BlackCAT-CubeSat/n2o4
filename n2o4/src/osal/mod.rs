@@ -6,6 +6,9 @@
 use cfs_sys::*;
 use core::ffi::c_ulong;
 
+use crate::utils::NegativeI32;
+
+pub(crate) mod error;
 pub mod file;
 pub mod socket;
 pub mod sync;
@@ -19,6 +22,13 @@ pub mod task;
 pub const MAX_NAME_LEN: usize = OS_MAX_API_NAME as usize;
 
 const I_OS_SUCCESS: i32 = OS_SUCCESS as i32;
+
+/// An error code, as returned by many OSAL API functions.
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub struct OsalError {
+    /// Numeric error code from OSAL.
+    pub code: NegativeI32,
+}
 
 /// An instant in time.
 ///
