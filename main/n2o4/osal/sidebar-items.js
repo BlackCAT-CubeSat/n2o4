@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["MAX_NAME_LEN"],"mod":["file","socket","sync"],"struct":["OSTime","OSTimeInterval","ObjectId","ObjectTypeConvertError"]};
+window.SIDEBAR_ITEMS = {"constant":["MAX_NAME_LEN"],"mod":["file","socket","sync","task"],"struct":["OSTime","OSTimeInterval","ObjectId","ObjectTypeConvertError"]};
