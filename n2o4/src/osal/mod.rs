@@ -9,6 +9,7 @@ use core::ffi::c_ulong;
 pub mod file;
 pub mod socket;
 pub mod sync;
+pub mod task;
 
 // NOTE: much of the following will probably get moved to submodules as `osal` gets flushed out.
 
