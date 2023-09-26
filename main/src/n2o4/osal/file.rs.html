@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `n2o4/src/osal/file.rs`."><title>file.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="n2o4" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (3223b0b5e 2023-09-20)" data-channel="nightly" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../n2o4/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `n2o4/src/osal/file.rs`."><title>file.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="n2o4" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (0288f2e19 2023-09-25)" data-channel="nightly" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../n2o4/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -282,20 +282,6 @@
 <a href="#282" id="282">282</a>
 <a href="#283" id="283">283</a>
 <a href="#284" id="284">284</a>
-<a href="#285" id="285">285</a>
-<a href="#286" id="286">286</a>
-<a href="#287" id="287">287</a>
-<a href="#288" id="288">288</a>
-<a href="#289" id="289">289</a>
-<a href="#290" id="290">290</a>
-<a href="#291" id="291">291</a>
-<a href="#292" id="292">292</a>
-<a href="#293" id="293">293</a>
-<a href="#294" id="294">294</a>
-<a href="#295" id="295">295</a>
-<a href="#296" id="296">296</a>
-<a href="#297" id="297">297</a>
-<a href="#298" id="298">298</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright (c) 2022-2023 The Pennsylvania State University and the project contributors.
 // SPDX-License-Identifier: Apache-2.0
 
@@ -327,17 +313,19 @@
         path: <span class="kw-2">&amp;</span>S,
         flags: FileFlags,
         access_mode: AccessMode,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, i32&gt; {
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, OsalError&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>id: osal_id_t = X_OS_OBJECT_ID_UNDEFINED;
 
-        <span class="kw">let </span>retval = <span class="kw">unsafe </span>{
+        <span class="kw">unsafe </span>{
             OS_OpenCreate(<span class="kw-2">&amp;mut </span>id, path.as_ref().as_ptr(), flags.flag <span class="kw">as </span>i32, access_mode <span class="kw">as </span>i32)
-        };
+        }
+        .as_osal_status()<span class="question-mark">?</span>;
 
-        <span class="kw">if </span>retval &gt;= <span class="number">0 </span>&amp;&amp; (ObjectId { id }).obj_type() == OS_OBJECT_TYPE_OS_STREAM {
+        <span class="comment">// some sanity checking of our own:
+        </span><span class="kw">if </span>(ObjectId { id }).obj_type() == OS_OBJECT_TYPE_OS_STREAM {
             <span class="prelude-val">Ok</span>(File { id })
         } <span class="kw">else </span>{
-            <span class="prelude-val">Err</span>(retval)
+            <span class="prelude-val">Err</span>(OsalError::OS_ERR_INVALID_ID)
         }
     }
 
@@ -350,15 +338,11 @@
     /// Wraps `OS_read`.
     </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_read&quot;</span>)]
     #[inline]
-    </span><span class="kw">pub fn </span>read(<span class="kw-2">&amp;mut </span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;usize, i32&gt; {
+    </span><span class="kw">pub fn </span>read(<span class="kw-2">&amp;mut </span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;usize, OsalError&gt; {
         <span class="kw">let </span>buffer = buf.as_mut_ptr() <span class="kw">as </span><span class="kw-2">*mut </span>c_void;
-        <span class="kw">let </span>retval = <span class="kw">unsafe </span>{ OS_read(<span class="self">self</span>.id, buffer, buf.len()) };
+        <span class="kw">let </span>retval = <span class="kw">unsafe </span>{ OS_read(<span class="self">self</span>.id, buffer, buf.len()) }.as_osal_status()<span class="question-mark">?</span>;
 
-        <span class="kw">if </span>retval &gt;= <span class="number">0 </span>{
-            <span class="prelude-val">Ok</span>(retval <span class="kw">as </span>usize)
-        } <span class="kw">else </span>{
-            <span class="prelude-val">Err</span>(retval)
-        }
+        <span class="prelude-val">Ok</span>(retval <span class="kw">as </span>usize)
     }
 
     <span class="doccomment">/// Writes up to `buf.len()` bytes from `buf`
@@ -370,15 +354,11 @@
     /// Wraps `OS_write`.
     </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_write&quot;</span>)]
     #[inline]
-    </span><span class="kw">pub fn </span>write(<span class="kw-2">&amp;mut </span><span class="self">self</span>, buf: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;usize, i32&gt; {
+    </span><span class="kw">pub fn </span>write(<span class="kw-2">&amp;mut </span><span class="self">self</span>, buf: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;usize, OsalError&gt; {
         <span class="kw">let </span>buffer = buf.as_ptr() <span class="kw">as </span><span class="kw-2">*const </span>c_void;
-        <span class="kw">let </span>retval = <span class="kw">unsafe </span>{ OS_write(<span class="self">self</span>.id, buffer, buf.len()) };
+        <span class="kw">let </span>retval = <span class="kw">unsafe </span>{ OS_write(<span class="self">self</span>.id, buffer, buf.len()) }.as_osal_status()<span class="question-mark">?</span>;
 
-        <span class="kw">if </span>retval &gt;= <span class="number">0 </span>{
-            <span class="prelude-val">Ok</span>(retval <span class="kw">as </span>usize)
-        } <span class="kw">else </span>{
-            <span class="prelude-val">Err</span>(retval)
-        }
+        <span class="prelude-val">Ok</span>(retval <span class="kw">as </span>usize)
     }
 
     <span class="doccomment">/// Seeks the file handle `self`
@@ -390,14 +370,10 @@
     /// Wraps `OS_lseek`.
     </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_lseek&quot;</span>)]
     #[inline]
-    </span><span class="kw">pub fn </span>lseek(<span class="kw-2">&amp;mut </span><span class="self">self</span>, offset: i32, whence: SeekReference) -&gt; <span class="prelude-ty">Result</span>&lt;u32, i32&gt; {
-        <span class="kw">let </span>retval = <span class="kw">unsafe </span>{ OS_lseek(<span class="self">self</span>.id, offset, whence <span class="kw">as </span>u32) };
+    </span><span class="kw">pub fn </span>lseek(<span class="kw-2">&amp;mut </span><span class="self">self</span>, offset: i32, whence: SeekReference) -&gt; <span class="prelude-ty">Result</span>&lt;u32, OsalError&gt; {
+        <span class="kw">let </span>retval = <span class="kw">unsafe </span>{ OS_lseek(<span class="self">self</span>.id, offset, whence <span class="kw">as </span>u32) }.as_osal_status()<span class="question-mark">?</span>;
 
-        <span class="kw">if </span>retval &gt;= <span class="number">0 </span>{
-            <span class="prelude-val">Ok</span>(retval <span class="kw">as </span>u32)
-        } <span class="kw">else </span>{
-            <span class="prelude-val">Err</span>(retval)
-        }
+        <span class="prelude-val">Ok</span>(retval <span class="kw">as </span>u32)
     }
 
     <span class="doccomment">/// Closes the file handle `self`.
@@ -405,14 +381,10 @@
     /// Wraps `OS_close`.
     </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_close&quot;</span>)]
     #[inline]
-    </span><span class="kw">pub fn </span>close(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), i32&gt; {
-        <span class="kw">let </span>retval = <span class="kw">unsafe </span>{ OS_close(<span class="self">self</span>.id) };
+    </span><span class="kw">pub fn </span>close(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), OsalError&gt; {
+        <span class="kw">unsafe </span>{ OS_close(<span class="self">self</span>.id) }.as_osal_status()<span class="question-mark">?</span>;
 
-        <span class="kw">if </span>retval &gt;= <span class="number">0 </span>{
-            <span class="prelude-val">Ok</span>(())
-        } <span class="kw">else </span>{
-            <span class="prelude-val">Err</span>(retval)
-        }
+        <span class="prelude-val">Ok</span>(())
     }
 
     <span class="doccomment">/// Returns the [`ObjectId`] for the file.
@@ -450,7 +422,7 @@
         path: <span class="kw-2">&amp;</span>S,
         flags: FileFlags,
         access_mode: AccessMode,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, i32&gt; {
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, OsalError&gt; {
         File::open_create(path, flags, access_mode).map(|f| OwnedFile { f })
     }
 }
