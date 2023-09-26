@@ -24,16 +24,16 @@ impl Task {
     /// Wraps `OS_TaskGetIdByName`.
     #[doc(alias = "OS_TaskGetIdByName")]
     #[inline]
-    pub fn by_name<S: AsRef<CStr>>(task_name: &S) -> Result<Self, i32> {
+    pub fn by_name<S: AsRef<CStr>>(task_name: &S) -> Result<Self, OsalError> {
         let task_name = task_name.as_ref().as_ptr();
         let mut id: osal_id_t = X_OS_OBJECT_ID_UNDEFINED;
 
-        let result = unsafe { OS_TaskGetIdByName(&mut id, task_name) };
+        unsafe { OS_TaskGetIdByName(&mut id, task_name) }.as_osal_status()?;
 
-        if result >= 0 && (ObjectId { id }).obj_type() == OS_OBJECT_TYPE_OS_TASK {
+        if (ObjectId { id }).obj_type() == OS_OBJECT_TYPE_OS_TASK {
             Ok(Self { id })
         } else {
-            Err(result)
+            Err(OsalError::OS_ERR_INVALID_ID)
         }
     }
 
@@ -42,7 +42,7 @@ impl Task {
     /// Wraps `OS_TaskGetInfo`.
     #[doc(alias = "OS_TaskGetInfo")]
     #[inline]
-    pub fn info(&self) -> Result<TaskProperties, i32> {
+    pub fn info(&self) -> Result<TaskProperties, OsalError> {
         let mut props = OS_task_prop_t {
             name:       [0; { OS_MAX_API_NAME as usize }],
             creator:    0,
@@ -50,18 +50,14 @@ impl Task {
             priority:   0,
         };
 
-        let result = unsafe { OS_TaskGetInfo(self.id, &mut props) };
+        unsafe { OS_TaskGetInfo(self.id, &mut props) }.as_osal_status()?;
 
-        if result >= 0 {
-            Ok(TaskProperties {
-                name:       CStrBuf::new_into(props.name),
-                stack_size: props.stack_size,
-                priority:   props.priority,
-                creator:    ObjectId { id: props.creator },
-            })
-        } else {
-            Err(result)
-        }
+        Ok(TaskProperties {
+            name:       CStrBuf::new_into(props.name),
+            stack_size: props.stack_size,
+            priority:   props.priority,
+            creator:    ObjectId { id: props.creator },
+        })
     }
 
     /// Sets the priority of the task.
@@ -69,14 +65,10 @@ impl Task {
     /// Wraps `OS_TaskSetPriority`.
     #[doc(alias = "OS_TaskSetPriority")]
     #[inline]
-    pub fn set_priority(&self, new_priority: TaskPriority) -> Result<(), i32> {
-        let result = unsafe { OS_TaskSetPriority(self.id, new_priority) };
+    pub fn set_priority(&self, new_priority: TaskPriority) -> Result<(), OsalError> {
+        unsafe { OS_TaskSetPriority(self.id, new_priority) }.as_osal_status()?;
 
-        if result < 0 {
-            Err(result)
-        } else {
-            Ok(())
-        }
+        Ok(())
     }
 
     /// Deletes the task.
@@ -84,14 +76,10 @@ impl Task {
     /// Wraps `OS_TaskDelete`.
     #[doc(alias = "OS_TaskDelete")]
     #[inline]
-    pub fn delete(self) -> Result<(), i32> {
-        let result = unsafe { OS_TaskDelete(self.id) };
+    pub fn delete(self) -> Result<(), OsalError> {
+        unsafe { OS_TaskDelete(self.id) }.as_osal_status()?;
 
-        if result >= 0 {
-            Ok(())
-        } else {
-            Err(result)
-        }
+        Ok(())
     }
 
     /// Returns the [`ObjectId`] for the task.
@@ -149,13 +137,13 @@ pub struct TaskProperties {
 /// Wraps `OS_TaskGetId`.
 #[doc(alias = "OS_TaskGetId")]
 #[inline]
-pub fn get_id() -> Result<Task, ()> {
+pub fn get_id() -> Result<Task, OsalError> {
     let task_id = unsafe { OS_TaskGetId() };
 
     if task_id != 0 && (ObjectId { id: task_id }).obj_type() == OS_OBJECT_TYPE_OS_TASK {
         Ok(Task { id: task_id })
     } else {
-        Err(())
+        Err(OsalError::OS_ERR_INVALID_ID)
     }
 }
 
@@ -181,12 +169,8 @@ pub fn exit() -> ! {
 /// Wraps `OS_TaskDelay`.
 #[doc(alias = "OS_TaskDelay")]
 #[inline]
-pub fn delay(millis: u32) -> Result<(), i32> {
-    let result = unsafe { OS_TaskDelay(millis) };
+pub fn delay(millis: u32) -> Result<(), OsalError> {
+    unsafe { OS_TaskDelay(millis) }.as_osal_status()?;
 
-    if result < 0 {
-        Err(result)
-    } else {
-        Ok(())
-    }
+    Ok(())
 }
