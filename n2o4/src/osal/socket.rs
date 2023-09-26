@@ -9,7 +9,7 @@ use core::ffi::{c_char, c_void, CStr};
 use core::marker::PhantomData;
 use core::mem::ManuallyDrop;
 
-use super::ObjectId;
+use super::{I32Ext, ObjectId, OsalError};
 use crate::sealed_traits::{SocketDomainSealed, SocketRoleSealed, SocketTypeSealed};
 use crate::utils::CStrBuf;
 
@@ -115,30 +115,20 @@ impl<T: SocketDomain> SockAddr<T> {
     /// Wraps `OS_SocketAddrInit`, `OS_SocketAddrFromString`, and `OS_SocketAddrSetPort`.
     #[doc(alias = "OS_SocketAddrInit")]
     #[inline]
-    pub fn new<S: AsRef<CStr> + ?Sized>(network_address: &S, port: u16) -> Result<Self, i32> {
+    pub fn new<S: AsRef<CStr> + ?Sized>(network_address: &S, port: u16) -> Result<Self, OsalError> {
         let network_address = network_address.as_ref().as_ptr();
         let mut addr: OS_SockAddr_t = dummy_sock_addr();
 
-        let status = unsafe { OS_SocketAddrInit(&mut addr, T::DOMAIN) };
-        if status < 0 {
-            return Err(status);
-        }
+        unsafe { OS_SocketAddrInit(&mut addr, T::DOMAIN) }.as_osal_status()?;
 
-        let status = unsafe { OS_SocketAddrFromString(&mut addr, network_address) };
-        if status < 0 {
-            return Err(status);
-        }
+        unsafe { OS_SocketAddrFromString(&mut addr, network_address) }.as_osal_status()?;
 
-        let status = unsafe { OS_SocketAddrSetPort(&mut addr, port) };
+        unsafe { OS_SocketAddrSetPort(&mut addr, port) }.as_osal_status()?;
 
-        if status >= 0 {
-            Ok(Self {
-                inner:   addr,
-                phantom: PhantomData,
-            })
-        } else {
-            Err(status)
-        }
+        Ok(Self {
+            inner:   addr,
+            phantom: PhantomData,
+        })
     }
 
     /// Tries to write the address's host address to `buf` as a C-style string.
@@ -146,7 +136,7 @@ impl<T: SocketDomain> SockAddr<T> {
     /// Wraps `OS_SocketAddrToString`.
     #[doc(alias = "OS_SocketAddrToString")]
     #[inline]
-    pub fn get_host_addr(&self, buf: &mut [c_char]) -> Result<(), i32> {
+    pub fn get_host_addr(&self, buf: &mut [c_char]) -> Result<(), OsalError> {
         let status = unsafe { OS_SocketAddrToString(buf.as_mut_ptr(), buf.len(), &self.inner) };
 
         // Just in case OSAL doesn't do this on edge cases, null-terminate:
@@ -154,11 +144,7 @@ impl<T: SocketDomain> SockAddr<T> {
             buf[buf.len() - 1] = b'\0' as c_char;
         }
 
-        if status >= 0 {
-            Ok(())
-        } else {
-            Err(status)
-        }
+        status.as_osal_status().map(|_| ())
     }
 
     /// Tries to set the address's host address from a C-style string (e.g., `"192.0.2.1"`, `"2001:db8::1"`).
@@ -166,16 +152,12 @@ impl<T: SocketDomain> SockAddr<T> {
     /// Wraps `OS_SocketAddrFromString`.
     #[doc(alias = "OS_SocketAddrFromString")]
     #[inline]
-    pub fn set_host_addr<S: AsRef<CStr> + ?Sized>(&mut self, addr: &S) -> Result<(), i32> {
+    pub fn set_host_addr<S: AsRef<CStr> + ?Sized>(&mut self, addr: &S) -> Result<(), OsalError> {
         let addr = addr.as_ref();
 
-        let status = unsafe { OS_SocketAddrFromString(&mut self.inner, addr.as_ptr()) };
+        unsafe { OS_SocketAddrFromString(&mut self.inner, addr.as_ptr()) }.as_osal_status()?;
 
-        if status >= 0 {
-            Ok(())
-        } else {
-            Err(status)
-        }
+        Ok(())
     }
 
     /// Returns the address's port number.
@@ -183,16 +165,12 @@ impl<T: SocketDomain> SockAddr<T> {
     /// Wraps `OS_SocketAddrGetPort`.
     #[doc(alias = "OS_SocketAddrGetPort")]
     #[inline]
-    pub fn port(&self) -> Result<u16, i32> {
+    pub fn port(&self) -> Result<u16, OsalError> {
         let mut port_num: u16 = 0;
 
-        let status = unsafe { OS_SocketAddrGetPort(&mut port_num, &self.inner) };
+        unsafe { OS_SocketAddrGetPort(&mut port_num, &self.inner) }.as_osal_status()?;
 
-        if status >= 0 {
-            Ok(port_num)
-        } else {
-            Err(status)
-        }
+        Ok(port_num)
     }
 
     /// Sets the address's port number.
@@ -200,14 +178,10 @@ impl<T: SocketDomain> SockAddr<T> {
     /// Wraps `OS_SocketAddrSetPort`.
     #[doc(alias = "OS_SocketAddrSetPort")]
     #[inline]
-    pub fn set_port(&mut self, port_num: u16) -> Result<(), i32> {
-        let status = unsafe { OS_SocketAddrSetPort(&mut self.inner, port_num) };
+    pub fn set_port(&mut self, port_num: u16) -> Result<(), OsalError> {
+        unsafe { OS_SocketAddrSetPort(&mut self.inner, port_num) }.as_osal_status()?;
 
-        if status >= 0 {
-            Ok(())
-        } else {
-            Err(status)
-        }
+        Ok(())
     }
 }
 
@@ -231,15 +205,15 @@ impl<D: SocketDomain, T: SocketType> EarlySocket<D, T> {
     /// Wraps `OS_SocketOpen`.
     #[doc(alias = "OS_SocketOpen")]
     #[inline]
-    pub fn open() -> Result<Self, i32> {
+    pub fn open() -> Result<Self, OsalError> {
         let mut sock_id: osal_id_t = X_OS_OBJECT_ID_UNDEFINED;
 
-        let status = unsafe { OS_SocketOpen(&mut sock_id, D::DOMAIN, T::SOCK_TYPE) };
+        unsafe { OS_SocketOpen(&mut sock_id, D::DOMAIN, T::SOCK_TYPE) }.as_osal_status()?;
 
-        if status >= 0 && (ObjectId { id: sock_id }).is_defined() {
+        if (ObjectId { id: sock_id }).is_defined() {
             Ok(EarlySocket { sock_id, phantom: PhantomData })
         } else {
-            Err(status)
+            Err(OsalError::OS_ERR_INVALID_ID)
         }
     }
 
@@ -255,22 +229,18 @@ impl<D: SocketDomain, T: SocketType> EarlySocket<D, T> {
         self,
         addr: &SockAddr<D>,
         timeout_ms: Option<u32>,
-    ) -> Result<Socket<D, T, Connected>, i32> {
+    ) -> Result<Socket<D, T, Connected>, OsalError> {
         let timeout: i32 = super::as_timeout(timeout_ms);
 
-        let status = unsafe { OS_SocketConnect(self.sock_id, &addr.inner, timeout) };
+        unsafe { OS_SocketConnect(self.sock_id, &addr.inner, timeout) }.as_osal_status()?;
 
-        if status >= 0 {
-            let sock = Socket {
-                sock_id:   self.sock_id,
-                is_cloned: Cell::new(false),
-                phantom:   PhantomData,
-            };
-            let _ = ManuallyDrop::new(self);
-            Ok(sock)
-        } else {
-            Err(status)
-        }
+        let sock = Socket {
+            sock_id:   self.sock_id,
+            is_cloned: Cell::new(false),
+            phantom:   PhantomData,
+        };
+        let _ = ManuallyDrop::new(self);
+        Ok(sock)
     }
 
     /// Binds the socket to the local address `addr`.
@@ -278,20 +248,16 @@ impl<D: SocketDomain, T: SocketType> EarlySocket<D, T> {
     /// Wraps `OS_SocketBind`.
     #[doc(alias = "OS_SocketBind")]
     #[inline]
-    pub fn bind(self, addr: &SockAddr<D>) -> Result<Socket<D, T, Bound>, i32> {
-        let status = unsafe { OS_SocketBind(self.sock_id, &addr.inner) };
+    pub fn bind(self, addr: &SockAddr<D>) -> Result<Socket<D, T, Bound>, OsalError> {
+        unsafe { OS_SocketBind(self.sock_id, &addr.inner) }.as_osal_status()?;
 
-        if status >= 0 {
-            let sock = Socket {
-                sock_id:   self.sock_id,
-                is_cloned: Cell::new(false),
-                phantom:   PhantomData,
-            };
-            let _ = ManuallyDrop::new(self);
-            Ok(sock)
-        } else {
-            Err(status)
-        }
+        let sock = Socket {
+            sock_id:   self.sock_id,
+            is_cloned: Cell::new(false),
+            phantom:   PhantomData,
+        };
+        let _ = ManuallyDrop::new(self);
+        Ok(sock)
     }
 
     /// Returns the [`ObjectId`] for the socket.
@@ -324,22 +290,18 @@ impl<D: SocketDomain, T: SocketType> EarlySocket<D, T> {
     /// Wraps `OS_SocketGetInfo`.
     #[doc(alias = "OS_SocketGetInfo")]
     #[inline]
-    pub fn info(&self) -> Result<SocketProperties, i32> {
+    pub fn info(&self) -> Result<SocketProperties, OsalError> {
         let mut props = OS_socket_prop_t {
             name:    [0; OS_MAX_API_NAME as usize],
             creator: X_OS_OBJECT_ID_UNDEFINED,
         };
 
-        let status = unsafe { OS_SocketGetInfo(self.sock_id, &mut props) };
+        unsafe { OS_SocketGetInfo(self.sock_id, &mut props) }.as_osal_status()?;
 
-        if status >= 0 {
-            Ok(SocketProperties {
-                name:    CStrBuf::new_into(props.name),
-                creator: ObjectId { id: props.creator },
-            })
-        } else {
-            Err(status)
-        }
+        Ok(SocketProperties {
+            name:    CStrBuf::new_into(props.name),
+            creator: ObjectId { id: props.creator },
+        })
     }
 }
 
@@ -423,21 +385,17 @@ impl<D: SocketDomain, T: SocketType, R: SocketRole> Socket<D, T, R> {
     /// Wraps `OS_close`.
     #[doc(alias = "OS_close")]
     #[inline]
-    pub fn close(self) -> Result<(), i32> {
+    pub fn close(self) -> Result<(), OsalError> {
         // Closing isn't necessarily safe to do
         // if we've cloned the [`Socket`] (use-after-release),
         // so we check:
         if self.is_cloned.get() == true {
-            return Err(cfs_sys::OS_ERR_OBJECT_IN_USE);
+            return Err(OsalError::OS_ERR_OBJECT_IN_USE);
         }
 
-        let status = unsafe { OS_close(self.sock_id) };
+        unsafe { OS_close(self.sock_id) }.as_osal_status()?;
 
-        if status >= 0 {
-            Ok(())
-        } else {
-            Err(status)
-        }
+        Ok(())
     }
 
     /// Closes the socket.
@@ -461,14 +419,10 @@ impl<D: SocketDomain, T: SocketType, R: SocketRole> Socket<D, T, R> {
     /// is never used after calling `close_mut`.
     #[doc(alias = "OS_close")]
     #[inline]
-    pub unsafe fn close_mut(&mut self) -> Result<(), i32> {
-        let status = unsafe { OS_close(self.sock_id) };
+    pub unsafe fn close_mut(&mut self) -> Result<(), OsalError> {
+        unsafe { OS_close(self.sock_id) }.as_osal_status()?;
 
-        if status >= 0 {
-            Ok(())
-        } else {
-            Err(status)
-        }
+        Ok(())
     }
 
     /// If successful, returns information about the socket.
@@ -476,22 +430,18 @@ impl<D: SocketDomain, T: SocketType, R: SocketRole> Socket<D, T, R> {
     /// Wraps `OS_SocketGetInfo`.
     #[doc(alias = "OS_SocketGetInfo")]
     #[inline]
-    pub fn info(&self) -> Result<SocketProperties, i32> {
+    pub fn info(&self) -> Result<SocketProperties, OsalError> {
         let mut props = OS_socket_prop_t {
             name:    [0; OS_MAX_API_NAME as usize],
             creator: X_OS_OBJECT_ID_UNDEFINED,
         };
 
-        let status = unsafe { OS_SocketGetInfo(self.sock_id, &mut props) };
+        unsafe { OS_SocketGetInfo(self.sock_id, &mut props) }.as_osal_status()?;
 
-        if status >= 0 {
-            Ok(SocketProperties {
-                name:    CStrBuf::new_into(props.name),
-                creator: ObjectId { id: props.creator },
-            })
-        } else {
-            Err(status)
-        }
+        Ok(SocketProperties {
+            name:    CStrBuf::new_into(props.name),
+            creator: ObjectId { id: props.creator },
+        })
     }
 }
 
@@ -504,14 +454,11 @@ impl<D: SocketDomain, T: SocketType> Socket<D, T, Connected> {
     /// Wraps `OS_read`.
     #[doc(alias = "OS_read")]
     #[inline]
-    pub fn read(&self, buf: &mut [u8]) -> Result<usize, i32> {
-        let status = unsafe { OS_read(self.sock_id, buf.as_mut_ptr() as *mut c_void, buf.len()) };
+    pub fn read(&self, buf: &mut [u8]) -> Result<usize, OsalError> {
+        let status = unsafe { OS_read(self.sock_id, buf.as_mut_ptr() as *mut c_void, buf.len()) }
+            .as_osal_status()?;
 
-        if status >= 0 {
-            Ok(status as usize)
-        } else {
-            Err(status)
-        }
+        Ok(status as usize)
     }
 
     /// Writes up to `buf.len()` bytes from `buf` to the connection.
@@ -521,14 +468,11 @@ impl<D: SocketDomain, T: SocketType> Socket<D, T, Connected> {
     /// Wraps `OS_write`.
     #[doc(alias = "OS_write")]
     #[inline]
-    pub fn write(&self, buf: &[u8]) -> Result<usize, i32> {
-        let status = unsafe { OS_write(self.sock_id, buf.as_ptr() as *const c_void, buf.len()) };
+    pub fn write(&self, buf: &[u8]) -> Result<usize, OsalError> {
+        let status = unsafe { OS_write(self.sock_id, buf.as_ptr() as *const c_void, buf.len()) }
+            .as_osal_status()?;
 
-        if status >= 0 {
-            Ok(status as usize)
-        } else {
-            Err(status)
-        }
+        Ok(status as usize)
     }
 }
 
@@ -538,15 +482,11 @@ impl<D: SocketDomain> Socket<D, Stream, Connected> {
     /// Wraps `OS_SocketShutdown`.
     #[doc(alias = "OS_SocketShutdown")]
     #[inline]
-    pub fn shutdown(&self, mode: SocketShutdownMode) -> Result<(), i32> {
-        let status =
-            unsafe { OS_SocketShutdown(self.sock_id, mode as u32 as OS_SocketShutdownMode_t) };
+    pub fn shutdown(&self, mode: SocketShutdownMode) -> Result<(), OsalError> {
+        unsafe { OS_SocketShutdown(self.sock_id, mode as u32 as OS_SocketShutdownMode_t) }
+            .as_osal_status()?;
 
-        if status >= 0 {
-            Ok(())
-        } else {
-            Err(status)
-        }
+        Ok(())
     }
 }
 
@@ -557,16 +497,12 @@ impl<D: SocketDomain> Socket<D, Datagram, Connected> {
     /// Wraps `OS_SocketConnect`.
     #[doc(alias = "OS_SocketConnect")]
     #[inline]
-    pub fn connect(&self, addr: &SockAddr<D>, timeout_ms: Option<u32>) -> Result<(), i32> {
+    pub fn connect(&self, addr: &SockAddr<D>, timeout_ms: Option<u32>) -> Result<(), OsalError> {
         let timeout = super::as_timeout(timeout_ms);
 
-        let status = unsafe { OS_SocketConnect(self.sock_id, &addr.inner, timeout) };
+        unsafe { OS_SocketConnect(self.sock_id, &addr.inner, timeout) }.as_osal_status()?;
 
-        if status >= 0 {
-            Ok(())
-        } else {
-            Err(status)
-        }
+        Ok(())
     }
 }
 
@@ -585,15 +521,15 @@ impl<D: SocketDomain> Socket<D, Stream, Bound> {
     pub fn accept(
         &self,
         timeout_ms: Option<u32>,
-    ) -> Result<(Socket<D, Stream, Connected>, SockAddr<D>), i32> {
+    ) -> Result<(Socket<D, Stream, Connected>, SockAddr<D>), OsalError> {
         let mut connsock_id: osal_id_t = X_OS_OBJECT_ID_UNDEFINED;
         let mut conn_addr = dummy_sock_addr();
         let timeout = super::as_timeout(timeout_ms);
 
-        let status =
-            unsafe { OS_SocketAccept(self.sock_id, &mut connsock_id, &mut conn_addr, timeout) };
+        unsafe { OS_SocketAccept(self.sock_id, &mut connsock_id, &mut conn_addr, timeout) }
+            .as_osal_status()?;
 
-        if status >= 0 && (ObjectId { id: connsock_id }).is_defined() {
+        if (ObjectId { id: connsock_id }).is_defined() {
             Ok((
                 Socket {
                     sock_id:   connsock_id,
@@ -606,7 +542,7 @@ impl<D: SocketDomain> Socket<D, Stream, Bound> {
                 },
             ))
         } else {
-            Err(status)
+            Err(OsalError::OS_ERR_INVALID_ID)
         }
     }
 }
@@ -620,7 +556,7 @@ impl<D: SocketDomain, R: SocketRole> Socket<D, Datagram, R> {
     /// Wraps `OS_SocketSendTo`.
     #[doc(alias = "OS_SocketSendTo")]
     #[inline]
-    pub fn send(&self, buf: &[u8], remote_addr: &SockAddr<D>) -> Result<usize, i32> {
+    pub fn send(&self, buf: &[u8], remote_addr: &SockAddr<D>) -> Result<usize, OsalError> {
         let status = unsafe {
             OS_SocketSendTo(
                 self.sock_id,
@@ -628,13 +564,10 @@ impl<D: SocketDomain, R: SocketRole> Socket<D, Datagram, R> {
                 buf.len(),
                 &remote_addr.inner,
             )
-        };
-
-        if status >= 0 {
-            Ok(status as usize)
-        } else {
-            Err(status)
         }
+        .as_osal_status()?;
+
+        Ok(status as usize)
     }
 }
 
@@ -654,7 +587,7 @@ impl<D: SocketDomain> Socket<D, Datagram, Bound> {
         &self,
         buf: &mut [u8],
         timeout_ms: Option<u32>,
-    ) -> Result<(usize, SockAddr<D>), i32> {
+    ) -> Result<(usize, SockAddr<D>), OsalError> {
         let mut remote_addr = dummy_sock_addr();
         let timeout = super::as_timeout(timeout_ms);
 
@@ -666,19 +599,16 @@ impl<D: SocketDomain> Socket<D, Datagram, Bound> {
                 &mut remote_addr,
                 timeout,
             )
-        };
-
-        if status >= 0 {
-            Ok((
-                status as usize,
-                SockAddr {
-                    inner:   remote_addr,
-                    phantom: PhantomData,
-                },
-            ))
-        } else {
-            Err(status)
         }
+        .as_osal_status()?;
+
+        Ok((
+            status as usize,
+            SockAddr {
+                inner:   remote_addr,
+                phantom: PhantomData,
+            },
+        ))
     }
 }
 

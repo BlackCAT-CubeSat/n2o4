@@ -4,6 +4,7 @@
 //! Executive Services system.
 
 use super::{ResourceId, Status};
+use crate::osal::OsalError;
 use crate::utils::CStrBuf;
 use cfs_sys::*;
 use core::ffi::{c_char, c_void, CStr};
@@ -548,7 +549,7 @@ macro_rules! get_shared_sem {
 
                 match Sem::new(&CStrBuf::<{MAX_NAME_LEN - 1}>::new(&name) $(, $constructor_arg)*) {
                     Ok(sem) => { break sem; }
-                    Err(OS_ERR_NAME_TAKEN) => (), // go around for another attempt
+                    Err(OsalError::OS_ERR_NAME_TAKEN) => (), // go around for another attempt
                     Err(_) => { return Err(Status::STATUS_EXTERNAL_RESOURCE_FAIL); }
                 }
 

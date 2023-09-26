@@ -29,17 +29,19 @@ impl File {
         path: &S,
         flags: FileFlags,
         access_mode: AccessMode,
-    ) -> Result<Self, i32> {
+    ) -> Result<Self, OsalError> {
         let mut id: osal_id_t = X_OS_OBJECT_ID_UNDEFINED;
 
-        let retval = unsafe {
+        unsafe {
             OS_OpenCreate(&mut id, path.as_ref().as_ptr(), flags.flag as i32, access_mode as i32)
-        };
+        }
+        .as_osal_status()?;
 
-        if retval >= 0 && (ObjectId { id }).obj_type() == OS_OBJECT_TYPE_OS_STREAM {
+        // some sanity checking of our own:
+        if (ObjectId { id }).obj_type() == OS_OBJECT_TYPE_OS_STREAM {
             Ok(File { id })
         } else {
-            Err(retval)
+            Err(OsalError::OS_ERR_INVALID_ID)
         }
     }
 
@@ -52,15 +54,11 @@ impl File {
     /// Wraps `OS_read`.
     #[doc(alias = "OS_read")]
     #[inline]
-    pub fn read(&mut self, buf: &mut [u8]) -> Result<usize, i32> {
+    pub fn read(&mut self, buf: &mut [u8]) -> Result<usize, OsalError> {
         let buffer = buf.as_mut_ptr() as *mut c_void;
-        let retval = unsafe { OS_read(self.id, buffer, buf.len()) };
+        let retval = unsafe { OS_read(self.id, buffer, buf.len()) }.as_osal_status()?;
 
-        if retval >= 0 {
-            Ok(retval as usize)
-        } else {
-            Err(retval)
-        }
+        Ok(retval as usize)
     }
 
     /// Writes up to `buf.len()` bytes from `buf`
@@ -72,15 +70,11 @@ impl File {
     /// Wraps `OS_write`.
     #[doc(alias = "OS_write")]
     #[inline]
-    pub fn write(&mut self, buf: &[u8]) -> Result<usize, i32> {
+    pub fn write(&mut self, buf: &[u8]) -> Result<usize, OsalError> {
         let buffer = buf.as_ptr() as *const c_void;
-        let retval = unsafe { OS_write(self.id, buffer, buf.len()) };
+        let retval = unsafe { OS_write(self.id, buffer, buf.len()) }.as_osal_status()?;
 
-        if retval >= 0 {
-            Ok(retval as usize)
-        } else {
-            Err(retval)
-        }
+        Ok(retval as usize)
     }
 
     /// Seeks the file handle `self`
@@ -92,14 +86,10 @@ impl File {
     /// Wraps `OS_lseek`.
     #[doc(alias = "OS_lseek")]
     #[inline]
-    pub fn lseek(&mut self, offset: i32, whence: SeekReference) -> Result<u32, i32> {
-        let retval = unsafe { OS_lseek(self.id, offset, whence as u32) };
+    pub fn lseek(&mut self, offset: i32, whence: SeekReference) -> Result<u32, OsalError> {
+        let retval = unsafe { OS_lseek(self.id, offset, whence as u32) }.as_osal_status()?;
 
-        if retval >= 0 {
-            Ok(retval as u32)
-        } else {
-            Err(retval)
-        }
+        Ok(retval as u32)
     }
 
     /// Closes the file handle `self`.
@@ -107,14 +97,10 @@ impl File {
     /// Wraps `OS_close`.
     #[doc(alias = "OS_close")]
     #[inline]
-    pub fn close(self) -> Result<(), i32> {
-        let retval = unsafe { OS_close(self.id) };
+    pub fn close(self) -> Result<(), OsalError> {
+        unsafe { OS_close(self.id) }.as_osal_status()?;
 
-        if retval >= 0 {
-            Ok(())
-        } else {
-            Err(retval)
-        }
+        Ok(())
     }
 
     /// Returns the [`ObjectId`] for the file.
@@ -152,7 +138,7 @@ impl OwnedFile {
         path: &S,
         flags: FileFlags,
         access_mode: AccessMode,
-    ) -> Result<Self, i32> {
+    ) -> Result<Self, OsalError> {
         File::open_create(path, flags, access_mode).map(|f| OwnedFile { f })
     }
 }

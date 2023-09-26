@@ -25,16 +25,19 @@ impl BinSem {
     /// Wraps `OS_BinSemCreate`.
     #[doc(alias = "OS_BinSemCreate")]
     #[inline]
-    pub fn new<S: AsRef<CStr> + ?Sized>(name: &S, initial_value: BinSemState) -> Result<Self, i32> {
+    pub fn new<S: AsRef<CStr> + ?Sized>(
+        name: &S,
+        initial_value: BinSemState,
+    ) -> Result<Self, OsalError> {
         let mut id: osal_id_t = X_OS_OBJECT_ID_UNDEFINED;
 
-        let retval =
-            unsafe { OS_BinSemCreate(&mut id, name.as_ref().as_ptr(), initial_value as u32, 0) };
+        unsafe { OS_BinSemCreate(&mut id, name.as_ref().as_ptr(), initial_value as u32, 0) }
+            .as_osal_status()?;
 
-        if retval == I_OS_SUCCESS && id != X_OS_OBJECT_ID_UNDEFINED {
+        if id != X_OS_OBJECT_ID_UNDEFINED {
             Ok(Self { id })
         } else {
-            Err(retval)
+            Err(OsalError::OS_ERR_INVALID_ID)
         }
     }
 
@@ -46,19 +49,19 @@ impl BinSem {
     /// Wraps `OS_BinSemGetIdByName`.
     #[doc(alias = "OS_BinSemGetIdByName")]
     #[inline]
-    pub fn find_by_name<S: AsRef<CStr> + ?Sized>(name: &S) -> Result<Option<Self>, i32> {
+    pub fn find_by_name<S: AsRef<CStr> + ?Sized>(name: &S) -> Result<Option<Self>, OsalError> {
         let mut id: osal_id_t = X_OS_OBJECT_ID_UNDEFINED;
 
-        match unsafe { OS_BinSemGetIdByName(&mut id, name.as_ref().as_ptr()) } {
-            I_OS_SUCCESS => {
+        match unsafe { OS_BinSemGetIdByName(&mut id, name.as_ref().as_ptr()) }.as_osal_status() {
+            Ok(_) => {
                 if id != X_OS_OBJECT_ID_UNDEFINED {
                     Ok(Some(Self { id }))
                 } else {
-                    Err(I_OS_SUCCESS)
+                    Err(OsalError::OS_ERR_INVALID_ID)
                 }
             }
-            OS_ERR_NAME_NOT_FOUND => Ok(None),
-            err => Err(err),
+            Err(OsalError::OS_ERR_NAME_NOT_FOUND) => Ok(None),
+            Err(err) => Err(err),
         }
     }
 
@@ -67,11 +70,10 @@ impl BinSem {
     /// Wraps `OS_BinSemTake`.
     #[doc(alias = "OS_BinSemTake")]
     #[inline]
-    pub fn take(&self) -> Result<(), i32> {
-        match unsafe { OS_BinSemTake(self.id) } {
-            I_OS_SUCCESS => Ok(()),
-            err => Err(err),
-        }
+    pub fn take(&self) -> Result<(), OsalError> {
+        unsafe { OS_BinSemTake(self.id) }.as_osal_status()?;
+
+        Ok(())
     }
 
     /// Decrements the semaphore value, blocking for up to `timeout_ms` milliseconds if need be.
@@ -83,11 +85,11 @@ impl BinSem {
     /// Wraps `OS_BinSemTimedWait`.
     #[doc(alias = "OS_BinSemTimedWait")]
     #[inline]
-    pub fn timed_wait(&self, timeout_ms: u32) -> Result<bool, i32> {
-        match unsafe { OS_BinSemTimedWait(self.id, timeout_ms) } {
-            I_OS_SUCCESS => Ok(true),
-            OS_SEM_TIMEOUT => Ok(false),
-            err => Err(err),
+    pub fn timed_wait(&self, timeout_ms: u32) -> Result<bool, OsalError> {
+        match unsafe { OS_BinSemTimedWait(self.id, timeout_ms) }.as_osal_status() {
+            Ok(_) => Ok(true),
+            Err(OsalError::OS_SEM_TIMEOUT) => Ok(false),
+            Err(err) => Err(err),
         }
     }
 
@@ -96,11 +98,10 @@ impl BinSem {
     /// Wraps `OS_BinSemGive`.
     #[doc(alias = "OS_BinSemGive")]
     #[inline]
-    pub fn give(&self) -> Result<(), i32> {
-        match unsafe { OS_BinSemGive(self.id) } {
-            I_OS_SUCCESS => Ok(()),
-            err => Err(err),
-        }
+    pub fn give(&self) -> Result<(), OsalError> {
+        unsafe { OS_BinSemGive(self.id) }.as_osal_status()?;
+
+        Ok(())
     }
 
     /// Unblocks all tasks blocking on the semaphore without incrementing or decrementing its value.
@@ -108,11 +109,10 @@ impl BinSem {
     /// Wraps `OS_BinSemFlush`.
     #[doc(alias = "OS_BinSemFlush")]
     #[inline]
-    pub fn flush(&self) -> Result<(), i32> {
-        match unsafe { OS_BinSemFlush(self.id) } {
-            I_OS_SUCCESS => Ok(()),
-            err => Err(err),
-        }
+    pub fn flush(&self) -> Result<(), OsalError> {
+        unsafe { OS_BinSemFlush(self.id) }.as_osal_status()?;
+
+        Ok(())
     }
 
     /// Deletes the binary semaphore.
@@ -120,11 +120,10 @@ impl BinSem {
     /// Wraps `OS_BinSemDelete`.
     #[doc(alias = "OS_BinSemDelete")]
     #[inline]
-    pub fn delete(self) -> Result<(), i32> {
-        match unsafe { OS_BinSemDelete(self.id) } {
-            I_OS_SUCCESS => Ok(()),
-            err => Err(err),
-        }
+    pub fn delete(self) -> Result<(), OsalError> {
+        unsafe { OS_BinSemDelete(self.id) }.as_osal_status()?;
+
+        Ok(())
     }
 
     /// If successful, returns details about the binary semaphore.
@@ -132,21 +131,20 @@ impl BinSem {
     /// Wraps `OS_BinSemGetInfo`.
     #[doc(alias = "OS_BinSemGetInfo")]
     #[inline]
-    pub fn info(&self) -> Result<BinSemProperties, i32> {
+    pub fn info(&self) -> Result<BinSemProperties, OsalError> {
         let mut props = OS_bin_sem_prop_t {
             name:    [b'\0' as c_char; MAX_NAME_LEN],
             creator: X_OS_OBJECT_ID_UNDEFINED,
             value:   0,
         };
 
-        match unsafe { OS_BinSemGetInfo(self.id, &mut props) } {
-            I_OS_SUCCESS => Ok(BinSemProperties {
-                name:    CStrBuf::new(&props.name),
-                creator: ObjectId { id: props.creator },
-                value:   props.value,
-            }),
-            err => Err(err),
-        }
+        unsafe { OS_BinSemGetInfo(self.id, &mut props) }.as_osal_status()?;
+
+        Ok(BinSemProperties {
+            name:    CStrBuf::new(&props.name),
+            creator: ObjectId { id: props.creator },
+            value:   props.value,
+        })
     }
 
     /// Returns the [`ObjectId`] for the mutex.
@@ -213,16 +211,19 @@ impl CountSem {
     /// Wraps `OS_CountSemCreate`.
     #[doc(alias = "OS_CountSemCreate")]
     #[inline]
-    pub fn new<S: AsRef<CStr> + ?Sized>(sem_name: &S, initial_value: u32) -> Result<Self, i32> {
+    pub fn new<S: AsRef<CStr> + ?Sized>(
+        sem_name: &S,
+        initial_value: u32,
+    ) -> Result<Self, OsalError> {
         let mut id: osal_id_t = X_OS_OBJECT_ID_UNDEFINED;
 
-        let retval =
-            unsafe { OS_CountSemCreate(&mut id, sem_name.as_ref().as_ptr(), initial_value, 0) };
+        unsafe { OS_CountSemCreate(&mut id, sem_name.as_ref().as_ptr(), initial_value, 0) }
+            .as_osal_status()?;
 
-        if retval == I_OS_SUCCESS && id != X_OS_OBJECT_ID_UNDEFINED {
+        if id != X_OS_OBJECT_ID_UNDEFINED {
             Ok(Self { id })
         } else {
-            Err(retval)
+            Err(OsalError::OS_ERR_INVALID_ID)
         }
     }
 
@@ -234,19 +235,19 @@ impl CountSem {
     /// Wraps `OS_CountSemGetIdByName`.
     #[doc(alias = "OS_CountSemGetIdByName")]
     #[inline]
-    pub fn find_by_name<S: AsRef<CStr> + ?Sized>(name: &S) -> Result<Option<Self>, i32> {
+    pub fn find_by_name<S: AsRef<CStr> + ?Sized>(name: &S) -> Result<Option<Self>, OsalError> {
         let mut id: osal_id_t = X_OS_OBJECT_ID_UNDEFINED;
 
-        match unsafe { OS_CountSemGetIdByName(&mut id, name.as_ref().as_ptr()) } {
-            I_OS_SUCCESS => {
+        match unsafe { OS_CountSemGetIdByName(&mut id, name.as_ref().as_ptr()) }.as_osal_status() {
+            Ok(_) => {
                 if id != X_OS_OBJECT_ID_UNDEFINED {
                     Ok(Some(Self { id }))
                 } else {
-                    Err(I_OS_SUCCESS)
+                    Err(OsalError::OS_ERR_INVALID_ID)
                 }
             }
-            OS_ERR_NAME_NOT_FOUND => Ok(None),
-            err => Err(err),
+            Err(OsalError::OS_ERR_NAME_NOT_FOUND) => Ok(None),
+            Err(err) => Err(err),
         }
     }
 
@@ -255,11 +256,10 @@ impl CountSem {
     /// Wraps `OS_CountSemTake`.
     #[doc(alias = "OS_CountSemTake")]
     #[inline]
-    pub fn take(&self) -> Result<(), i32> {
-        match unsafe { OS_CountSemTake(self.id) } {
-            I_OS_SUCCESS => Ok(()),
-            err => Err(err),
-        }
+    pub fn take(&self) -> Result<(), OsalError> {
+        unsafe { OS_CountSemTake(self.id) }.as_osal_status()?;
+
+        Ok(())
     }
 
     /// Decrements the semaphore value; if it is non-zero, waits for up to `timeout_ms` milliseconds to be able to decrement.
@@ -271,11 +271,11 @@ impl CountSem {
     /// Wraps `OS_CountSemTimedWait`.
     #[doc(alias = "OS_CountSemTimedWait")]
     #[inline]
-    pub fn timed_wait(&self, timeout_ms: u32) -> Result<bool, i32> {
-        match unsafe { OS_CountSemTimedWait(self.id, timeout_ms) } {
-            I_OS_SUCCESS => Ok(true),
-            OS_SEM_TIMEOUT => Ok(false),
-            err => Err(err),
+    pub fn timed_wait(&self, timeout_ms: u32) -> Result<bool, OsalError> {
+        match unsafe { OS_CountSemTimedWait(self.id, timeout_ms) }.as_osal_status() {
+            Ok(_) => Ok(true),
+            Err(OsalError::OS_SEM_TIMEOUT) => Ok(false),
+            Err(err) => Err(err),
         }
     }
 
@@ -284,11 +284,10 @@ impl CountSem {
     /// Wraps `OS_CountSemGive`.
     #[doc(alias = "OS_CountSemGive")]
     #[inline]
-    pub fn give(&self) -> Result<(), i32> {
-        match unsafe { OS_CountSemGive(self.id) } {
-            I_OS_SUCCESS => Ok(()),
-            err => Err(err),
-        }
+    pub fn give(&self) -> Result<(), OsalError> {
+        unsafe { OS_CountSemGive(self.id) }.as_osal_status()?;
+
+        Ok(())
     }
 
     /// Deletes the counting semaphore.
@@ -296,11 +295,10 @@ impl CountSem {
     /// Wraps `OS_CountSemDelete`.
     #[doc(alias = "OS_CountSemDelete")]
     #[inline]
-    pub fn delete(self) -> Result<(), i32> {
-        match unsafe { OS_CountSemDelete(self.id) } {
-            I_OS_SUCCESS => Ok(()),
-            err => Err(err),
-        }
+    pub fn delete(self) -> Result<(), OsalError> {
+        unsafe { OS_CountSemDelete(self.id) }.as_osal_status()?;
+
+        Ok(())
     }
 
     /// If successful, returns details about the counting semaphore.
@@ -308,21 +306,20 @@ impl CountSem {
     /// Wraps `OS_CountSemGetInfo`.
     #[doc(alias = "OS_CountSemGetInfo")]
     #[inline]
-    pub fn info(&self) -> Result<CountSemProperties, i32> {
+    pub fn info(&self) -> Result<CountSemProperties, OsalError> {
         let mut props = OS_count_sem_prop_t {
             name:    [b'\0' as c_char; MAX_NAME_LEN],
             creator: X_OS_OBJECT_ID_UNDEFINED,
             value:   0,
         };
 
-        match unsafe { OS_CountSemGetInfo(self.id, &mut props) } {
-            I_OS_SUCCESS => Ok(CountSemProperties {
-                name:    CStrBuf::new(&props.name),
-                creator: ObjectId { id: props.creator },
-                value:   props.value,
-            }),
-            err => Err(err),
-        }
+        unsafe { OS_CountSemGetInfo(self.id, &mut props) }.as_osal_status()?;
+
+        Ok(CountSemProperties {
+            name:    CStrBuf::new(&props.name),
+            creator: ObjectId { id: props.creator },
+            value:   props.value,
+        })
     }
 
     /// Returns the [`ObjectId`] for the mutex.
@@ -378,15 +375,15 @@ impl MutSem {
     /// Wraps `OS_MutSemCreate`.
     #[doc(alias = "OS_MutSemCreate")]
     #[inline]
-    pub fn new<S: AsRef<CStr> + ?Sized>(sem_name: &S) -> Result<Self, i32> {
+    pub fn new<S: AsRef<CStr> + ?Sized>(sem_name: &S) -> Result<Self, OsalError> {
         let mut id: osal_id_t = X_OS_OBJECT_ID_UNDEFINED;
 
-        let retval = unsafe { OS_MutSemCreate(&mut id, sem_name.as_ref().as_ptr(), 0) };
+        unsafe { OS_MutSemCreate(&mut id, sem_name.as_ref().as_ptr(), 0) }.as_osal_status()?;
 
-        if retval == I_OS_SUCCESS && id != X_OS_OBJECT_ID_UNDEFINED {
+        if id != X_OS_OBJECT_ID_UNDEFINED {
             Ok(Self { id })
         } else {
-            Err(retval)
+            Err(OsalError::OS_ERR_INVALID_ID)
         }
     }
 
@@ -398,19 +395,19 @@ impl MutSem {
     /// Wraps `OS_MutSemGetIdByName`.
     #[doc(alias = "OS_MutSemGetIdByName")]
     #[inline]
-    pub fn find_by_name<S: AsRef<CStr> + ?Sized>(name: &S) -> Result<Option<Self>, i32> {
+    pub fn find_by_name<S: AsRef<CStr> + ?Sized>(name: &S) -> Result<Option<Self>, OsalError> {
         let mut id: osal_id_t = X_OS_OBJECT_ID_UNDEFINED;
 
-        match unsafe { OS_MutSemGetIdByName(&mut id, name.as_ref().as_ptr()) } {
-            I_OS_SUCCESS => {
+        match unsafe { OS_MutSemGetIdByName(&mut id, name.as_ref().as_ptr()) }.as_osal_status() {
+            Ok(_) => {
                 if id != X_OS_OBJECT_ID_UNDEFINED {
                     Ok(Some(Self { id }))
                 } else {
-                    Err(I_OS_SUCCESS)
+                    Err(OsalError::OS_ERR_INVALID_ID)
                 }
             }
-            OS_ERR_NAME_NOT_FOUND => Ok(None),
-            err => Err(err),
+            Err(OsalError::OS_ERR_NAME_NOT_FOUND) => Ok(None),
+            Err(err) => Err(err),
         }
     }
 
@@ -420,7 +417,7 @@ impl MutSem {
     /// Wraps `OS_MutSemTake` and `OS_MutSemGive`.
     #[doc(alias("OS_MutSemTake", "OS_MutSemGive"))]
     #[inline]
-    pub fn lock<T, F: FnOnce() -> T>(&self, closure: F) -> Result<T, i32> {
+    pub fn lock<T, F: FnOnce() -> T>(&self, closure: F) -> Result<T, OsalError> {
         self.take()?;
 
         struct MutGuard {
@@ -446,11 +443,10 @@ impl MutSem {
     /// Wraps `OS_MutSemTake`.
     #[doc(alias = "OS_MutSemTake")]
     #[inline]
-    fn take(&self) -> Result<(), i32> {
-        match unsafe { OS_MutSemTake(self.id) } {
-            I_OS_SUCCESS => Ok(()),
-            err => Err(err),
-        }
+    fn take(&self) -> Result<(), OsalError> {
+        unsafe { OS_MutSemTake(self.id) }.as_osal_status()?;
+
+        Ok(())
     }
 
     // TODO: determine if this should be `pub`
@@ -459,11 +455,10 @@ impl MutSem {
     /// Wraps `OS_MutSemGive`.
     #[doc(alias = "OS_MutSemGive")]
     #[inline]
-    fn give(&self) -> Result<(), i32> {
-        match unsafe { OS_MutSemGive(self.id) } {
-            I_OS_SUCCESS => Ok(()),
-            err => Err(err),
-        }
+    fn give(&self) -> Result<(), OsalError> {
+        unsafe { OS_MutSemGive(self.id) }.as_osal_status()?;
+
+        Ok(())
     }
 
     /// Deletes the mutex.
@@ -471,11 +466,10 @@ impl MutSem {
     /// Wraps `OS_MutSemDelete`.
     #[doc(alias = "OS_MutSemDelete")]
     #[inline]
-    pub fn delete(self) -> Result<(), i32> {
-        match unsafe { OS_MutSemDelete(self.id) } {
-            I_OS_SUCCESS => Ok(()),
-            err => Err(err),
-        }
+    pub fn delete(self) -> Result<(), OsalError> {
+        unsafe { OS_MutSemDelete(self.id) }.as_osal_status()?;
+
+        Ok(())
     }
 
     /// If successful, returns details about the mutex.
@@ -483,19 +477,18 @@ impl MutSem {
     /// Wraps `OS_MutSemGetInfo`.
     #[doc(alias = "OS_MutSemGetInfo")]
     #[inline]
-    pub fn info(&self) -> Result<MutSemProperties, i32> {
+    pub fn info(&self) -> Result<MutSemProperties, OsalError> {
         let mut info: OS_mut_sem_prop_t = OS_mut_sem_prop_t {
             name:    [b'\0' as c_char; super::MAX_NAME_LEN],
             creator: X_OS_OBJECT_ID_UNDEFINED,
         };
 
-        match unsafe { OS_MutSemGetInfo(self.id, &mut info) } {
-            I_OS_SUCCESS => Ok(MutSemProperties {
-                name:    CStrBuf::new(&info.name),
-                creator: ObjectId { id: info.creator },
-            }),
-            err => Err(err),
-        }
+        unsafe { OS_MutSemGetInfo(self.id, &mut info) }.as_osal_status()?;
+
+        Ok(MutSemProperties {
+            name:    CStrBuf::new(&info.name),
+            creator: ObjectId { id: info.creator },
+        })
     }
 
     /// Returns the [`ObjectId`] for the mutex.
@@ -542,7 +535,7 @@ macro_rules! owned_sem_variant {
             #[doc = "\n\n"]
             #[doc = concat!("Wraps `", stringify!($constructor), "`.")]
             #[inline]
-            pub fn new<S: AsRef<CStr> + ?Sized>(sem_name: &S $(, $cparam: $ctype )*) -> Result<Self, i32> {
+            pub fn new<S: AsRef<CStr> + ?Sized>(sem_name: &S $(, $cparam: $ctype )*) -> Result<Self, OsalError> {
                 <$wrapped_type>::new(sem_name $(, $cparam)*).map(|sem| $type_name { sem })
             }
         }
