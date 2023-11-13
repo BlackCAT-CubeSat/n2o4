@@ -8,7 +8,10 @@ This is what you need to do:
 
 ## Prerequisites
 
-First off, you need to [install Rust], if you haven't done so already.
+First off, you will need the C toolchain and other build tools (_e.g._, CMake)
+you are using to build the rest of your cFS system.
+
+Next, you need to [install Rust], if you haven't done so already.
 Make sure the `cargo` tool is in your `$PATH`.
 
 For the time being, we need the `nightly` release channel
@@ -17,15 +20,25 @@ If you're using `rustup` to manage your Rust installation, this will add
 that channel:
 
 ```sh
-$ rustup toolchain install nightly
+rustup toolchain install nightly
 ```
 
 We also need the Rust standard library's source code
 (for reasons relating to how we handle panics):
 
 ```sh
-$ rustup +nightly component add rust-src
+rustup +nightly component add rust-src
 ```
+
+Finally, you will need to install `libclang` and the associated development files,
+as they are required for automated generation of low-level bindings to cFS C APIs.
+For example, on most Debian-like systems, you can run the following (as `root`):
+
+```sh
+apt install libclang-[n]-dev libclang1-[n]
+```
+
+where `[n]` is a sufficiently recent version of `clang` (at time of writing, it must be at least `5`).
 
 ## Build system additions
 
