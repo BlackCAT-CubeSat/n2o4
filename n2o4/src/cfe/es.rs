@@ -5,8 +5,8 @@
 
 use super::{ResourceId, Status};
 use crate::osal::OsalError;
+use crate::sys::*;
 use crate::utils::CStrBuf;
-use cfs_sys::*;
 use core::ffi::{c_char, c_void, CStr};
 use core::marker::PhantomData;
 use printf_wrap::{PrintfArgument, PrintfFmt};

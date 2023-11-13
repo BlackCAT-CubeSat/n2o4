@@ -5,8 +5,8 @@
 
 use crate::cfe::time::SysTime;
 use crate::cfe::Status;
+use crate::sys::*;
 use crate::utils::CStrBuf;
-use cfs_sys::*;
 use core::ffi::{c_char, c_void, CStr};
 use core::marker::PhantomData;
 use core::ops::{Deref, DerefMut};
@@ -771,7 +771,7 @@ impl<T: TableType> OptionExt for Option<TableValidationFn<T>> {
 
 /// This is only exported for the use of [`table_validation_fn`](crate::table_validation_fn).
 #[doc(hidden)]
-pub const CFE_SUCCESS: i32 = cfs_sys::S_CFE_SUCCESS;
+pub const CFE_SUCCESS: i32 = crate::sys::S_CFE_SUCCESS;
 
 /// Creates a `const` [`TableValidationFn`]`<$t>` from
 /// static function `$f_wrapped`,

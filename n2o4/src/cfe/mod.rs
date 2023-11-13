@@ -1,9 +1,9 @@
-// Copyright (c) 2021-2022 The Pennsylvania State University and the project contributors.
+// Copyright (c) 2021-2023 The Pennsylvania State University and the project contributors.
 // SPDX-License-Identifier: Apache-2.0
 
 //! cFE APIs.
 
-use cfs_sys::*;
+use crate::sys::*;
 use core::ffi::c_ulong;
 
 pub mod es;
@@ -85,7 +85,7 @@ impl From<ResourceId> for c_ulong {
 /// This is the same as `CFE_Status_t`.
 #[doc(alias = "CFE_Status_t")]
 #[doc(inline)]
-pub use cfs_sys::CFE_Status_t as CFE_Status;
+pub use crate::sys::CFE_Status_t as CFE_Status;
 
 /// A status-code type often used as a return type in this crate.
 ///

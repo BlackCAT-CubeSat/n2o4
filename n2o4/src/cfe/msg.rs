@@ -9,7 +9,7 @@ use core::ops::{Deref, DerefMut};
 
 use super::sb::MsgId;
 use super::Status;
-use cfs_sys::*;
+use crate::sys::*;
 
 /// Returns the number of items in array field `$field` of `$type`.
 ///
@@ -51,14 +51,14 @@ macro_rules! offset_of {
 /// This is the same as `CFE_MSG_FcnCode_t`.
 #[doc(alias = "CFE_MSG_FcnCode_t")]
 #[doc(inline)]
-pub use cfs_sys::CFE_MSG_FcnCode_t as FunctionCode;
+pub use crate::sys::CFE_MSG_FcnCode_t as FunctionCode;
 
 /// Represents the size of a [`Message`].
 ///
 /// This is the same as `CFE_MSG_Size_t`.
 #[doc(alias = "CFE_MSG_Size_t")]
 #[doc(inline)]
-pub use cfs_sys::CFE_MSG_Size_t as Size;
+pub use crate::sys::CFE_MSG_Size_t as Size;
 
 /// An instance of the common header for cFE software bus messages.
 ///

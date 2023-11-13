@@ -8,10 +8,13 @@ readme = "README.md"
 publish = false
 workspace = ".."
 keywords = ["cFS", "cFE", "OSAL", "flight-software", "no_std"]
-categories = ["aerospace", "api-bindings", "no-std"]
+categories = ["aerospace", "api-bindings", "external-ffi-bindings", "no-std"]
 rust-version = "1.64.0"
 
 [dependencies]
-cfs-sys = { path = "../cfs-sys" }
 printf-wrap = { version = "^0.2", default-features = false }
 psm = "^0.1.21"
+
+[build-dependencies]
+bindgen = "^0.59.1"
+cc = "^1.0"

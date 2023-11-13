@@ -1,9 +1,9 @@
-// Copyright (c) 2021-2022 The Pennsylvania State University and the project contributors.
+// Copyright (c) 2021-2023 The Pennsylvania State University and the project contributors.
 // SPDX-License-Identifier: Apache-2.0
 
 //! Time Services system.
 
-use cfs_sys::*;
+use crate::sys::*;
 use core::cmp::Ordering;
 use core::ops::{Add, Sub};
 
@@ -54,7 +54,7 @@ macro_rules! cfe_time_type {
             #[doc(alias = "CFE_TIME_Compare")]
             #[inline]
             fn eq(&self, other: &Self) -> bool {
-                cfs_sys::CFE_TIME_Compare_CFE_TIME_EQUAL == unsafe { CFE_TIME_Compare(self.tm, other.tm) }
+                crate::sys::CFE_TIME_Compare_CFE_TIME_EQUAL == unsafe { CFE_TIME_Compare(self.tm, other.tm) }
             }
         }
 
@@ -66,8 +66,8 @@ macro_rules! cfe_time_type {
             #[inline]
             fn cmp(&self, other: &Self) -> Ordering {
                 match unsafe { CFE_TIME_Compare(self.tm, other.tm) } {
-                    cfs_sys::CFE_TIME_Compare_CFE_TIME_A_LT_B => Ordering::Less,
-                    cfs_sys::CFE_TIME_Compare_CFE_TIME_EQUAL => Ordering::Equal,
+                    crate::sys::CFE_TIME_Compare_CFE_TIME_A_LT_B => Ordering::Less,
+                    crate::sys::CFE_TIME_Compare_CFE_TIME_EQUAL => Ordering::Equal,
                     _ => Ordering::Greater,
                 }
             }

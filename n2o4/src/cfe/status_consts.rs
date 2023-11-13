@@ -1,4 +1,4 @@
-// Copyright (c) 2021-2022 The Pennsylvania State University and the project contributors.
+// Copyright (c) 2021-2023 The Pennsylvania State University and the project contributors.
 // SPDX-License-Identifier: Apache-2.0
 
 //! Status constants used by cFE.
@@ -6,7 +6,7 @@
 #![allow(missing_docs)]
 
 use super::Status;
-use cfs_sys::*;
+use crate::sys::*;
 
 const fn mk_status(n: CFE_Status_t) -> Status {
     Status { status: n }

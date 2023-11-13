@@ -6,7 +6,7 @@
 use super::Status;
 use crate::cfe::{es::AppId, time::SysTime};
 use crate::sealed_traits;
-use cfs_sys::*;
+use crate::sys::*;
 use core::convert::TryFrom;
 use core::ffi::{c_char, c_void};
 use core::marker::PhantomData;
@@ -34,11 +34,11 @@ pub struct EventSender {
 /// This is the same as `CFE_EVS_BinFilter`.
 #[doc(alias = "CFE_EVS_BinFilter")]
 #[doc(inline)]
-pub use cfs_sys::CFE_EVS_BinFilter as BinFilter;
+pub use crate::sys::CFE_EVS_BinFilter as BinFilter;
 
 /// Values intended for use in the `Mask` field of [`BinFilter`].
 pub mod bin_filter {
-    use cfs_sys::*;
+    use crate::sys::*;
 
     /// Value for [`Mask`](`super::BinFilter::Mask`): all event messages are sent (until the event counter saturates).
     #[doc(alias = "CFE_EVS_NO_FILTER")]

@@ -1,4 +1,4 @@
-// Copyright (c) 2021-2022 The Pennsylvania State University and the project contributors.
+// Copyright (c) 2021-2023 The Pennsylvania State University and the project contributors.
 // SPDX-License-Identifier: Apache-2.0
 
 //! Safe, higher-level bindings to the APIs of
@@ -9,9 +9,10 @@
 #![cfg_attr(not(test), no_std)]
 #![warn(missing_docs)]
 
-extern crate cfs_sys;
 extern crate printf_wrap;
 extern crate psm;
+
+pub mod sys;
 
 pub mod cfe;
 pub mod osal;

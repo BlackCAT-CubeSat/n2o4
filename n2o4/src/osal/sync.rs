@@ -3,7 +3,7 @@
 
 //! Synchronization primitives.
 
-use cfs_sys::*;
+use crate::sys::*;
 
 use super::*;
 use crate::utils::CStrBuf;
