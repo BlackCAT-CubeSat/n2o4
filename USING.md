@@ -38,7 +38,8 @@ For example, on most Debian-like systems, you can run the following (as `root`):
 apt install libclang-[n]-dev libclang1-[n]
 ```
 
-where `[n]` is a sufficiently recent version of `clang` (at time of writing, it must be at least `5`).
+where `[n]` is some version of `clang` (generally, the newer the better,
+but [version 5 at minimum]).
 
 ## Build system additions
 
@@ -201,6 +202,7 @@ You can find a fully worked-out example of a Rust-using cFS application at
 [install rust]: https://www.rust-lang.org/tools/install
 [1]: https://rust-lang.github.io/rustup/concepts/channels.html
 [2]: https://doc.rust-lang.org/book/appendix-07-nightly-rust.html
+[version 5 at minimum]: https://rust-lang.github.io/rust-bindgen/requirements.html
 [a little configuration]: https://doc.rust-lang.org/cargo/reference/environment-variables.html#environment-variables-cargo-reads
 [shared compile caches]: https://doc.rust-lang.org/cargo/guide/build-cache.html#shared-cache
 [sccache]: https://github.com/mozilla/sccache
