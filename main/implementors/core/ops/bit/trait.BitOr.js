@@ -1,3 +1,0 @@
-(function() {var implementors = {
-"n2o4":[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/ops/bit/trait.BitOr.html\" title=\"trait core::ops::bit::BitOr\">BitOr</a>&lt;<a class=\"struct\" href=\"n2o4/osal/file/struct.FileFlags.html\" title=\"struct n2o4::osal::file::FileFlags\">FileFlags</a>&gt; for <a class=\"struct\" href=\"n2o4/osal/file/struct.FileFlags.html\" title=\"struct n2o4::osal::file::FileFlags\">FileFlags</a>"]]
-};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
