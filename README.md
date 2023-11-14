@@ -41,12 +41,6 @@ Also, take a look at [a sample app] demonstrating the use of `n2o4`.
 * Have you written a new feature or a bug fix?
   Please make a [pull request].
 
-## `cfs-sys`
-
-Under the hood, `n2o4` uses [`cfs-sys`](cfs-sys)
-(not to be confused with the [crate of the same name] on crates.io),
-which provides mostly machine-generated, `unsafe` bindings to the cFS and OSAL APIs.
-
 ## License
 
 This crate is licensed under the [Apache License version 2.0](LICENSE).
