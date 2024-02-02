@@ -3,7 +3,7 @@
 
 //! Types and methods for interacting with files.
 
-use cfs_sys::*;
+use crate::sys::*;
 use core::convert::TryFrom;
 use core::ffi::{c_void, CStr};
 use core::ops::{BitOr, BitOrAssign, Deref, DerefMut};

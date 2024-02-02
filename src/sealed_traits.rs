@@ -8,12 +8,12 @@ pub trait FilterSchemeSealed {}
 
 /// Sealing trait for [`SocketDomain`](crate::osal::socket::SocketDomain).
 pub trait SocketDomainSealed {
-    const DOMAIN: cfs_sys::OS_SocketDomain_t;
+    const DOMAIN: crate::sys::OS_SocketDomain_t;
 }
 
 /// Sealing trait for [`SocketType`](crate::osal::socket::SocketType).
 pub trait SocketTypeSealed {
-    const SOCK_TYPE: cfs_sys::OS_SocketType_t;
+    const SOCK_TYPE: crate::sys::OS_SocketType_t;
 }
 
 /// Sealing trait for [`SocketRole`](crate::osal::socket::SocketRole).

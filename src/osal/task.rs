@@ -3,7 +3,7 @@
 
 //! Task-related APIs.
 
-use cfs_sys::*;
+use crate::sys::*;
 use core::ffi::CStr;
 
 use super::*;
@@ -111,7 +111,7 @@ impl TryFrom<ObjectId> for Task {
 /// This is the same as `osal_priority_t`.
 #[doc(alias = "osal_priority_t")]
 #[doc(inline)]
-pub use cfs_sys::osal_priority_t as TaskPriority;
+pub use crate::sys::osal_priority_t as TaskPriority;
 
 /// Information about an OSAL task.
 ///

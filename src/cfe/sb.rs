@@ -8,14 +8,14 @@ use core::marker::PhantomData;
 
 use super::msg::{Message, MsgType};
 use super::Status;
-use cfs_sys::*;
+use crate::sys::*;
 
 /// The numeric value of a [message ID](`MsgId`).
 ///
 /// This is the same as `CFE_SB_MsgId_Atom_t`.
 #[doc(alias = "CFG_SB_MsgId_Atom_t")]
 #[doc(inline)]
-pub use cfs_sys::CFE_SB_MsgId_Atom_t as MsgId_Atom;
+pub use crate::sys::CFE_SB_MsgId_Atom_t as MsgId_Atom;
 
 /// An encoded message ID.
 ///

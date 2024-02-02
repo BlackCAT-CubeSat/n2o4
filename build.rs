@@ -1,4 +1,4 @@
-// Copyright (c) 2021-2022 The Pennsylvania State University and the project contributors.
+// Copyright (c) 2021-2023 The Pennsylvania State University and the project contributors.
 // SPDX-License-Identifier: Apache-2.0
 
 extern crate bindgen;
@@ -11,10 +11,11 @@ fn main() {
     let in_dir = env_unwrap("CARGO_MANIFEST_DIR");
     let out_dir = env_unwrap("OUT_DIR");
 
-    let api_header = pb(&[&in_dir, "cfs-api.h"]).to_string_unwrap();
-    let shims_header = pb(&[&in_dir, "cfs-shims.h"]).to_string_unwrap();
+    let api_header = pb(&[&in_dir, "c-src", "cfs-api.h"]).to_string_unwrap();
+    let shims_header = pb(&[&in_dir, "c-src", "cfs-shims.h"]).to_string_unwrap();
+    let shims_c = pb(&[&in_dir, "c-src", "cfs-shims.c"]).to_string_unwrap();
+
     let out_file = pb(&[&out_dir, "cfs-all.rs"]).to_string_unwrap();
-    let shims_c = pb(&[&out_dir, "cfs-shims.c"]).to_string_unwrap();
 
     for f in [&api_header, &shims_header, &shims_c] {
         println!("cargo:rerun-if-changed={}", f);
@@ -56,7 +57,7 @@ fn main() {
         builder.flag(opt);
     }
 
-    builder.file("cfs-shims.c").compile("cfs-shims");
+    builder.file(&shims_c).compile("cfs-shims");
 }
 
 fn env_unwrap(key: &str) -> String {

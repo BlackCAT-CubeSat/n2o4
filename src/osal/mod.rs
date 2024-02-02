@@ -3,7 +3,7 @@
 
 //! OSAL APIs.
 
-use cfs_sys::*;
+use crate::sys;
 use core::ffi::c_ulong;
 
 use crate::utils::NegativeI32;
@@ -20,7 +20,7 @@ pub mod task;
 /// The maximum length of strings for names of many OSAL objects.
 ///
 /// The length includes the null terminator.
-pub const MAX_NAME_LEN: usize = OS_MAX_API_NAME as usize;
+pub const MAX_NAME_LEN: usize = sys::OS_MAX_API_NAME as usize;
 
 /// An error code, as returned by many OSAL API functions.
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
@@ -39,7 +39,7 @@ pub struct OsalError {
 #[doc(alias = "OS_time_t")]
 #[derive(Clone, Copy, Debug)]
 pub struct OSTime {
-    pub(crate) tm: OS_time_t,
+    pub(crate) tm: sys::OS_time_t,
 }
 
 /// A time interval.
@@ -52,7 +52,7 @@ pub struct OSTime {
 #[doc(alias = "OS_time_t")]
 #[derive(Clone, Copy, Debug)]
 pub struct OSTimeInterval {
-    pub(crate) int: OS_time_t,
+    pub(crate) int: sys::OS_time_t,
 }
 
 /// Methods in common between [`OSTime`] and [`OSTimeInterval`].
@@ -71,7 +71,7 @@ macro_rules! time_methods {
         #[doc(alias = $c_from)]
         #[inline]
         pub fn $name_from(seconds: i64, $fraction_lower: u32) -> Self {
-            let tm = unsafe { $wrapped_function_from(seconds, $fraction_lower) };
+            let tm = unsafe { sys::$wrapped_function_from(seconds, $fraction_lower) };
             Self { $field: tm }
         }
 
@@ -84,7 +84,7 @@ macro_rules! time_methods {
         #[doc(alias = $c_total)]
         #[inline]
         pub fn $name_total(&self) -> i64 {
-            unsafe { $wrapped_function_total(self.$field) }
+            unsafe { sys::$wrapped_function_total(self.$field) }
         }
         )?
 
@@ -96,7 +96,7 @@ macro_rules! time_methods {
         #[doc(alias = $c_part)]
         #[inline]
         pub fn $name_part(&self) -> u32 {
-            unsafe { $wrapped_function_part(self.$field) }
+            unsafe { sys::$wrapped_function_part(self.$field) }
         }
     };
     ($t:ident, $field:ident, $term:literal) => {
@@ -136,7 +136,7 @@ macro_rules! time_methods {
             #[doc(alias = "OS_TimeGetTotalSeconds")]
             #[inline]
             pub fn total_seconds(&self) -> i64 {
-                unsafe { SHIM_OS_TimeGetTotalSeconds(self.$field) }
+                unsafe { sys::SHIM_OS_TimeGetTotalSeconds(self.$field) }
             }
 
             #[doc = concat!(
@@ -147,16 +147,16 @@ macro_rules! time_methods {
             #[doc(alias = "OS_TimeGetFractionalPart")]
             #[inline]
             pub fn fractional_part(&self) -> i64 {
-                unsafe { SHIM_OS_TimeGetFractionalPart(self.$field) }
+                unsafe { sys::SHIM_OS_TimeGetFractionalPart(self.$field) }
             }
 
             #[inline]
-            const fn as_os_time(&self) -> OS_time_t {
+            const fn as_os_time(&self) -> sys::OS_time_t {
                 self.$field
             }
 
             #[inline]
-            const fn from_os_time(tm: OS_time_t) -> Self {
+            const fn from_os_time(tm: sys::OS_time_t) -> Self {
                 Self { $field: tm }
             }
         }
@@ -210,7 +210,7 @@ macro_rules! arith_impl {
 
 #[rustfmt::skip]
 mod time_arith_impls {
-    use cfs_sys::*;
+    use crate::sys::*;
     use core::ops::{Add, Sub};
     use super::*;
 
@@ -229,7 +229,7 @@ mod time_arith_impls {
 #[doc(alias = "osal_id_t")]
 #[derive(Clone, Copy, Debug)]
 pub struct ObjectId {
-    id: osal_id_t,
+    id: sys::osal_id_t,
 }
 
 impl ObjectId {
@@ -237,7 +237,9 @@ impl ObjectId {
     ///
     /// Wraps `OS_OBJECT_ID_UNDEFINED`.
     #[doc(alias = "OS_OBJECT_ID_UNDEFINED")]
-    pub const UNDEFINED: ObjectId = ObjectId { id: X_OS_OBJECT_ID_UNDEFINED };
+    pub const UNDEFINED: ObjectId = ObjectId {
+        id: sys::X_OS_OBJECT_ID_UNDEFINED,
+    };
 
     /// Returns whether `self` refers to a defined resource.
     ///
@@ -245,7 +247,7 @@ impl ObjectId {
     #[doc(alias = "OS_ObjectIdDefined")]
     #[inline]
     pub fn is_defined(&self) -> bool {
-        unsafe { SHIM_OS_ObjectIdDefined(self.id) }
+        unsafe { sys::SHIM_OS_ObjectIdDefined(self.id) }
     }
 
     /// Returns the object type of `self` as a raw
@@ -254,8 +256,8 @@ impl ObjectId {
     /// Wraps `OS_IdentifyObject`.
     #[doc(alias = "OS_IdentifyObject")]
     #[inline]
-    pub(crate) fn obj_type(&self) -> osal_objtype_t {
-        unsafe { OS_IdentifyObject(self.id) }
+    pub(crate) fn obj_type(&self) -> sys::osal_objtype_t {
+        unsafe { sys::OS_IdentifyObject(self.id) }
     }
 }
 
@@ -265,7 +267,7 @@ impl From<c_ulong> for ObjectId {
     #[inline]
     fn from(val: c_ulong) -> ObjectId {
         ObjectId {
-            id: unsafe { SHIM_OS_ObjectIdFromInteger(val) },
+            id: unsafe { sys::SHIM_OS_ObjectIdFromInteger(val) },
         }
     }
 }
@@ -275,7 +277,7 @@ impl From<ObjectId> for c_ulong {
     #[doc(alias = "OS_ObjectIdToInteger")]
     #[inline]
     fn from(oid: ObjectId) -> c_ulong {
-        unsafe { SHIM_OS_ObjectIdToInteger(oid.id) }
+        unsafe { sys::SHIM_OS_ObjectIdToInteger(oid.id) }
     }
 }
 
@@ -284,7 +286,7 @@ impl PartialEq<Self> for ObjectId {
     #[doc(alias = "OS_ObjectIdEqual")]
     #[inline]
     fn eq(&self, other_id: &Self) -> bool {
-        unsafe { SHIM_OS_ObjectIdEqual(self.id, other_id.id) }
+        unsafe { sys::SHIM_OS_ObjectIdEqual(self.id, other_id.id) }
     }
 }
 

@@ -3,7 +3,7 @@
 
 //! Types and methods for interacting with network sockets.
 
-use cfs_sys::*;
+use crate::sys::*;
 use core::cell::Cell;
 use core::ffi::{c_char, c_void, CStr};
 use core::marker::PhantomData;

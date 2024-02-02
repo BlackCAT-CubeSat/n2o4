@@ -17,7 +17,7 @@ macro_rules! osal_err_consts {
         impl OsalError {
             $(
                 #[doc = concat!($doc, ".\n\nWraps `", stringify!($error_code), "`.")]
-                pub const $error_code: Self = err_or_panic(cfs_sys::$error_code);
+                pub const $error_code: Self = err_or_panic(crate::sys::$error_code);
             )+
         }
     };

@@ -43,11 +43,12 @@ but [version 5 at minimum]).
 
 ## Build system additions
 
-The `cfs-sys` crate,
-which provides the low-level bindings to the cFS APIs that `n2o4` uses,
+The build script,
+which generates the low-level bindings to the cFS APIs that `n2o4` uses,
 requires information about the C compiler used
 and the locations of the cFE and OSAL include files.
-In addition, generating Rustdocs for all the projects
+In addition, Cargo needs to be instructed to write output files
+to an appropriate place under the cFS project's `build/` directory.
 
 This all is handled by a couple of CMake files
 you can find in the `etc/` directory of this repository:
@@ -65,17 +66,19 @@ and the following line to `*_defs/arch_build_custom.cmake`:
 include("${MISSION_DEFS}/rust_cfs_app.cmake")
 ```
 
-When cross-compiling to a non-host CPU, or when you need custom compiler flags, you'll
+When cross-compiling to a non-host CPU, or when you need custom C compiler flags, you'll
 also need to set some variables in your toolchain file (`*_defs/toolchain-${CPU}.cmake`):
 
 ```cmake
 # The Rust target, as you would pass to rustc or Cargo through the --target option:
 SET(RUST_TARGET "armv7-unknown-linux-gnueabihf")
 
-# Any additional compiler flags to pass to the `cc` crate, used by `cfs-sys`:
+# Any additional compiler flags to pass to the `cc` crate,
+# which is used by `n2o4`'s build script:
 SET(RUST_CC_CFLAGS "-I/an/include/dir" "-DC_DEFINE" "-Wno-something")
 
-# Any additional compiler flags to pass to the `bindgen` crate, used by `cfs-sys`:
+# Any additional compiler flags to pass to the `bindgen` crate,
+# which is used by the build script:
 SET(RUST_BINDGEN_CFLAGS "-I/an/include/dir" "-DC_DEFINE" "-I/another/include_dir")
 ```
 
@@ -89,7 +92,7 @@ by default not sharing compilation artifacts
 even when they use the same version of the same crate.
 This can lead to fresh builds taking some
 time&mdash;a couple of minutes per app on a 2021-vintage laptop
-(though incremental rebuilds are typically much faster).
+(though incremental rebuilds are typically much faster&mdash;often a second or two).
 
 With [a little configuration], Cargo can support [shared compile caches], notably with [sccache].
 You can set the `RUSTC_WRAPPER_CMD` environment variable when CMake is run to enable its use, e.g.:
