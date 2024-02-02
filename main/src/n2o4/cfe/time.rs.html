@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `n2o4/src/cfe/time.rs`."><title>time.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="n2o4" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (ba7c7a301 2023-11-13)" data-channel="nightly" data-search-js="search-8fbf244ebcf71464.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-f06f02fd918e3bb3.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/cfe/time.rs`."><title>time.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="n2o4" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (11f32b73e 2024-01-31)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
+            <h2>Files</h2></div></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../../n2o4/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -181,12 +183,12 @@
 <a href="#181" id="181">181</a>
 <a href="#182" id="182">182</a>
 <a href="#183" id="183">183</a>
-</pre></div><pre class="rust"><code><span class="comment">// Copyright (c) 2021-2022 The Pennsylvania State University and the project contributors.
+</pre></div><pre class="rust"><code><span class="comment">// Copyright (c) 2021-2023 The Pennsylvania State University and the project contributors.
 // SPDX-License-Identifier: Apache-2.0
 
 </span><span class="doccomment">//! Time Services system.
 
-</span><span class="kw">use </span>cfs_sys::<span class="kw-2">*</span>;
+</span><span class="kw">use </span><span class="kw">crate</span>::sys::<span class="kw-2">*</span>;
 <span class="kw">use </span>core::cmp::Ordering;
 <span class="kw">use </span>core::ops::{Add, Sub};
 
@@ -195,37 +197,37 @@
         <span class="attr">#[doc = <span class="macro-nonterminal">$type_docstring</span>]
         </span><span class="doccomment">///
         /// Wraps `CFE_TIME_SysTime_t`.
-        </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_TIME_SysTime_t&quot;</span>)]
+        </span><span class="attr">#[doc(alias = <span class="string">"CFE_TIME_SysTime_t"</span>)]
         #[derive(Clone, Copy, Debug)]
         </span><span class="kw">pub struct </span><span class="macro-nonterminal">$name </span>{
             <span class="kw">pub</span>(<span class="kw">crate</span>) tm: CFE_TIME_SysTime_t,
         }
 
         <span class="kw">impl </span><span class="macro-nonterminal">$name </span>{
-            <span class="attr">#[doc = <span class="macro">concat!</span>(<span class="string">&quot;Creates a new `&quot;</span>, <span class="macro">stringify!</span>(<span class="macro-nonterminal">$name</span>), <span class="string">&quot;` with the specified seconds/subseconds count.&quot;</span>)]
+            <span class="attr">#[doc = <span class="macro">concat!</span>(<span class="string">"Creates a new `"</span>, <span class="macro">stringify!</span>(<span class="macro-nonterminal">$name</span>), <span class="string">"` with the specified seconds/subseconds count."</span>)]
             #[inline]
             </span><span class="kw">pub const fn </span>new(seconds: u32, subseconds: u32) -&gt; <span class="self">Self </span>{
                 <span class="self">Self </span>{ tm: CFE_TIME_SysTime_t { Seconds: seconds, Subseconds: subseconds } }
             }
 
-            <span class="attr">#[doc = <span class="macro">concat!</span>(<span class="string">&quot;Returns the number of whole seconds &quot;</span>, <span class="macro-nonterminal">$accessor_docstring</span>, <span class="string">&quot;.&quot;</span>)]
+            <span class="attr">#[doc = <span class="macro">concat!</span>(<span class="string">"Returns the number of whole seconds "</span>, <span class="macro-nonterminal">$accessor_docstring</span>, <span class="string">"."</span>)]
             #[inline]
             </span><span class="kw">pub const fn </span>seconds(<span class="self">self</span>) -&gt; u32 {
                 <span class="self">self</span>.tm.Seconds
             }
 
-            <span class="attr">#[doc = <span class="macro">concat!</span>(<span class="string">&quot;Returns the fractional number of seconds &quot;</span>, <span class="macro-nonterminal">$accessor_docstring</span>)]
+            <span class="attr">#[doc = <span class="macro">concat!</span>(<span class="string">"Returns the fractional number of seconds "</span>, <span class="macro-nonterminal">$accessor_docstring</span>)]
             </span><span class="doccomment">/// (in type-native units of 2&lt;sup&gt;&amp;#8722;32&lt;/sup&gt;&amp;nbsp;seconds).
             </span><span class="attr">#[inline]
             </span><span class="kw">pub const fn </span>subseconds(<span class="self">self</span>) -&gt; u32 {
                 <span class="self">self</span>.tm.Subseconds
             }
 
-            <span class="attr">#[doc = <span class="macro">concat!</span>(<span class="string">&quot;Returns the fractional number of seconds &quot;</span>, <span class="macro-nonterminal">$accessor_docstring</span>)]
+            <span class="attr">#[doc = <span class="macro">concat!</span>(<span class="string">"Returns the fractional number of seconds "</span>, <span class="macro-nonterminal">$accessor_docstring</span>)]
             </span><span class="doccomment">/// (in units of microseconds).
             ///
             /// Wraps `CFE_TIME_Sub2MicroSecs`.
-            </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_TIME_Sub2MicroSecs&quot;</span>)]
+            </span><span class="attr">#[doc(alias = <span class="string">"CFE_TIME_Sub2MicroSecs"</span>)]
             #[inline]
             </span><span class="kw">pub fn </span>microseconds(<span class="self">self</span>) -&gt; u32 {
                 <span class="kw">unsafe </span>{ CFE_TIME_Sub2MicroSecs(<span class="self">self</span>.tm.Subseconds) }
@@ -234,10 +236,10 @@
 
         <span class="doccomment">/// Wraps `CFE_TIME_Compare`.
         </span><span class="kw">impl </span>PartialEq <span class="kw">for </span><span class="macro-nonterminal">$name </span>{
-            <span class="attr">#[doc(alias = <span class="string">&quot;CFE_TIME_Compare&quot;</span>)]
+            <span class="attr">#[doc(alias = <span class="string">"CFE_TIME_Compare"</span>)]
             #[inline]
             </span><span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
-                cfs_sys::CFE_TIME_Compare_CFE_TIME_EQUAL == <span class="kw">unsafe </span>{ CFE_TIME_Compare(<span class="self">self</span>.tm, other.tm) }
+                <span class="kw">crate</span>::sys::CFE_TIME_Compare_CFE_TIME_EQUAL == <span class="kw">unsafe </span>{ CFE_TIME_Compare(<span class="self">self</span>.tm, other.tm) }
             }
         }
 
@@ -245,12 +247,12 @@
 
         <span class="doccomment">/// Wraps `CFE_TIME_Compare`.
         </span><span class="kw">impl </span>Ord <span class="kw">for </span><span class="macro-nonterminal">$name </span>{
-            <span class="attr">#[doc(alias = <span class="string">&quot;CFE_TIME_Compare&quot;</span>)]
+            <span class="attr">#[doc(alias = <span class="string">"CFE_TIME_Compare"</span>)]
             #[inline]
             </span><span class="kw">fn </span>cmp(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; Ordering {
                 <span class="kw">match unsafe </span>{ CFE_TIME_Compare(<span class="self">self</span>.tm, other.tm) } {
-                    cfs_sys::CFE_TIME_Compare_CFE_TIME_A_LT_B =&gt; Ordering::Less,
-                    cfs_sys::CFE_TIME_Compare_CFE_TIME_EQUAL =&gt; Ordering::Equal,
+                    <span class="kw">crate</span>::sys::CFE_TIME_Compare_CFE_TIME_A_LT_B =&gt; Ordering::Less,
+                    <span class="kw">crate</span>::sys::CFE_TIME_Compare_CFE_TIME_EQUAL =&gt; Ordering::Equal,
                     <span class="kw">_ </span>=&gt; Ordering::Greater,
                 }
             }
@@ -258,7 +260,7 @@
 
         <span class="doccomment">/// Wraps `CFE_TIME_Compare`.
         </span><span class="kw">impl </span>PartialOrd <span class="kw">for </span><span class="macro-nonterminal">$name </span>{
-            <span class="attr">#[doc(alias = <span class="string">&quot;CFE_TIME_Compare&quot;</span>)]
+            <span class="attr">#[doc(alias = <span class="string">"CFE_TIME_Compare"</span>)]
             #[inline]
             </span><span class="kw">fn </span>partial_cmp(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Ordering&gt; {
                 <span class="prelude-val">Some</span>(<span class="self">self</span>.cmp(other))
@@ -289,20 +291,20 @@
 }
 
 <span class="macro">cfe_time_type!</span>(SysTime:
-    <span class="string">&quot;A system time value, represented as seconds/subseconds since some epoch.&quot;</span>,
-    <span class="string">&quot;since the relevant epoch&quot;</span>,
+    <span class="string">"A system time value, represented as seconds/subseconds since some epoch."</span>,
+    <span class="string">"since the relevant epoch"</span>,
     <span class="kw">crate</span>::osal::OSTime
 );
 <span class="macro">cfe_time_type!</span>(DeltaTime:
-    <span class="string">&quot;An increment in time, represented in seconds/subseconds.&quot;</span>,
-    <span class="string">&quot;in the time delta&quot;</span>,
+    <span class="string">"An increment in time, represented in seconds/subseconds."</span>,
+    <span class="string">"in the time delta"</span>,
     <span class="kw">crate</span>::osal::OSTimeInterval
 );
 
 <span class="macro">macro_rules! </span>cfe_time_op {
     (<span class="macro-nonterminal">$</span><span class="kw">trait</span>:<span class="macro-nonterminal">ident $method</span>:ident <span class="macro-nonterminal">$wrapped</span>:ident <span class="macro-nonterminal">$wrapped_str</span>:literal : $(<span class="macro-nonterminal">$lhs</span>:ty , <span class="macro-nonterminal">$rhs</span>:ty =&gt; <span class="macro-nonterminal">$output</span>:ty),<span class="kw-2">*</span>) =&gt; {
         $(
-            <span class="attr">#[doc = <span class="macro">concat!</span>(<span class="string">&quot;Wraps `&quot;</span>, <span class="macro">stringify!</span>(<span class="macro-nonterminal">$wrapped</span>), <span class="string">&quot;`.&quot;</span>)]
+            <span class="attr">#[doc = <span class="macro">concat!</span>(<span class="string">"Wraps `"</span>, <span class="macro">stringify!</span>(<span class="macro-nonterminal">$wrapped</span>), <span class="string">"`."</span>)]
             </span><span class="kw">impl </span><span class="macro-nonterminal">$</span><span class="kw">trait</span>&lt;<span class="macro-nonterminal">$rhs</span>&gt; <span class="kw">for </span><span class="macro-nonterminal">$lhs </span>{
                 <span class="kw">type </span>Output = <span class="macro-nonterminal">$output</span>;
 
@@ -318,7 +320,7 @@
 
 <span class="attr">#[rustfmt::skip]
 </span><span class="macro">cfe_time_op! </span>{
-    Add add CFE_TIME_Add <span class="string">&quot;CFE_TIME_Add&quot; </span>:
+    Add add CFE_TIME_Add <span class="string">"CFE_TIME_Add" </span>:
     SysTime   , DeltaTime =&gt; SysTime,
     DeltaTime , SysTime   =&gt; SysTime,
     DeltaTime , DeltaTime =&gt; DeltaTime
@@ -326,7 +328,7 @@
 
 <span class="attr">#[rustfmt::skip]
 </span><span class="macro">cfe_time_op! </span>{
-    Sub sub CFE_TIME_Subtract <span class="string">&quot;CFE_TIME_Subtract&quot; </span>:
+    Sub sub CFE_TIME_Subtract <span class="string">"CFE_TIME_Subtract" </span>:
     SysTime   , SysTime   =&gt; DeltaTime,
     SysTime   , DeltaTime =&gt; SysTime,
     DeltaTime , DeltaTime =&gt; DeltaTime
@@ -336,7 +338,7 @@
 /// or returns `!0` if `microseconds` is over `999_999`.
 ///
 /// Wraps `CFE_TIME_Micro2SubSecs`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_TIME_Micro2SubSecs&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_TIME_Micro2SubSecs"</span>)]
 #[inline]
 </span><span class="kw">pub fn </span>micro_to_subsecs(microseconds: u32) -&gt; u32 {
     <span class="kw">unsafe </span>{ CFE_TIME_Micro2SubSecs(microseconds) }
@@ -345,7 +347,7 @@
 <span class="doccomment">/// Converts `subseconds` cFE sub-seconds (2&lt;sup&gt;&amp;#8722;32&lt;/sup&gt;&amp;nbsp;seconds) to microseconds.
 ///
 /// Wraps `CFE_TIME_Sub2MicroSecs`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_TIME_Sub2MicroSecs&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_TIME_Sub2MicroSecs"</span>)]
 #[inline]
 </span><span class="kw">pub fn </span>sub_to_microsecs(subseconds: u32) -&gt; u32 {
     <span class="kw">unsafe </span>{ CFE_TIME_Sub2MicroSecs(subseconds) }
@@ -358,7 +360,7 @@
 /// depending on mission configuration.
 ///
 /// Wraps `CFE_TIME_GetTime`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_TIME_GetTime&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_TIME_GetTime"</span>)]
 #[inline]
 </span><span class="kw">pub fn </span>get_time() -&gt; SysTime {
     <span class="kw">let </span>tm = <span class="kw">unsafe </span>{ CFE_TIME_GetTime() };

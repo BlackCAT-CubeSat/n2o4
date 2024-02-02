@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `n2o4/src/cfe/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="n2o4" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (ba7c7a301 2023-11-13)" data-channel="nightly" data-search-js="search-8fbf244ebcf71464.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-f06f02fd918e3bb3.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/cfe/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="n2o4" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (11f32b73e 2024-01-31)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
+            <h2>Files</h2></div></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../../n2o4/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -251,12 +253,12 @@
 <a href="#251" id="251">251</a>
 <a href="#252" id="252">252</a>
 <a href="#253" id="253">253</a>
-</pre></div><pre class="rust"><code><span class="comment">// Copyright (c) 2021-2022 The Pennsylvania State University and the project contributors.
+</pre></div><pre class="rust"><code><span class="comment">// Copyright (c) 2021-2023 The Pennsylvania State University and the project contributors.
 // SPDX-License-Identifier: Apache-2.0
 
 </span><span class="doccomment">//! cFE APIs.
 
-</span><span class="kw">use </span>cfs_sys::<span class="kw-2">*</span>;
+</span><span class="kw">use </span><span class="kw">crate</span>::sys::<span class="kw-2">*</span>;
 <span class="kw">use </span>core::ffi::c_ulong;
 
 <span class="kw">pub mod </span>es;
@@ -274,7 +276,7 @@
 <span class="doccomment">/// An ID to identify cFE-managed resources.
 ///
 /// Wraps `CFE_ResourceId_t`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ResourceId_t&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_ResourceId_t"</span>)]
 #[derive(Clone, Copy, Debug)]
 </span><span class="kw">pub struct </span>ResourceId {
     id: CFE_ResourceId_t,
@@ -284,7 +286,7 @@
     <span class="doccomment">/// Checks if a resource ID value is defined.
     ///
     /// Wraps `CFE_ResourceId_IsDefined`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ResourceId_IsDefined&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_ResourceId_IsDefined"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>is_defined(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="kw">unsafe </span>{ SHIM_CFE_ResourceId_IsDefined(<span class="self">self</span>.id) }
@@ -293,19 +295,19 @@
     <span class="doccomment">/// A value that represents an undefined/unused resource.
     ///
     /// Wraps `CFE_RESOURCEID_UNDEFINED`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_RESOURCEID_UNDEFINED&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_RESOURCEID_UNDEFINED"</span>)]
     </span><span class="kw">pub const </span>UNDEFINED: <span class="self">Self </span>= ResourceId { id: X_CFE_RESOURCEID_UNDEFINED };
 
     <span class="doccomment">/// A value that represents a reserved entry.
     ///
     /// Wraps `CFE_RESOURCEID_RESERVED`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_RESOURCEID_RESERVED&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_RESOURCEID_RESERVED"</span>)]
     </span><span class="kw">pub const </span>RESERVED: <span class="self">Self </span>= ResourceId { id: X_CFE_RESOURCEID_RESERVED };
 }
 
 <span class="doccomment">/// Wraps `CFE_ResourceId_Equal`.
 </span><span class="kw">impl </span>PartialEq&lt;ResourceId&gt; <span class="kw">for </span>ResourceId {
-    <span class="attr">#[doc(alias = <span class="string">&quot;CFE_ResourceId_Equal&quot;</span>)]
+    <span class="attr">#[doc(alias = <span class="string">"CFE_ResourceId_Equal"</span>)]
     #[inline]
     </span><span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>ResourceId) -&gt; bool {
         <span class="kw">unsafe </span>{ SHIM_CFE_ResourceId_Equal(<span class="self">self</span>.id, other.id) }
@@ -316,7 +318,7 @@
 
 <span class="doccomment">/// Wraps `CFE_ResourceId_FromInteger`.
 </span><span class="kw">impl </span>From&lt;c_ulong&gt; <span class="kw">for </span>ResourceId {
-    <span class="attr">#[doc(alias = <span class="string">&quot;CFE_ResourceId_FromInteger&quot;</span>)]
+    <span class="attr">#[doc(alias = <span class="string">"CFE_ResourceId_FromInteger"</span>)]
     #[inline]
     </span><span class="kw">fn </span>from(val: c_ulong) -&gt; ResourceId {
         <span class="kw">let </span>rid = <span class="kw">unsafe </span>{ SHIM_CFE_ResourceId_FromInteger(val) };
@@ -326,7 +328,7 @@
 
 <span class="doccomment">/// Wraps `CFE_ResourceId_ToInteger`.
 </span><span class="kw">impl </span>From&lt;ResourceId&gt; <span class="kw">for </span>c_ulong {
-    <span class="attr">#[doc(alias = <span class="string">&quot;CFE_ResourceId_ToInteger&quot;</span>)]
+    <span class="attr">#[doc(alias = <span class="string">"CFE_ResourceId_ToInteger"</span>)]
     #[inline]
     </span><span class="kw">fn </span>from(id: ResourceId) -&gt; c_ulong {
         <span class="kw">unsafe </span>{ SHIM_CFE_ResourceId_ToInteger(id.id) }
@@ -336,14 +338,14 @@
 <span class="doccomment">/// The numeric type corresponding to a [`Status`].
 ///
 /// This is the same as `CFE_Status_t`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_Status_t&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_Status_t"</span>)]
 #[doc(inline)]
-</span><span class="kw">pub use </span>cfs_sys::CFE_Status_t <span class="kw">as </span>CFE_Status;
+</span><span class="kw">pub use </span><span class="kw">crate</span>::sys::CFE_Status_t <span class="kw">as </span>CFE_Status;
 
 <span class="doccomment">/// A status-code type often used as a return type in this crate.
 ///
 /// Wraps `CFE_Status_t`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_Status_t&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_Status_t"</span>)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 </span><span class="kw">pub struct </span>Status {
     <span class="kw">pub</span>(<span class="kw">crate</span>) status: CFE_Status_t,
@@ -364,25 +366,25 @@
 }
 
 <span class="doccomment">/// The severity part of a [`Status`].
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_SEVERITY_BITMASK&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_SEVERITY_BITMASK"</span>)]
 #[repr(u32)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 </span><span class="kw">pub enum </span>StatusSeverity {
     <span class="doccomment">/// Operation completed successfully.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_SEVERITY_SUCCESS&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_SEVERITY_SUCCESS"</span>)]
     </span>Success = <span class="number">0b00</span>,
 
     <span class="doccomment">/// Operation not completed for non-error reasons, or completed with caveats.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_SEVERITY_INFO&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_SEVERITY_INFO"</span>)]
     </span>Informational = <span class="number">0b01</span>,
 
     <span class="doccomment">/// Operation failed.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_SEVERITY_ERROR&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_SEVERITY_ERROR"</span>)]
     </span>Error   = <span class="number">0b11</span>,
 }
 
 <span class="doccomment">/// The cFE service that generated a [`Status`].
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_SERVICE_BITMASK&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_SERVICE_BITMASK"</span>)]
 #[repr(u32)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 </span><span class="kw">pub enum </span>StatusServiceId {
@@ -391,31 +393,31 @@
     </span>NotCfe  = <span class="number">0b000</span>,
 
     <span class="doccomment">/// Event service.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_EVENTS_SERVICE&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_EVENTS_SERVICE"</span>)]
     </span>EVS     = <span class="number">0b001</span>,
 
     <span class="doccomment">/// Executive service.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_EXECUTIVE_SERVICE&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_EXECUTIVE_SERVICE"</span>)]
     </span>ES      = <span class="number">0b010</span>,
 
     <span class="doccomment">/// File service.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_FILE_SERVICE&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_FILE_SERVICE"</span>)]
     </span>FS      = <span class="number">0b011</span>,
 
     <span class="doccomment">/// Generic service.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_GENERIC_SERVICE&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_GENERIC_SERVICE"</span>)]
     </span>Generic = <span class="number">0b100</span>,
 
     <span class="doccomment">/// Software Bus service.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_SOFTWARE_BUS_SERVICE&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_SOFTWARE_BUS_SERVICE"</span>)]
     </span>SB      = <span class="number">0b101</span>,
 
     <span class="doccomment">/// Table service.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_TABLE_SERVICE&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_TABLE_SERVICE"</span>)]
     </span>TBL     = <span class="number">0b110</span>,
 
     <span class="doccomment">/// Time service.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_TIME_SERVICE&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_TIME_SERVICE"</span>)]
     </span>TIME    = <span class="number">0b111</span>,
 }
 
@@ -440,8 +442,8 @@
         Status { status: n <span class="kw">as </span>CFE_Status_t }
     }
 
-    <span class="doccomment">/// Returns the status&#39;s severity.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_SEVERITY_BITMASK&quot;</span>)]
+    <span class="doccomment">/// Returns the status's severity.
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_SEVERITY_BITMASK"</span>)]
     #[inline]
     </span><span class="kw">pub const fn </span>severity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; StatusSeverity {
         <span class="kw">use </span>StatusSeverity::<span class="kw-2">*</span>;
@@ -454,7 +456,7 @@
     }
 
     <span class="doccomment">/// Returns the cFE service that generated this status.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_SERVICE_BITMASK&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_SERVICE_BITMASK"</span>)]
     #[inline]
     </span><span class="kw">pub const fn </span>service(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; StatusServiceId {
         <span class="kw">use </span>StatusServiceId::<span class="kw-2">*</span>;
@@ -503,5 +505,5 @@
 
 <span class="doccomment">/// Format string for using a Rust [`str`] in
 /// [`printf(3)`](https://www.freebsd.org/cgi/man.cgi?printf%283%29)-style C functions.
-</span><span class="kw">const </span>RUST_STR_FMT: NullString = <span class="macro">null_str!</span>(<span class="string">&quot;%.*s&quot;</span>);
+</span><span class="kw">const </span>RUST_STR_FMT: NullString = <span class="macro">null_str!</span>(<span class="string">"%.*s"</span>);
 </code></pre></div></section></main></body></html>

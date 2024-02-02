@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `n2o4/src/osal/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="n2o4" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (ba7c7a301 2023-11-13)" data-channel="nightly" data-search-js="search-8fbf244ebcf71464.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-f06f02fd918e3bb3.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/osal/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="n2o4" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (11f32b73e 2024-01-31)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
+            <h2>Files</h2></div></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../../n2o4/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -302,12 +304,14 @@
 <a href="#302" id="302">302</a>
 <a href="#303" id="303">303</a>
 <a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright (c) 2021-2023 The Pennsylvania State University and the project contributors.
 // SPDX-License-Identifier: Apache-2.0
 
 </span><span class="doccomment">//! OSAL APIs.
 
-</span><span class="kw">use </span>cfs_sys::<span class="kw-2">*</span>;
+</span><span class="kw">use </span><span class="kw">crate</span>::sys;
 <span class="kw">use </span>core::ffi::c_ulong;
 
 <span class="kw">use </span><span class="kw">crate</span>::utils::NegativeI32;
@@ -324,7 +328,7 @@
 </span><span class="doccomment">/// The maximum length of strings for names of many OSAL objects.
 ///
 /// The length includes the null terminator.
-</span><span class="kw">pub const </span>MAX_NAME_LEN: usize = OS_MAX_API_NAME <span class="kw">as </span>usize;
+</span><span class="kw">pub const </span>MAX_NAME_LEN: usize = sys::OS_MAX_API_NAME <span class="kw">as </span>usize;
 
 <span class="doccomment">/// An error code, as returned by many OSAL API functions.
 </span><span class="attr">#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
@@ -340,10 +344,10 @@
 /// we separate the two for greater clarity as to which is meant.
 ///
 /// Wraps `OS_time_t`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;OS_time_t&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"OS_time_t"</span>)]
 #[derive(Clone, Copy, Debug)]
 </span><span class="kw">pub struct </span>OSTime {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) tm: OS_time_t,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) tm: sys::OS_time_t,
 }
 
 <span class="doccomment">/// A time interval.
@@ -353,10 +357,10 @@
 /// we separate the two for greater clarity as to which is meant.
 ///
 /// Wraps `OS_time_t`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;OS_time_t&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"OS_time_t"</span>)]
 #[derive(Clone, Copy, Debug)]
 </span><span class="kw">pub struct </span>OSTimeInterval {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) int: OS_time_t,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) int: sys::OS_time_t,
 }
 
 <span class="doccomment">/// Methods in common between [`OSTime`] and [`OSTimeInterval`].
@@ -368,99 +372,99 @@
         $(, <span class="macro-nonterminal">$name_total</span>:ident, <span class="macro-nonterminal">$wrapped_function_total</span>:ident, <span class="macro-nonterminal">$c_total</span>:literal)<span class="question-mark">?
     </span>) =&gt; {
         <span class="attr">#[doc = <span class="macro">concat!</span>(
-            <span class="string">&quot;Creates the &quot;</span>, <span class="macro-nonterminal">$term</span>, <span class="string">&quot; with the specified (seconds, &quot;</span>, <span class="macro">stringify!</span>(<span class="macro-nonterminal">$fraction_lower</span>), <span class="string">&quot;).\n&quot;</span>,
-            <span class="string">&quot;\n&quot;</span>,
-            <span class="string">&quot;Wraps `&quot;</span>, <span class="macro-nonterminal">$c_from</span>, <span class="string">&quot;`.\n&quot;</span>,
+            <span class="string">"Creates the "</span>, <span class="macro-nonterminal">$term</span>, <span class="string">" with the specified (seconds, "</span>, <span class="macro">stringify!</span>(<span class="macro-nonterminal">$fraction_lower</span>), <span class="string">").\n"</span>,
+            <span class="string">"\n"</span>,
+            <span class="string">"Wraps `"</span>, <span class="macro-nonterminal">$c_from</span>, <span class="string">"`.\n"</span>,
         )]
         #[doc(alias = <span class="macro-nonterminal">$c_from</span>)]
         #[inline]
         </span><span class="kw">pub fn </span><span class="macro-nonterminal">$name_from</span>(seconds: i64, <span class="macro-nonterminal">$fraction_lower</span>: u32) -&gt; <span class="self">Self </span>{
-            <span class="kw">let </span>tm = <span class="kw">unsafe </span>{ <span class="macro-nonterminal">$wrapped_function_from</span>(seconds, <span class="macro-nonterminal">$fraction_lower</span>) };
+            <span class="kw">let </span>tm = <span class="kw">unsafe </span>{ sys::<span class="macro-nonterminal">$wrapped_function_from</span>(seconds, <span class="macro-nonterminal">$fraction_lower</span>) };
             <span class="self">Self </span>{ <span class="macro-nonterminal">$field</span>: tm }
         }
 
         $(
         <span class="attr">#[doc = <span class="macro">concat!</span>(
-            <span class="string">&quot;Converts the &quot;</span>, <span class="macro-nonterminal">$term</span>, <span class="string">&quot; into a count of &quot;</span>, <span class="macro">stringify!</span>(<span class="macro-nonterminal">$fraction_lower</span>), <span class="string">&quot;.\n&quot;</span>,
-            <span class="string">&quot;\n&quot;</span>,
-            <span class="string">&quot;Wraps `&quot;</span>, <span class="macro-nonterminal">$c_total</span>, <span class="string">&quot;`.\n&quot;</span>,
+            <span class="string">"Converts the "</span>, <span class="macro-nonterminal">$term</span>, <span class="string">" into a count of "</span>, <span class="macro">stringify!</span>(<span class="macro-nonterminal">$fraction_lower</span>), <span class="string">".\n"</span>,
+            <span class="string">"\n"</span>,
+            <span class="string">"Wraps `"</span>, <span class="macro-nonterminal">$c_total</span>, <span class="string">"`.\n"</span>,
         )]
         #[doc(alias = <span class="macro-nonterminal">$c_total</span>)]
         #[inline]
         </span><span class="kw">pub fn </span><span class="macro-nonterminal">$name_total</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; i64 {
-            <span class="kw">unsafe </span>{ <span class="macro-nonterminal">$wrapped_function_total</span>(<span class="self">self</span>.<span class="macro-nonterminal">$field</span>) }
+            <span class="kw">unsafe </span>{ sys::<span class="macro-nonterminal">$wrapped_function_total</span>(<span class="self">self</span>.<span class="macro-nonterminal">$field</span>) }
         }
         )<span class="question-mark">?
 
         </span><span class="attr">#[doc = <span class="macro">concat!</span>(
-            <span class="string">&quot;Returns the fractional-seconds part of the &quot;</span>, <span class="macro-nonterminal">$term</span>, <span class="string">&quot; in &quot;</span>, <span class="macro">stringify!</span>(<span class="macro-nonterminal">$fraction_lower</span>), <span class="string">&quot;.\n&quot;</span>,
-            <span class="string">&quot;\n&quot;</span>,
-            <span class="string">&quot;Wraps `&quot;</span>, <span class="macro-nonterminal">$c_part</span>, <span class="string">&quot;`.\n&quot;</span>,
+            <span class="string">"Returns the fractional-seconds part of the "</span>, <span class="macro-nonterminal">$term</span>, <span class="string">" in "</span>, <span class="macro">stringify!</span>(<span class="macro-nonterminal">$fraction_lower</span>), <span class="string">".\n"</span>,
+            <span class="string">"\n"</span>,
+            <span class="string">"Wraps `"</span>, <span class="macro-nonterminal">$c_part</span>, <span class="string">"`.\n"</span>,
         )]
         #[doc(alias = <span class="macro-nonterminal">$c_part</span>)]
         #[inline]
         </span><span class="kw">pub fn </span><span class="macro-nonterminal">$name_part</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u32 {
-            <span class="kw">unsafe </span>{ <span class="macro-nonterminal">$wrapped_function_part</span>(<span class="self">self</span>.<span class="macro-nonterminal">$field</span>) }
+            <span class="kw">unsafe </span>{ sys::<span class="macro-nonterminal">$wrapped_function_part</span>(<span class="self">self</span>.<span class="macro-nonterminal">$field</span>) }
         }
     };
     (<span class="macro-nonterminal">$t</span>:ident, <span class="macro-nonterminal">$field</span>:ident, <span class="macro-nonterminal">$term</span>:literal) =&gt; {
         <span class="kw">impl </span><span class="macro-nonterminal">$t </span>{
             <span class="macro">time_methods!</span>(@
                 nanoseconds, <span class="macro-nonterminal">$field</span>, <span class="macro-nonterminal">$term</span>,
-                from_nanoseconds, SHIM_OS_TimeAssembleFromNanoseconds, <span class="string">&quot;OS_TimeAssembleFromNanoseconds&quot;</span>,
-                nanoseconds_part, SHIM_OS_TimeGetNanosecondsPart, <span class="string">&quot;OS_TimeGetNanosecondsPart&quot;</span>,
-                total_nanoseconds, SHIM_OS_TimeGetTotalNanoseconds, <span class="string">&quot;OS_TimeGetTotalNanoseconds&quot;
+                from_nanoseconds, SHIM_OS_TimeAssembleFromNanoseconds, <span class="string">"OS_TimeAssembleFromNanoseconds"</span>,
+                nanoseconds_part, SHIM_OS_TimeGetNanosecondsPart, <span class="string">"OS_TimeGetNanosecondsPart"</span>,
+                total_nanoseconds, SHIM_OS_TimeGetTotalNanoseconds, <span class="string">"OS_TimeGetTotalNanoseconds"
             </span>);
 
             <span class="macro">time_methods!</span>(@
                 microseconds, <span class="macro-nonterminal">$field</span>, <span class="macro-nonterminal">$term</span>,
-                from_microseconds, SHIM_OS_TimeAssembleFromMicroseconds, <span class="string">&quot;OS_TimeAssembleFromMicroseconds&quot;</span>,
-                microseconds_part, SHIM_OS_TimeGetMicrosecondsPart, <span class="string">&quot;OS_TimeGetMicrosecondsPart&quot;</span>,
-                total_microseconds, SHIM_OS_TimeGetTotalMicroseconds, <span class="string">&quot;OS_TimeGetTotalMicroseconds&quot;
+                from_microseconds, SHIM_OS_TimeAssembleFromMicroseconds, <span class="string">"OS_TimeAssembleFromMicroseconds"</span>,
+                microseconds_part, SHIM_OS_TimeGetMicrosecondsPart, <span class="string">"OS_TimeGetMicrosecondsPart"</span>,
+                total_microseconds, SHIM_OS_TimeGetTotalMicroseconds, <span class="string">"OS_TimeGetTotalMicroseconds"
             </span>);
 
             <span class="macro">time_methods!</span>(@
                 milliseconds, <span class="macro-nonterminal">$field</span>, <span class="macro-nonterminal">$term</span>,
-                from_milliseconds, SHIM_OS_TimeAssembleFromMilliseconds, <span class="string">&quot;OS_TimeAssembleFromMilliseconds&quot;</span>,
-                milliseconds_part, SHIM_OS_TimeGetMillisecondsPart, <span class="string">&quot;OS_TimeGetMillisecondsPart&quot;</span>,
-                total_milliseconds, SHIM_OS_TimeGetTotalMilliseconds, <span class="string">&quot;OS_TimeGetTotalMilliseconds&quot;
+                from_milliseconds, SHIM_OS_TimeAssembleFromMilliseconds, <span class="string">"OS_TimeAssembleFromMilliseconds"</span>,
+                milliseconds_part, SHIM_OS_TimeGetMillisecondsPart, <span class="string">"OS_TimeGetMillisecondsPart"</span>,
+                total_milliseconds, SHIM_OS_TimeGetTotalMilliseconds, <span class="string">"OS_TimeGetTotalMilliseconds"
             </span>);
 
             <span class="macro">time_methods!</span>(@
                 subseconds, <span class="macro-nonterminal">$field</span>, <span class="macro-nonterminal">$term</span>,
-                from_subseconds, SHIM_OS_TimeAssembleFromSubseconds, <span class="string">&quot;OS_TimeAssembleFromSubseconds&quot;</span>,
-                subseconds_part, SHIM_OS_TimeGetSubsecondsPart, <span class="string">&quot;OS_TimeGetSubsecondsPart&quot;
+                from_subseconds, SHIM_OS_TimeAssembleFromSubseconds, <span class="string">"OS_TimeAssembleFromSubseconds"</span>,
+                subseconds_part, SHIM_OS_TimeGetSubsecondsPart, <span class="string">"OS_TimeGetSubsecondsPart"
             </span>);
 
             <span class="attr">#[doc = <span class="macro">concat!</span>(
-                <span class="string">&quot;Converts the &quot;</span>, <span class="macro-nonterminal">$term</span>, <span class="string">&quot; into a count of seconds.\n&quot;</span>,
-                <span class="string">&quot;\n&quot;</span>,
-                <span class="string">&quot;Wraps `OS_TimeGetTotalSeconds`.\n&quot;
+                <span class="string">"Converts the "</span>, <span class="macro-nonterminal">$term</span>, <span class="string">" into a count of seconds.\n"</span>,
+                <span class="string">"\n"</span>,
+                <span class="string">"Wraps `OS_TimeGetTotalSeconds`.\n"
             </span>)]
-            #[doc(alias = <span class="string">&quot;OS_TimeGetTotalSeconds&quot;</span>)]
+            #[doc(alias = <span class="string">"OS_TimeGetTotalSeconds"</span>)]
             #[inline]
             </span><span class="kw">pub fn </span>total_seconds(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; i64 {
-                <span class="kw">unsafe </span>{ SHIM_OS_TimeGetTotalSeconds(<span class="self">self</span>.<span class="macro-nonterminal">$field</span>) }
+                <span class="kw">unsafe </span>{ sys::SHIM_OS_TimeGetTotalSeconds(<span class="self">self</span>.<span class="macro-nonterminal">$field</span>) }
             }
 
             <span class="attr">#[doc = <span class="macro">concat!</span>(
-                <span class="string">&quot;Returns the fractional-seconds part of the &quot;</span>, <span class="macro-nonterminal">$term</span>, <span class="string">&quot; in (non-standardized) ticks.\n&quot;</span>,
-                <span class="string">&quot;\n&quot;</span>,
-                <span class="string">&quot;Wraps `OS_TimeGetFractionalPart`.\n&quot;
+                <span class="string">"Returns the fractional-seconds part of the "</span>, <span class="macro-nonterminal">$term</span>, <span class="string">" in (non-standardized) ticks.\n"</span>,
+                <span class="string">"\n"</span>,
+                <span class="string">"Wraps `OS_TimeGetFractionalPart`.\n"
             </span>)]
-            #[doc(alias = <span class="string">&quot;OS_TimeGetFractionalPart&quot;</span>)]
+            #[doc(alias = <span class="string">"OS_TimeGetFractionalPart"</span>)]
             #[inline]
             </span><span class="kw">pub fn </span>fractional_part(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; i64 {
-                <span class="kw">unsafe </span>{ SHIM_OS_TimeGetFractionalPart(<span class="self">self</span>.<span class="macro-nonterminal">$field</span>) }
+                <span class="kw">unsafe </span>{ sys::SHIM_OS_TimeGetFractionalPart(<span class="self">self</span>.<span class="macro-nonterminal">$field</span>) }
             }
 
             <span class="attr">#[inline]
-            </span><span class="kw">const fn </span>as_os_time(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; OS_time_t {
+            </span><span class="kw">const fn </span>as_os_time(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; sys::OS_time_t {
                 <span class="self">self</span>.<span class="macro-nonterminal">$field
             </span>}
 
             <span class="attr">#[inline]
-            </span><span class="kw">const fn </span>from_os_time(tm: OS_time_t) -&gt; <span class="self">Self </span>{
+            </span><span class="kw">const fn </span>from_os_time(tm: sys::OS_time_t) -&gt; <span class="self">Self </span>{
                 <span class="self">Self </span>{ <span class="macro-nonterminal">$field</span>: tm }
             }
         }
@@ -490,13 +494,13 @@
     };
 }
 
-<span class="macro">time_methods!</span>(OSTime, tm, <span class="string">&quot;time&quot;</span>);
-<span class="macro">time_methods!</span>(OSTimeInterval, int, <span class="string">&quot;interval&quot;</span>);
+<span class="macro">time_methods!</span>(OSTime, tm, <span class="string">"time"</span>);
+<span class="macro">time_methods!</span>(OSTimeInterval, int, <span class="string">"interval"</span>);
 
 <span class="doccomment">/// Quick generation of an implementation of arithmetic for times, time intervals.
 </span><span class="macro">macro_rules! </span>arith_impl {
     (<span class="macro-nonterminal">$</span><span class="kw">trait</span>:<span class="macro-nonterminal">ident</span>, <span class="macro-nonterminal">$lhs</span>:ident, <span class="macro-nonterminal">$rhs</span>:ident, <span class="macro-nonterminal">$method</span>:ident, <span class="macro-nonterminal">$result</span>:ident, <span class="macro-nonterminal">$func</span>:ident, <span class="macro-nonterminal">$func_cname</span>:literal) =&gt; {
-        <span class="attr">#[doc = <span class="macro">concat!</span>(<span class="string">&quot;Wraps `&quot;</span>, <span class="macro-nonterminal">$func_cname</span>, <span class="string">&quot;`.&quot;</span>)]
+        <span class="attr">#[doc = <span class="macro">concat!</span>(<span class="string">"Wraps `"</span>, <span class="macro-nonterminal">$func_cname</span>, <span class="string">"`."</span>)]
         </span><span class="kw">impl </span><span class="macro-nonterminal">$</span><span class="kw">trait</span>&lt;<span class="macro-nonterminal">$rhs</span>&gt; <span class="kw">for </span><span class="macro-nonterminal">$lhs </span>{
             <span class="kw">type </span>Output = <span class="macro-nonterminal">$result</span>;
 
@@ -514,81 +518,83 @@
 
 <span class="attr">#[rustfmt::skip]
 </span><span class="kw">mod </span>time_arith_impls {
-    <span class="kw">use </span>cfs_sys::<span class="kw-2">*</span>;
+    <span class="kw">use </span><span class="kw">crate</span>::sys::<span class="kw-2">*</span>;
     <span class="kw">use </span>core::ops::{Add, Sub};
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
-    <span class="macro">arith_impl!</span>(Add, OSTime,         OSTimeInterval, add, OSTime,         SHIM_OS_TimeAdd, <span class="string">&quot;OS_TimeAdd&quot;</span>);
-    <span class="macro">arith_impl!</span>(Add, OSTimeInterval, OSTime,         add, OSTime,         SHIM_OS_TimeAdd, <span class="string">&quot;OS_TimeAdd&quot;</span>);
-    <span class="macro">arith_impl!</span>(Add, OSTimeInterval, OSTimeInterval, add, OSTimeInterval, SHIM_OS_TimeAdd, <span class="string">&quot;OS_TimeAdd&quot;</span>);
+    <span class="macro">arith_impl!</span>(Add, OSTime,         OSTimeInterval, add, OSTime,         SHIM_OS_TimeAdd, <span class="string">"OS_TimeAdd"</span>);
+    <span class="macro">arith_impl!</span>(Add, OSTimeInterval, OSTime,         add, OSTime,         SHIM_OS_TimeAdd, <span class="string">"OS_TimeAdd"</span>);
+    <span class="macro">arith_impl!</span>(Add, OSTimeInterval, OSTimeInterval, add, OSTimeInterval, SHIM_OS_TimeAdd, <span class="string">"OS_TimeAdd"</span>);
 
-    <span class="macro">arith_impl!</span>(Sub, OSTime,         OSTime,         sub, OSTimeInterval, SHIM_OS_TimeSubtract, <span class="string">&quot;OS_TimeSubtract&quot;</span>);
-    <span class="macro">arith_impl!</span>(Sub, OSTime,         OSTimeInterval, sub, OSTime,         SHIM_OS_TimeSubtract, <span class="string">&quot;OS_TimeSubtract&quot;</span>);
-    <span class="macro">arith_impl!</span>(Sub, OSTimeInterval, OSTimeInterval, sub, OSTimeInterval, SHIM_OS_TimeSubtract, <span class="string">&quot;OS_TimeSubtract&quot;</span>);
+    <span class="macro">arith_impl!</span>(Sub, OSTime,         OSTime,         sub, OSTimeInterval, SHIM_OS_TimeSubtract, <span class="string">"OS_TimeSubtract"</span>);
+    <span class="macro">arith_impl!</span>(Sub, OSTime,         OSTimeInterval, sub, OSTime,         SHIM_OS_TimeSubtract, <span class="string">"OS_TimeSubtract"</span>);
+    <span class="macro">arith_impl!</span>(Sub, OSTimeInterval, OSTimeInterval, sub, OSTimeInterval, SHIM_OS_TimeSubtract, <span class="string">"OS_TimeSubtract"</span>);
 }
 
 <span class="doccomment">/// An identifier for an object managed by OSAL.
 ///
 /// Wraps `osal_id_t`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;osal_id_t&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"osal_id_t"</span>)]
 #[derive(Clone, Copy, Debug)]
 </span><span class="kw">pub struct </span>ObjectId {
-    id: osal_id_t,
+    id: sys::osal_id_t,
 }
 
 <span class="kw">impl </span>ObjectId {
     <span class="doccomment">/// An object ID guaranteed never to refer to a valid resource.
     ///
     /// Wraps `OS_OBJECT_ID_UNDEFINED`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_OBJECT_ID_UNDEFINED&quot;</span>)]
-    </span><span class="kw">pub const </span>UNDEFINED: ObjectId = ObjectId { id: X_OS_OBJECT_ID_UNDEFINED };
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_OBJECT_ID_UNDEFINED"</span>)]
+    </span><span class="kw">pub const </span>UNDEFINED: ObjectId = ObjectId {
+        id: sys::X_OS_OBJECT_ID_UNDEFINED,
+    };
 
     <span class="doccomment">/// Returns whether `self` refers to a defined resource.
     ///
     /// Wraps `OS_ObjectIdDefined`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_ObjectIdDefined&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_ObjectIdDefined"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>is_defined(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="kw">unsafe </span>{ SHIM_OS_ObjectIdDefined(<span class="self">self</span>.id) }
+        <span class="kw">unsafe </span>{ sys::SHIM_OS_ObjectIdDefined(<span class="self">self</span>.id) }
     }
 
     <span class="doccomment">/// Returns the object type of `self` as a raw
     /// (non-Rustic) value.
     ///
     /// Wraps `OS_IdentifyObject`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_IdentifyObject&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_IdentifyObject"</span>)]
     #[inline]
-    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>obj_type(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; osal_objtype_t {
-        <span class="kw">unsafe </span>{ OS_IdentifyObject(<span class="self">self</span>.id) }
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>obj_type(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; sys::osal_objtype_t {
+        <span class="kw">unsafe </span>{ sys::OS_IdentifyObject(<span class="self">self</span>.id) }
     }
 }
 
 <span class="doccomment">/// Wraps `OS_ObjectIdFromInteger`.
 </span><span class="kw">impl </span>From&lt;c_ulong&gt; <span class="kw">for </span>ObjectId {
-    <span class="attr">#[doc(alias = <span class="string">&quot;OS_ObjectIdFromInteger&quot;</span>)]
+    <span class="attr">#[doc(alias = <span class="string">"OS_ObjectIdFromInteger"</span>)]
     #[inline]
     </span><span class="kw">fn </span>from(val: c_ulong) -&gt; ObjectId {
         ObjectId {
-            id: <span class="kw">unsafe </span>{ SHIM_OS_ObjectIdFromInteger(val) },
+            id: <span class="kw">unsafe </span>{ sys::SHIM_OS_ObjectIdFromInteger(val) },
         }
     }
 }
 
 <span class="doccomment">/// Wraps `OS_ObjectIdToInteger`.
 </span><span class="kw">impl </span>From&lt;ObjectId&gt; <span class="kw">for </span>c_ulong {
-    <span class="attr">#[doc(alias = <span class="string">&quot;OS_ObjectIdToInteger&quot;</span>)]
+    <span class="attr">#[doc(alias = <span class="string">"OS_ObjectIdToInteger"</span>)]
     #[inline]
     </span><span class="kw">fn </span>from(oid: ObjectId) -&gt; c_ulong {
-        <span class="kw">unsafe </span>{ SHIM_OS_ObjectIdToInteger(oid.id) }
+        <span class="kw">unsafe </span>{ sys::SHIM_OS_ObjectIdToInteger(oid.id) }
     }
 }
 
 <span class="doccomment">/// Wraps `OS_ObjectIdEqual`.
 </span><span class="kw">impl </span>PartialEq&lt;<span class="self">Self</span>&gt; <span class="kw">for </span>ObjectId {
-    <span class="attr">#[doc(alias = <span class="string">&quot;OS_ObjectIdEqual&quot;</span>)]
+    <span class="attr">#[doc(alias = <span class="string">"OS_ObjectIdEqual"</span>)]
     #[inline]
     </span><span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other_id: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
-        <span class="kw">unsafe </span>{ SHIM_OS_ObjectIdEqual(<span class="self">self</span>.id, other_id.id) }
+        <span class="kw">unsafe </span>{ sys::SHIM_OS_ObjectIdEqual(<span class="self">self</span>.id, other_id.id) }
     }
 }
 
@@ -599,9 +605,9 @@
 </span><span class="attr">#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 </span><span class="kw">pub struct </span>ObjectTypeConvertError {}
 
-<span class="doccomment">/// Utility function to convert a &quot;timeout or `None`&quot; option into an `i32`,
+<span class="doccomment">/// Utility function to convert a "timeout or `None`" option into an `i32`,
 /// as used by multiple OSAL functions as a timeout value
-/// (where negative values mean &quot;wait indefinitely&quot;).
+/// (where negative values mean "wait indefinitely").
 </span><span class="attr">#[inline]
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>as_timeout(timeout: <span class="prelude-ty">Option</span>&lt;u32&gt;) -&gt; i32 {
     timeout.map(|t| t.min(i32::MAX <span class="kw">as </span>u32) <span class="kw">as </span>i32).unwrap_or(-<span class="number">1</span>)

@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `n2o4/src/cfe/evs.rs`."><title>evs.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="n2o4" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (ba7c7a301 2023-11-13)" data-channel="nightly" data-search-js="search-8fbf244ebcf71464.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-f06f02fd918e3bb3.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/cfe/evs.rs`."><title>evs.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="n2o4" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (11f32b73e 2024-01-31)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
+            <h2>Files</h2></div></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../../n2o4/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -334,7 +336,7 @@
 </span><span class="kw">use </span><span class="kw">super</span>::Status;
 <span class="kw">use </span><span class="kw">crate</span>::cfe::{es::AppId, time::SysTime};
 <span class="kw">use </span><span class="kw">crate</span>::sealed_traits;
-<span class="kw">use </span>cfs_sys::<span class="kw-2">*</span>;
+<span class="kw">use </span><span class="kw">crate</span>::sys::<span class="kw-2">*</span>;
 <span class="kw">use </span>core::convert::TryFrom;
 <span class="kw">use </span>core::ffi::{c_char, c_void};
 <span class="kw">use </span>core::marker::PhantomData;
@@ -354,62 +356,62 @@
 /// For each event ID supplied to [`register`], EVS maintains a (saturating) counter
 /// which gets incremented after an event message with that ID is emitted
 /// by the application.
-/// This counter is binary AND&#39;ed with the `Mask` value for that filter ID.
+/// This counter is binary AND'ed with the `Mask` value for that filter ID.
 /// The message gets sent if (and only if) the result of the AND is zero.
 ///
 /// See the [`bin_filter`] module for some possible values of `Mask`.
 ///
 /// This is the same as `CFE_EVS_BinFilter`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_EVS_BinFilter&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_EVS_BinFilter"</span>)]
 #[doc(inline)]
-</span><span class="kw">pub use </span>cfs_sys::CFE_EVS_BinFilter <span class="kw">as </span>BinFilter;
+</span><span class="kw">pub use </span><span class="kw">crate</span>::sys::CFE_EVS_BinFilter <span class="kw">as </span>BinFilter;
 
 <span class="doccomment">/// Values intended for use in the `Mask` field of [`BinFilter`].
 </span><span class="kw">pub mod </span>bin_filter {
-    <span class="kw">use </span>cfs_sys::<span class="kw-2">*</span>;
+    <span class="kw">use </span><span class="kw">crate</span>::sys::<span class="kw-2">*</span>;
 
     <span class="doccomment">/// Value for [`Mask`](`super::BinFilter::Mask`): all event messages are sent (until the event counter saturates).
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_EVS_NO_FILTER&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_EVS_NO_FILTER"</span>)]
     </span><span class="kw">pub const </span>NO_FILTER: u16 = CFE_EVS_NO_FILTER <span class="kw">as </span>u16;
 
     <span class="doccomment">/// Value for [`Mask`](`super::BinFilter::Mask`): only the first event message is sent.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_EVS_FIRST_ONE_STOP&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_EVS_FIRST_ONE_STOP"</span>)]
     </span><span class="kw">pub const </span>FIRST_ONE_STOP: u16 = CFE_EVS_FIRST_ONE_STOP <span class="kw">as </span>u16;
 
     <span class="doccomment">/// Value for [`Mask`](`super::BinFilter::Mask`): only the first two event messages are sent.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_EVS_FIRST_TWO_STOP&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_EVS_FIRST_TWO_STOP"</span>)]
     </span><span class="kw">pub const </span>FIRST_TWO_STOP: u16 = CFE_EVS_FIRST_TWO_STOP <span class="kw">as </span>u16;
 
     <span class="doccomment">/// Value for [`Mask`](`super::BinFilter::Mask`): only the first four event messages are sent.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_EVS_FIRST_4_STOP&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_EVS_FIRST_4_STOP"</span>)]
     </span><span class="kw">pub const </span>FIRST_4_STOP: u16 = CFE_EVS_FIRST_4_STOP <span class="kw">as </span>u16;
 
     <span class="doccomment">/// Value for [`Mask`](`super::BinFilter::Mask`): only the first eight event messages are sent.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_EVS_FIRST_8_STOP&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_EVS_FIRST_8_STOP"</span>)]
     </span><span class="kw">pub const </span>FIRST_8_STOP: u16 = CFE_EVS_FIRST_8_STOP <span class="kw">as </span>u16;
 
     <span class="doccomment">/// Value for [`Mask`](`super::BinFilter::Mask`): only the first 16 event messages are sent.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_EVS_FIRST_16_STOP&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_EVS_FIRST_16_STOP"</span>)]
     </span><span class="kw">pub const </span>FIRST_16_STOP: u16 = CFE_EVS_FIRST_16_STOP <span class="kw">as </span>u16;
 
     <span class="doccomment">/// Value for [`Mask`](`super::BinFilter::Mask`): only the first 32 event messages are sent.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_EVS_FIRST_32_STOP&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_EVS_FIRST_32_STOP"</span>)]
     </span><span class="kw">pub const </span>FIRST_32_STOP: u16 = CFE_EVS_FIRST_32_STOP <span class="kw">as </span>u16;
 
     <span class="doccomment">/// Value for [`Mask`](`super::BinFilter::Mask`): only the first 64 event messages are sent.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_EVS_FIRST_64_STOP&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_EVS_FIRST_64_STOP"</span>)]
     </span><span class="kw">pub const </span>FIRST_64_STOP: u16 = CFE_EVS_FIRST_64_STOP <span class="kw">as </span>u16;
 
     <span class="doccomment">/// Value for [`Mask`](`super::BinFilter::Mask`): every other event message is sent.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_EVS_EVERY_OTHER_ONE&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_EVS_EVERY_OTHER_ONE"</span>)]
     </span><span class="kw">pub const </span>EVERY_OTHER_ONE: u16 = CFE_EVS_EVERY_OTHER_ONE <span class="kw">as </span>u16;
 
     <span class="doccomment">/// Value for [`Mask`](`super::BinFilter::Mask`): sends two messages, filters out two, then repeats.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_EVS_EVERY_OTHER_TWO&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_EVS_EVERY_OTHER_TWO"</span>)]
     </span><span class="kw">pub const </span>EVERY_OTHER_TWO: u16 = CFE_EVS_EVERY_OTHER_TWO <span class="kw">as </span>u16;
 
     <span class="doccomment">/// Value for [`Mask`](`super::BinFilter::Mask`): every fourth event message is sent.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_EVS_EVERY_FOURTH_ONE&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_EVS_EVERY_FOURTH_ONE"</span>)]
     </span><span class="kw">pub const </span>EVERY_FOURTH_ONE: u16 = CFE_EVS_EVERY_FOURTH_ONE <span class="kw">as </span>u16;
 }
 
@@ -432,12 +434,12 @@
 
 <span class="doccomment">/// Registers the application with event services.
 ///
-/// This needs to be called before sending event messages, so &quot;send an event&quot;
+/// This needs to be called before sending event messages, so "send an event"
 /// operations are implemented as methods on [`EventSender`],
 /// which is provided only by this function.
 ///
 /// Wraps `CFE_EVS_Register`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_EVS_Register&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_EVS_Register"</span>)]
 #[inline]
 </span><span class="kw">pub fn </span>register&lt;T: FilterScheme&gt;(filters: <span class="kw-2">&amp;</span>[T]) -&gt; <span class="prelude-ty">Result</span>&lt;EventSender, Status&gt; {
     <span class="kw">let </span>num_filters = <span class="kw">match </span>u16::try_from(filters.len()) {
@@ -456,25 +458,25 @@
 <span class="doccomment">/// The classification of an event message, analogous to the
 /// [syslog](https://en.wikipedia.org/wiki/Syslog)
 /// severity level.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_EVS_EventType&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_EVS_EventType"</span>)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[repr(u16)]
 #[non_exhaustive]
 </span><span class="kw">pub enum </span>EventType {
     <span class="doccomment">/// Events that are intended only for debugging, not nominal operations.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_EVS_EventType_DEBUG&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_EVS_EventType_DEBUG"</span>)]
     </span>Debug       = CFE_EVS_EventType_CFE_EVS_EventType_DEBUG <span class="kw">as </span>u16,
 
     <span class="doccomment">/// Events that identify a state change or action that is not an error.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_EVS_EventType_INFORMATION&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_EVS_EventType_INFORMATION"</span>)]
     </span>Information = CFE_EVS_EventType_CFE_EVS_EventType_INFORMATION <span class="kw">as </span>u16,
 
     <span class="doccomment">/// Events that identify an error but are not catastrophic.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_EVS_EventType_ERROR&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_EVS_EventType_ERROR"</span>)]
     </span>Error       = CFE_EVS_EventType_CFE_EVS_EventType_ERROR <span class="kw">as </span>u16,
 
     <span class="doccomment">/// Events that identify errors that are unrecoverable autonomously.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_EVS_EventType_CRITICAL&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_EVS_EventType_CRITICAL"</span>)]
     </span>Critical    = CFE_EVS_EventType_CFE_EVS_EventType_CRITICAL <span class="kw">as </span>u16,
 }
 
@@ -482,12 +484,12 @@
 </span><span class="macro">macro_rules! </span>send_impl {
     (@ <span class="macro-nonterminal">$doc_args</span>:expr, <span class="macro-nonterminal">$se</span>:ident, <span class="macro-nonterminal">$sewai</span>:ident, <span class="macro-nonterminal">$ste</span>:ident, ( $(<span class="macro-nonterminal">$t</span>:ident),* ), ( $(<span class="macro-nonterminal">$var</span>:ident),* )) =&gt; {
         <span class="attr">#[doc = <span class="macro">concat!</span>(
-            <span class="string">&quot;Generates a software event using a format string and &quot;</span>,
-            <span class="macro-nonterminal">$doc_args</span>, <span class="string">&quot;.\n&quot;</span>,
-            <span class="string">&quot;\n&quot;</span>,
-            <span class="string">&quot;Wraps `CFE_EVS_SendEvent`.\n&quot;</span>,
+            <span class="string">"Generates a software event using a format string and "</span>,
+            <span class="macro-nonterminal">$doc_args</span>, <span class="string">".\n"</span>,
+            <span class="string">"\n"</span>,
+            <span class="string">"Wraps `CFE_EVS_SendEvent`.\n"</span>,
         )]
-        #[doc(alias = <span class="string">&quot;CFE_EVS_SendEvent&quot;</span>)]
+        #[doc(alias = <span class="string">"CFE_EVS_SendEvent"</span>)]
         #[inline]
         </span><span class="kw">pub fn </span><span class="macro-nonterminal">$se</span>&lt;$(<span class="macro-nonterminal">$t</span>),<span class="kw-2">*</span>&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, event_id: u16, event_type: EventType, fmt: PrintfFmt&lt;($(<span class="macro-nonterminal">$t</span>,)<span class="kw-2">*</span>)&gt;, $(<span class="macro-nonterminal">$var</span>: <span class="macro-nonterminal">$t</span>),<span class="kw-2">*</span>) -&gt; Status
             <span class="kw">where </span>$(<span class="macro-nonterminal">$t</span>: PrintfArgument),* {
@@ -501,13 +503,13 @@
         }
 
         <span class="attr">#[doc = <span class="macro">concat!</span>(
-            <span class="string">&quot;Generates a software event (with the specified Application ID) &quot;</span>,
-            <span class="string">&quot;using a format string and &quot;</span>,
-            <span class="macro-nonterminal">$doc_args</span>, <span class="string">&quot;.\n&quot;</span>,
-            <span class="string">&quot;\n&quot;</span>,
-            <span class="string">&quot;Wraps `CFE_EVS_SendEventWithAppID`.\n&quot;</span>,
+            <span class="string">"Generates a software event (with the specified Application ID) "</span>,
+            <span class="string">"using a format string and "</span>,
+            <span class="macro-nonterminal">$doc_args</span>, <span class="string">".\n"</span>,
+            <span class="string">"\n"</span>,
+            <span class="string">"Wraps `CFE_EVS_SendEventWithAppID`.\n"</span>,
         )]
-        #[doc(alias = <span class="string">&quot;CFE_EVS_SendEventWithAppID&quot;</span>)]
+        #[doc(alias = <span class="string">"CFE_EVS_SendEventWithAppID"</span>)]
         #[inline]
         </span><span class="kw">pub fn </span><span class="macro-nonterminal">$sewai</span>&lt;$(<span class="macro-nonterminal">$t</span>),<span class="kw-2">*</span>&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, event_id: u16, event_type: EventType, app_id: AppId, fmt: PrintfFmt&lt;($(<span class="macro-nonterminal">$t</span>,)<span class="kw-2">*</span>)&gt;, $(<span class="macro-nonterminal">$var</span>: <span class="macro-nonterminal">$t</span>),<span class="kw-2">*</span>) -&gt; Status
             <span class="kw">where </span>$(<span class="macro-nonterminal">$t</span>: PrintfArgument),* {
@@ -521,13 +523,13 @@
         }
 
         <span class="attr">#[doc = <span class="macro">concat!</span>(
-            <span class="string">&quot;Generates a software event (with a specific time tag) &quot;</span>,
-            <span class="string">&quot;using a format string and &quot;</span>,
-            <span class="macro-nonterminal">$doc_args</span>, <span class="string">&quot;.\n&quot;</span>,
-            <span class="string">&quot;\n&quot;</span>,
-            <span class="string">&quot;Wraps `CFE_EVS_SendTimedEvent`.\n&quot;</span>,
+            <span class="string">"Generates a software event (with a specific time tag) "</span>,
+            <span class="string">"using a format string and "</span>,
+            <span class="macro-nonterminal">$doc_args</span>, <span class="string">".\n"</span>,
+            <span class="string">"\n"</span>,
+            <span class="string">"Wraps `CFE_EVS_SendTimedEvent`.\n"</span>,
         )]
-        #[doc(alias = <span class="string">&quot;CFE_EVS_SendTimedEvent&quot;</span>)]
+        #[doc(alias = <span class="string">"CFE_EVS_SendTimedEvent"</span>)]
         #[inline]
         </span><span class="kw">pub fn </span><span class="macro-nonterminal">$ste</span>&lt;$(<span class="macro-nonterminal">$t</span>),<span class="kw-2">*</span>&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, time: SysTime, event_id: u16, event_type: EventType, fmt: PrintfFmt&lt;($(<span class="macro-nonterminal">$t</span>,)<span class="kw-2">*</span>)&gt;, $(<span class="macro-nonterminal">$var</span>: <span class="macro-nonterminal">$t</span>),<span class="kw-2">*</span>) -&gt; Status
             <span class="kw">where </span>$(<span class="macro-nonterminal">$t</span>: PrintfArgument),* {
@@ -541,12 +543,12 @@
         }
     };
     (<span class="macro-nonterminal">$num</span>:expr, <span class="macro-nonterminal">$se</span>:ident, <span class="macro-nonterminal">$sewai</span>:ident, <span class="macro-nonterminal">$ste</span>:ident, ( $(<span class="macro-nonterminal">$t</span>:ident),* ), ( $(<span class="macro-nonterminal">$var</span>:ident),* )) =&gt; {
-        <span class="macro">send_impl!</span>(@ <span class="macro">concat!</span>(<span class="macro">stringify!</span>(<span class="macro-nonterminal">$num</span>), <span class="string">&quot; format arguments&quot;</span>),
+        <span class="macro">send_impl!</span>(@ <span class="macro">concat!</span>(<span class="macro">stringify!</span>(<span class="macro-nonterminal">$num</span>), <span class="string">" format arguments"</span>),
             <span class="macro-nonterminal">$se</span>, <span class="macro-nonterminal">$sewai</span>, <span class="macro-nonterminal">$ste</span>, ( $(<span class="macro-nonterminal">$t</span>),* ), ( $(<span class="macro-nonterminal">$var</span>),* )
         );
     };
     (<span class="macro-nonterminal">$se</span>:ident, <span class="macro-nonterminal">$sewai</span>:ident, <span class="macro-nonterminal">$ste</span>:ident, ( $(<span class="macro-nonterminal">$t</span>:ident),* ), ( $(<span class="macro-nonterminal">$var</span>:ident),* )) =&gt; {
-        <span class="macro">send_impl!</span>(@ <span class="string">&quot;1 format argument&quot;</span>,
+        <span class="macro">send_impl!</span>(@ <span class="string">"1 format argument"</span>,
             <span class="macro-nonterminal">$se</span>, <span class="macro-nonterminal">$sewai</span>, <span class="macro-nonterminal">$ste</span>, ( $(<span class="macro-nonterminal">$t</span>),* ), ( $(<span class="macro-nonterminal">$var</span>),* )
         );
     };
@@ -581,7 +583,7 @@
     /// will not get put into the event message.
     ///
     /// Wraps `CFE_EVS_SendEvent`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_EVS_SendEvent&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_EVS_SendEvent"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>send_event_str(<span class="kw-2">&amp;</span><span class="self">self</span>, event_id: u16, event_type: EventType, msg: <span class="kw-2">&amp;</span>str) -&gt; Status {
         <span class="kw">unsafe </span>{
@@ -603,7 +605,7 @@
     /// will not get put into the event message.
     ///
     /// Wraps `CFE_EVS_SendEventWithAppID`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_EVS_SendEventWithAppID&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_EVS_SendEventWithAppID"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>send_event_with_app_id_str(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
@@ -632,7 +634,7 @@
     /// will not get put into the event message.
     ///
     /// Wraps `CFE_EVS_SendTimedEvent`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_EVS_SendTimedEvent&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_EVS_SendTimedEvent"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>send_timed_event_str(
         <span class="kw-2">&amp;</span><span class="self">self</span>,

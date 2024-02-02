@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `n2o4/src/osal/sync.rs`."><title>sync.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="n2o4" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (ba7c7a301 2023-11-13)" data-channel="nightly" data-search-js="search-8fbf244ebcf71464.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-f06f02fd918e3bb3.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/osal/sync.rs`."><title>sync.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="n2o4" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (11f32b73e 2024-01-31)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
+            <h2>Files</h2></div></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../../n2o4/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -577,7 +579,7 @@
 
 </span><span class="doccomment">//! Synchronization primitives.
 
-</span><span class="kw">use </span>cfs_sys::<span class="kw-2">*</span>;
+</span><span class="kw">use </span><span class="kw">crate</span>::sys::<span class="kw-2">*</span>;
 
 <span class="kw">use super</span>::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::utils::CStrBuf;
@@ -586,7 +588,7 @@
 <span class="doccomment">/// A handle for a binary semaphore.
 ///
 /// Wraps `osal_id_t`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;osal_id_t&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"osal_id_t"</span>)]
 #[derive(Clone, Debug)]
 </span><span class="kw">pub struct </span>BinSem {
     <span class="kw">pub</span>(<span class="kw">crate</span>) id: osal_id_t,
@@ -597,7 +599,7 @@
     /// initial value `initial_value`, and default options; if successful, returns it.
     ///
     /// Wraps `OS_BinSemCreate`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_BinSemCreate&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_BinSemCreate"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>new&lt;S: AsRef&lt;CStr&gt; + <span class="question-mark">?</span>Sized&gt;(
         name: <span class="kw-2">&amp;</span>S,
@@ -621,7 +623,7 @@
     /// If an error occurred, returns `Err(err_code)`.
     ///
     /// Wraps `OS_BinSemGetIdByName`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_BinSemGetIdByName&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_BinSemGetIdByName"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>find_by_name&lt;S: AsRef&lt;CStr&gt; + <span class="question-mark">?</span>Sized&gt;(name: <span class="kw-2">&amp;</span>S) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt;, OsalError&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>id: osal_id_t = X_OS_OBJECT_ID_UNDEFINED;
@@ -642,7 +644,7 @@
     <span class="doccomment">/// Decrements the semaphore value, blocking until it is non-zero if needed.
     ///
     /// Wraps `OS_BinSemTake`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_BinSemTake&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_BinSemTake"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>take(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), OsalError&gt; {
         <span class="kw">unsafe </span>{ OS_BinSemTake(<span class="self">self</span>.id) }.as_osal_status()<span class="question-mark">?</span>;
@@ -657,7 +659,7 @@
     /// or `Err(err_code)` if an error occurred.
     ///
     /// Wraps `OS_BinSemTimedWait`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_BinSemTimedWait&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_BinSemTimedWait"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>timed_wait(<span class="kw-2">&amp;</span><span class="self">self</span>, timeout_ms: u32) -&gt; <span class="prelude-ty">Result</span>&lt;bool, OsalError&gt; {
         <span class="kw">match unsafe </span>{ OS_BinSemTimedWait(<span class="self">self</span>.id, timeout_ms) }.as_osal_status() {
@@ -670,7 +672,7 @@
     <span class="doccomment">/// Increments the semaphore value, waking up a blocked thread (if any).
     ///
     /// Wraps `OS_BinSemGive`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_BinSemGive&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_BinSemGive"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>give(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), OsalError&gt; {
         <span class="kw">unsafe </span>{ OS_BinSemGive(<span class="self">self</span>.id) }.as_osal_status()<span class="question-mark">?</span>;
@@ -681,7 +683,7 @@
     <span class="doccomment">/// Unblocks all tasks blocking on the semaphore without incrementing or decrementing its value.
     ///
     /// Wraps `OS_BinSemFlush`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_BinSemFlush&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_BinSemFlush"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>flush(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), OsalError&gt; {
         <span class="kw">unsafe </span>{ OS_BinSemFlush(<span class="self">self</span>.id) }.as_osal_status()<span class="question-mark">?</span>;
@@ -692,7 +694,7 @@
     <span class="doccomment">/// Deletes the binary semaphore.
     ///
     /// Wraps `OS_BinSemDelete`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_BinSemDelete&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_BinSemDelete"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>delete(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), OsalError&gt; {
         <span class="kw">unsafe </span>{ OS_BinSemDelete(<span class="self">self</span>.id) }.as_osal_status()<span class="question-mark">?</span>;
@@ -703,11 +705,11 @@
     <span class="doccomment">/// If successful, returns details about the binary semaphore.
     ///
     /// Wraps `OS_BinSemGetInfo`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_BinSemGetInfo&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_BinSemGetInfo"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>info(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;BinSemProperties, OsalError&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>props = OS_bin_sem_prop_t {
-            name:    [<span class="string">b&#39;\0&#39; </span><span class="kw">as </span>c_char; MAX_NAME_LEN],
+            name:    [<span class="string">b'\0' </span><span class="kw">as </span>c_char; MAX_NAME_LEN],
             creator: X_OS_OBJECT_ID_UNDEFINED,
             value:   <span class="number">0</span>,
         };
@@ -755,23 +757,23 @@
 <span class="doccomment">/// The properties associated with a [`BinSem`].
 ///
 /// Substitutes for `OS_bin_sem_prop_t`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;OS_bin_sem_prop_t&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"OS_bin_sem_prop_t"</span>)]
 #[derive(Debug)]
 </span><span class="kw">pub struct </span>BinSemProperties {
-    <span class="doccomment">/// The semaphore&#39;s name.
+    <span class="doccomment">/// The semaphore's name.
     </span><span class="kw">pub </span>name: CStrBuf&lt;{ MAX_NAME_LEN }&gt;,
 
-    <span class="doccomment">/// The semaphore&#39;s creator.
+    <span class="doccomment">/// The semaphore's creator.
     </span><span class="kw">pub </span>creator: ObjectId,
 
-    <span class="doccomment">/// The semaphore&#39;s value.
+    <span class="doccomment">/// The semaphore's value.
     </span><span class="kw">pub </span>value: i32,
 }
 
 <span class="doccomment">/// A handle for a counting semaphore.
 ///
 /// Wraps `osal_id_t`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;osal_id_t&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"osal_id_t"</span>)]
 #[derive(Clone, Debug)]
 </span><span class="kw">pub struct </span>CountSem {
     <span class="kw">pub</span>(<span class="kw">crate</span>) id: osal_id_t,
@@ -783,7 +785,7 @@
     /// if successful, returns a handle to it.
     ///
     /// Wraps `OS_CountSemCreate`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_CountSemCreate&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_CountSemCreate"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>new&lt;S: AsRef&lt;CStr&gt; + <span class="question-mark">?</span>Sized&gt;(
         sem_name: <span class="kw-2">&amp;</span>S,
@@ -807,7 +809,7 @@
     /// If an error occurred, returns `Err(err_code)`.
     ///
     /// Wraps `OS_CountSemGetIdByName`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_CountSemGetIdByName&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_CountSemGetIdByName"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>find_by_name&lt;S: AsRef&lt;CStr&gt; + <span class="question-mark">?</span>Sized&gt;(name: <span class="kw-2">&amp;</span>S) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt;, OsalError&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>id: osal_id_t = X_OS_OBJECT_ID_UNDEFINED;
@@ -828,7 +830,7 @@
     <span class="doccomment">/// Decrements the semaphore value, blocking until it is non-zero if needed.
     ///
     /// Wraps `OS_CountSemTake`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_CountSemTake&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_CountSemTake"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>take(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), OsalError&gt; {
         <span class="kw">unsafe </span>{ OS_CountSemTake(<span class="self">self</span>.id) }.as_osal_status()<span class="question-mark">?</span>;
@@ -843,7 +845,7 @@
     /// or `Err(err_code)` if an error occurred.
     ///
     /// Wraps `OS_CountSemTimedWait`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_CountSemTimedWait&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_CountSemTimedWait"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>timed_wait(<span class="kw-2">&amp;</span><span class="self">self</span>, timeout_ms: u32) -&gt; <span class="prelude-ty">Result</span>&lt;bool, OsalError&gt; {
         <span class="kw">match unsafe </span>{ OS_CountSemTimedWait(<span class="self">self</span>.id, timeout_ms) }.as_osal_status() {
@@ -856,7 +858,7 @@
     <span class="doccomment">/// Increments the semaphore value, waking up a blocked thread (if any).
     ///
     /// Wraps `OS_CountSemGive`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_CountSemGive&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_CountSemGive"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>give(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), OsalError&gt; {
         <span class="kw">unsafe </span>{ OS_CountSemGive(<span class="self">self</span>.id) }.as_osal_status()<span class="question-mark">?</span>;
@@ -867,7 +869,7 @@
     <span class="doccomment">/// Deletes the counting semaphore.
     ///
     /// Wraps `OS_CountSemDelete`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_CountSemDelete&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_CountSemDelete"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>delete(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), OsalError&gt; {
         <span class="kw">unsafe </span>{ OS_CountSemDelete(<span class="self">self</span>.id) }.as_osal_status()<span class="question-mark">?</span>;
@@ -878,11 +880,11 @@
     <span class="doccomment">/// If successful, returns details about the counting semaphore.
     ///
     /// Wraps `OS_CountSemGetInfo`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_CountSemGetInfo&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_CountSemGetInfo"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>info(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;CountSemProperties, OsalError&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>props = OS_count_sem_prop_t {
-            name:    [<span class="string">b&#39;\0&#39; </span><span class="kw">as </span>c_char; MAX_NAME_LEN],
+            name:    [<span class="string">b'\0' </span><span class="kw">as </span>c_char; MAX_NAME_LEN],
             creator: X_OS_OBJECT_ID_UNDEFINED,
             value:   <span class="number">0</span>,
         };
@@ -918,23 +920,23 @@
 <span class="doccomment">/// The properties associated with a [`CountSem`].
 ///
 /// Substitutes for `OS_count_sem_prop_t`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;OS_count_sem_prop_t&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"OS_count_sem_prop_t"</span>)]
 #[derive(Debug)]
 </span><span class="kw">pub struct </span>CountSemProperties {
-    <span class="doccomment">/// The semaphore&#39;s name.
+    <span class="doccomment">/// The semaphore's name.
     </span><span class="kw">pub </span>name: CStrBuf&lt;{ MAX_NAME_LEN }&gt;,
 
-    <span class="doccomment">/// The semaphore&#39;s creator.
+    <span class="doccomment">/// The semaphore's creator.
     </span><span class="kw">pub </span>creator: ObjectId,
 
-    <span class="doccomment">/// The semaphore&#39;s value.
+    <span class="doccomment">/// The semaphore's value.
     </span><span class="kw">pub </span>value: i32,
 }
 
 <span class="doccomment">/// A handle for a mutex semaphore.
 ///
 /// Wraps `osal_id_t`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;osal_id_t&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"osal_id_t"</span>)]
 #[derive(Clone, Debug)]
 </span><span class="kw">pub struct </span>MutSem {
     <span class="kw">pub</span>(<span class="kw">crate</span>) id: osal_id_t,
@@ -947,7 +949,7 @@
     /// Per the cFE Users Guide, mutexes are always created in the unlocked state.
     ///
     /// Wraps `OS_MutSemCreate`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_MutSemCreate&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_MutSemCreate"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>new&lt;S: AsRef&lt;CStr&gt; + <span class="question-mark">?</span>Sized&gt;(sem_name: <span class="kw-2">&amp;</span>S) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, OsalError&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>id: osal_id_t = X_OS_OBJECT_ID_UNDEFINED;
@@ -967,7 +969,7 @@
     /// If an error occurred, returns `Err(err_code)`.
     ///
     /// Wraps `OS_MutSemGetIdByName`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_MutSemGetIdByName&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_MutSemGetIdByName"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>find_by_name&lt;S: AsRef&lt;CStr&gt; + <span class="question-mark">?</span>Sized&gt;(name: <span class="kw-2">&amp;</span>S) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt;, OsalError&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>id: osal_id_t = X_OS_OBJECT_ID_UNDEFINED;
@@ -989,7 +991,7 @@
     /// Assuming nothing went wrong acquiring, runs the closure, then releases the mutex.
     ///
     /// Wraps `OS_MutSemTake` and `OS_MutSemGive`.
-    </span><span class="attr">#[doc(alias(<span class="string">&quot;OS_MutSemTake&quot;</span>, <span class="string">&quot;OS_MutSemGive&quot;</span>))]
+    </span><span class="attr">#[doc(alias(<span class="string">"OS_MutSemTake"</span>, <span class="string">"OS_MutSemGive"</span>))]
     #[inline]
     </span><span class="kw">pub fn </span>lock&lt;T, F: FnOnce() -&gt; T&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, closure: F) -&gt; <span class="prelude-ty">Result</span>&lt;T, OsalError&gt; {
         <span class="self">self</span>.take()<span class="question-mark">?</span>;
@@ -1015,7 +1017,7 @@
     </span><span class="doccomment">/// If successful, acquires the mutex; if the mutex is currently acquired, this thread will block until it does acquire it.
     ///
     /// Wraps `OS_MutSemTake`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_MutSemTake&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_MutSemTake"</span>)]
     #[inline]
     </span><span class="kw">fn </span>take(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), OsalError&gt; {
         <span class="kw">unsafe </span>{ OS_MutSemTake(<span class="self">self</span>.id) }.as_osal_status()<span class="question-mark">?</span>;
@@ -1027,7 +1029,7 @@
     </span><span class="doccomment">/// If successful, releases the mutex, unblocking a thread (if any) waiting to acquire it.
     ///
     /// Wraps `OS_MutSemGive`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_MutSemGive&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_MutSemGive"</span>)]
     #[inline]
     </span><span class="kw">fn </span>give(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), OsalError&gt; {
         <span class="kw">unsafe </span>{ OS_MutSemGive(<span class="self">self</span>.id) }.as_osal_status()<span class="question-mark">?</span>;
@@ -1038,7 +1040,7 @@
     <span class="doccomment">/// Deletes the mutex.
     ///
     /// Wraps `OS_MutSemDelete`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_MutSemDelete&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_MutSemDelete"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>delete(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), OsalError&gt; {
         <span class="kw">unsafe </span>{ OS_MutSemDelete(<span class="self">self</span>.id) }.as_osal_status()<span class="question-mark">?</span>;
@@ -1049,11 +1051,11 @@
     <span class="doccomment">/// If successful, returns details about the mutex.
     ///
     /// Wraps `OS_MutSemGetInfo`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_MutSemGetInfo&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_MutSemGetInfo"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>info(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;MutSemProperties, OsalError&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>info: OS_mut_sem_prop_t = OS_mut_sem_prop_t {
-            name:    [<span class="string">b&#39;\0&#39; </span><span class="kw">as </span>c_char; <span class="kw">super</span>::MAX_NAME_LEN],
+            name:    [<span class="string">b'\0' </span><span class="kw">as </span>c_char; <span class="kw">super</span>::MAX_NAME_LEN],
             creator: X_OS_OBJECT_ID_UNDEFINED,
         };
 
@@ -1087,10 +1089,10 @@
 <span class="doccomment">/// The properties associated with a [`MutSem`].
 ///
 /// Substitutes for `OS_mut_sem_prop_t`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;OS_mut_sem_prop_t&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"OS_mut_sem_prop_t"</span>)]
 #[derive(Debug)]
 </span><span class="kw">pub struct </span>MutSemProperties {
-    <span class="doccomment">/// The mutex&#39;s name.
+    <span class="doccomment">/// The mutex's name.
     </span><span class="kw">pub </span>name: CStrBuf&lt;{ <span class="kw">super</span>::MAX_NAME_LEN }&gt;,
 
     <span class="doccomment">/// The creator of the mutex.
@@ -1099,15 +1101,15 @@
 
 <span class="macro">macro_rules! </span>owned_sem_variant {
     (<span class="macro-nonterminal">$type_name</span>:ident, <span class="macro-nonterminal">$wrapped_type</span>:ty, <span class="macro-nonterminal">$destructor</span>:ident, <span class="macro-nonterminal">$constructor</span>:ident $(; <span class="macro-nonterminal">$cparam</span>:ident: <span class="macro-nonterminal">$ctype</span>:ty)<span class="kw-2">*</span>) =&gt; {
-        <span class="attr">#[doc = <span class="macro">concat!</span>(<span class="string">&quot;A wrapper around a [`&quot;</span>, <span class="macro">stringify!</span>(<span class="macro-nonterminal">$wrapped_type</span>), <span class="string">&quot;`] that automatically deletes it when dropped.&quot;</span>)]
+        <span class="attr">#[doc = <span class="macro">concat!</span>(<span class="string">"A wrapper around a [`"</span>, <span class="macro">stringify!</span>(<span class="macro-nonterminal">$wrapped_type</span>), <span class="string">"`] that automatically deletes it when dropped."</span>)]
         </span><span class="kw">pub struct </span><span class="macro-nonterminal">$type_name </span>{
             sem: <span class="macro-nonterminal">$wrapped_type</span>,
         }
 
         <span class="kw">impl </span><span class="macro-nonterminal">$type_name </span>{
-            <span class="attr">#[doc = <span class="macro">concat!</span>(<span class="string">&quot;Like [`&quot;</span>, <span class="macro">stringify!</span>(<span class="macro-nonterminal">$wrapped_type</span>), <span class="string">&quot;::new`], but creates an owned semaphore instead.&quot;</span>)]
-            #[doc = <span class="string">&quot;\n\n&quot;</span>]
-            #[doc = <span class="macro">concat!</span>(<span class="string">&quot;Wraps `&quot;</span>, <span class="macro">stringify!</span>(<span class="macro-nonterminal">$constructor</span>), <span class="string">&quot;`.&quot;</span>)]
+            <span class="attr">#[doc = <span class="macro">concat!</span>(<span class="string">"Like [`"</span>, <span class="macro">stringify!</span>(<span class="macro-nonterminal">$wrapped_type</span>), <span class="string">"::new`], but creates an owned semaphore instead."</span>)]
+            #[doc = <span class="string">"\n\n"</span>]
+            #[doc = <span class="macro">concat!</span>(<span class="string">"Wraps `"</span>, <span class="macro">stringify!</span>(<span class="macro-nonterminal">$constructor</span>), <span class="string">"`."</span>)]
             #[inline]
             </span><span class="kw">pub fn </span>new&lt;S: AsRef&lt;CStr&gt; + <span class="question-mark">?</span>Sized&gt;(sem_name: <span class="kw-2">&amp;</span>S $(, <span class="macro-nonterminal">$cparam</span>: <span class="macro-nonterminal">$ctype </span>)<span class="kw-2">*</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, OsalError&gt; {
                 &lt;<span class="macro-nonterminal">$wrapped_type</span>&gt;::new(sem_name $(, <span class="macro-nonterminal">$cparam</span>)<span class="kw-2">*</span>).map(|sem| <span class="macro-nonterminal">$type_name </span>{ sem })
@@ -1123,7 +1125,7 @@
             }
         }
 
-        <span class="attr">#[doc = <span class="macro">concat!</span>(<span class="string">&quot;Wraps `&quot;</span>, <span class="macro">stringify!</span>(<span class="macro-nonterminal">$destructor</span>), <span class="string">&quot;`.&quot;</span>)]
+        <span class="attr">#[doc = <span class="macro">concat!</span>(<span class="string">"Wraps `"</span>, <span class="macro">stringify!</span>(<span class="macro-nonterminal">$destructor</span>), <span class="string">"`."</span>)]
         </span><span class="kw">impl </span>Drop <span class="kw">for </span><span class="macro-nonterminal">$type_name </span>{
             <span class="attr">#[inline]
             </span><span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
@@ -1131,7 +1133,7 @@
             }
         }
 
-        <span class="attr">#[doc = <span class="macro">concat!</span>(<span class="string">&quot;Takes the wrapped [`&quot;</span>, <span class="macro">stringify!</span>(<span class="macro-nonterminal">$wrapped_type</span>), <span class="string">&quot;`] out of the [`&quot;</span>, <span class="macro">stringify!</span>(<span class="macro-nonterminal">$type_name</span>), <span class="string">&quot;`] wrapper without dropping it.&quot;</span>)]
+        <span class="attr">#[doc = <span class="macro">concat!</span>(<span class="string">"Takes the wrapped [`"</span>, <span class="macro">stringify!</span>(<span class="macro-nonterminal">$wrapped_type</span>), <span class="string">"`] out of the [`"</span>, <span class="macro">stringify!</span>(<span class="macro-nonterminal">$type_name</span>), <span class="string">"`] wrapper without dropping it."</span>)]
         </span><span class="kw">impl </span>From&lt;<span class="macro-nonterminal">$type_name</span>&gt; <span class="kw">for </span><span class="macro-nonterminal">$wrapped_type </span>{
             <span class="attr">#[inline]
             </span><span class="kw">fn </span>from(o_sem: <span class="macro-nonterminal">$type_name</span>) -&gt; <span class="self">Self </span>{

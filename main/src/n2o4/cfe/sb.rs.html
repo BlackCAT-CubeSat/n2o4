@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `n2o4/src/cfe/sb.rs`."><title>sb.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="n2o4" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (ba7c7a301 2023-11-13)" data-channel="nightly" data-search-js="search-8fbf244ebcf71464.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-f06f02fd918e3bb3.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/cfe/sb.rs`."><title>sb.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="n2o4" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (11f32b73e 2024-01-31)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
+            <h2>Files</h2></div></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../../n2o4/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -357,14 +359,14 @@
 
 <span class="kw">use </span><span class="kw">super</span>::msg::{Message, MsgType};
 <span class="kw">use </span><span class="kw">super</span>::Status;
-<span class="kw">use </span>cfs_sys::<span class="kw-2">*</span>;
+<span class="kw">use </span><span class="kw">crate</span>::sys::<span class="kw-2">*</span>;
 
 <span class="doccomment">/// The numeric value of a [message ID](`MsgId`).
 ///
 /// This is the same as `CFE_SB_MsgId_Atom_t`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFG_SB_MsgId_Atom_t&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFG_SB_MsgId_Atom_t"</span>)]
 #[doc(inline)]
-</span><span class="kw">pub use </span>cfs_sys::CFE_SB_MsgId_Atom_t <span class="kw">as </span>MsgId_Atom;
+</span><span class="kw">pub use </span><span class="kw">crate</span>::sys::CFE_SB_MsgId_Atom_t <span class="kw">as </span>MsgId_Atom;
 
 <span class="doccomment">/// An encoded message ID.
 ///
@@ -372,7 +374,7 @@
 /// [numeric message ID](`MsgId_Atom`).
 ///
 /// Wraps `CFE_SB_MsgId_t`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFG_SB_MsgId_t&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFG_SB_MsgId_t"</span>)]
 #[derive(Clone, Copy, Debug)]
 </span><span class="kw">pub struct </span>MsgId {
     <span class="kw">pub</span>(<span class="kw">crate</span>) id: CFE_SB_MsgId_t,
@@ -382,7 +384,7 @@
     <span class="doccomment">/// Returns whether `self` is a valid message ID.
     ///
     /// Wraps `CFE_SB_IsValidMsgId`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFG_SB_IsValidMsgId&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFG_SB_IsValidMsgId"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>is_valid(<span class="self">self</span>) -&gt; bool {
         <span class="kw">unsafe </span>{ CFE_SB_IsValidMsgId(<span class="self">self</span>.id) }
@@ -391,7 +393,7 @@
     <span class="doccomment">/// Returns the message type this message ID corresponds to.
     ///
     /// Wraps `CFE_MSG_GetTypeFromMsgId`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFG_MSG_GetTypeFromMsgId&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFG_MSG_GetTypeFromMsgId"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>msg_type(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;MsgType, Status&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>t: CFE_MSG_Type_t = CFE_MSG_Type_CFE_MSG_Type_Invalid;
@@ -403,19 +405,19 @@
     <span class="doccomment">/// A reserved value that will not match any valid message ID.
     ///
     /// Wraps `CFE_SB_MSGID_RESERVED`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFG_SB_MSGID_RESERVED&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFG_SB_MSGID_RESERVED"</span>)]
     </span><span class="kw">pub const </span>RESERVED: MsgId = MsgId { id: X_CFE_SB_MSGID_RESERVED };
 
     <span class="doccomment">/// Value representing an invalid message ID.
     ///
     /// Wraps `CFE_SB_INVALID_MSG_ID`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFG_SB_INVALID_MSG_ID&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFG_SB_INVALID_MSG_ID"</span>)]
     </span><span class="kw">pub const </span>INVALID: MsgId = MsgId { id: X_CFE_SB_INVALID_MSG_ID };
 }
 
 <span class="doccomment">/// Wraps `CFE_SB_MsgId_Equal`.
 </span><span class="kw">impl </span>PartialEq&lt;MsgId&gt; <span class="kw">for </span>MsgId {
-    <span class="attr">#[doc(alias = <span class="string">&quot;CFG_SB_MsgId_Equal&quot;</span>)]
+    <span class="attr">#[doc(alias = <span class="string">"CFG_SB_MsgId_Equal"</span>)]
     #[inline]
     </span><span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
         <span class="kw">unsafe </span>{ SHIM_CFE_SB_MsgId_Equal(<span class="self">self</span>.id, other.id) }
@@ -426,7 +428,7 @@
 
 <span class="doccomment">/// Wraps `CFE_SB_ValueToMsgId`.
 </span><span class="kw">impl </span>From&lt;MsgId_Atom&gt; <span class="kw">for </span>MsgId {
-    <span class="attr">#[doc(alias = <span class="string">&quot;CFG_SB_ValueToMsgId&quot;</span>)]
+    <span class="attr">#[doc(alias = <span class="string">"CFG_SB_ValueToMsgId"</span>)]
     #[inline]
     </span><span class="kw">fn </span>from(val: MsgId_Atom) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span>msg_id = <span class="kw">unsafe </span>{ SHIM_CFE_SB_ValueToMsgId(val) };
@@ -436,7 +438,7 @@
 
 <span class="doccomment">/// Wraps `CFE_SB_MsgIdToValue`.
 </span><span class="kw">impl </span>From&lt;MsgId&gt; <span class="kw">for </span>MsgId_Atom {
-    <span class="attr">#[doc(alias = <span class="string">&quot;CFG_SB_MsgIdToValue&quot;</span>)]
+    <span class="attr">#[doc(alias = <span class="string">"CFG_SB_MsgIdToValue"</span>)]
     #[inline]
     </span><span class="kw">fn </span>from(id: MsgId) -&gt; <span class="self">Self </span>{
         <span class="kw">unsafe </span>{ SHIM_CFE_SB_MsgIdToValue(id.id) }
@@ -444,32 +446,32 @@
 }
 
 <span class="doccomment">/// Message priority for off-system routing. Currently unused by cFE.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFG_SB_QosPriority&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFG_SB_QosPriority"</span>)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(u8)]
 #[non_exhaustive]
 </span><span class="kw">pub enum </span>QosPriority {
     <span class="doccomment">/// High priority.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFG_SB_QosPriority_HIGH&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFG_SB_QosPriority_HIGH"</span>)]
     </span>High = CFE_SB_QosPriority_CFE_SB_QosPriority_HIGH <span class="kw">as </span>u8,
 
     <span class="doccomment">/// Normal priority level.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFG_SB_QosPriority_LOW&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFG_SB_QosPriority_LOW"</span>)]
     </span>Low  = CFE_SB_QosPriority_CFE_SB_QosPriority_LOW <span class="kw">as </span>u8,
 }
 
 <span class="doccomment">/// Message transfer reliability for off-instance routing. Currently unused by cFE.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFG_SB_QosReliability&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFG_SB_QosReliability"</span>)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(u8)]
 #[non_exhaustive]
 </span><span class="kw">pub enum </span>QosReliability {
     <span class="doccomment">/// High reliability.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFG_SB_QosReliability_HIGH&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFG_SB_QosReliability_HIGH"</span>)]
     </span>High = CFE_SB_QosReliability_CFE_SB_QosReliability_HIGH <span class="kw">as </span>u8,
 
     <span class="doccomment">/// Normal (best-effort) reliability.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFG_SB_QosReliability_LOW&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFG_SB_QosReliability_LOW"</span>)]
     </span>Low  = CFE_SB_QosReliability_CFE_SB_QosReliability_LOW <span class="kw">as </span>u8,
 }
 
@@ -477,7 +479,7 @@
 /// Currently unused by cFE.
 ///
 /// Wraps `CFE_SB_Qos_t`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFG_SB_Qos_t&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFG_SB_Qos_t"</span>)]
 #[derive(Clone, Copy, Debug)]
 #[repr(transparent)]
 </span><span class="kw">pub struct </span>Qos {
@@ -499,7 +501,7 @@
     <span class="doccomment">/// The default QoS. Most applications should use this.
     ///
     /// Wraps `CFE_SB_DEFAULT_QOS`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFG_SB_DEFAULT_QOS&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFG_SB_DEFAULT_QOS"</span>)]
     </span><span class="kw">pub const </span>DEFAULT: Qos = Qos {
         qos: CFE_SB_Qos_t {
             Priority:    X_CFE_SB_DEFAULT_QOS_PRIORITY,
@@ -515,11 +517,11 @@
     </span>Millis(u32),
 
     <span class="doccomment">/// Non-blocking receive.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_SB_POLL&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_SB_POLL"</span>)]
     </span>Poll,
 
     <span class="doccomment">/// Wait forever for a message to arrive.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_SB_PEND_FOREVER&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_SB_PEND_FOREVER"</span>)]
     </span>PendForever,
 }
 
@@ -542,7 +544,7 @@
 /// This may not be used from a different thread from the one it was created on.
 ///
 /// Wraps `CFE_SB_PipeId_t`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFG_SB_PipeId_t&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFG_SB_PipeId_t"</span>)]
 #[derive(Debug)]
 </span><span class="kw">pub struct </span>Pipe {
     <span class="doccomment">/// cFE ID for the pipe.
@@ -561,7 +563,7 @@
     /// and the name `pipe_name`.
     ///
     /// Wraps `CFE_SB_CreatePipe`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFG_SB_CreatePipe&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFG_SB_CreatePipe"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>new&lt;S: AsRef&lt;CStr&gt; + <span class="question-mark">?</span>Sized&gt;(depth: u16, pipe_name: <span class="kw-2">&amp;</span>S) -&gt; <span class="prelude-ty">Result</span>&lt;Pipe, Status&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>p: CFE_SB_PipeId_t = <span class="kw">super</span>::ResourceId::UNDEFINED.id;
@@ -583,7 +585,7 @@
     /// the framework will do the needed cleanup at application exit.
     ///
     /// Wraps `CFE_SB_DeletePipe`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFG_SB_DeletePipe&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFG_SB_DeletePipe"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>delete(<span class="self">self</span>) {
         <span class="kw">unsafe </span>{
@@ -595,7 +597,7 @@
     /// on the software bus with default parameters.
     ///
     /// Wraps `CFE_SB_Subscribe`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFG_SB_Subscribe&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFG_SB_Subscribe"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>subscribe(<span class="kw-2">&amp;mut </span><span class="self">self</span>, msg_id: MsgId) -&gt; <span class="prelude-ty">Result</span>&lt;(), Status&gt; {
         <span class="kw">let </span>s: Status = <span class="kw">unsafe </span>{ CFE_SB_Subscribe(msg_id.id, <span class="self">self</span>.id) }.into();
@@ -609,7 +611,7 @@
     /// allowed in the pipe at the same time.
     ///
     /// Wraps `CFE_SB_SubscribeEx`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFG_SB_SubscribeEx&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFG_SB_SubscribeEx"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>subscribe_ex(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
@@ -629,7 +631,7 @@
     /// This is typically only used by the [SBN](https://github.com/nasa/SBN) application.
     ///
     /// Wraps `CFE_SB_SubscribeLocal`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFG_SB_SubscribeLocal&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFG_SB_SubscribeLocal"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>subscribe_local(<span class="kw-2">&amp;mut </span><span class="self">self</span>, msg_id: MsgId, msg_lim: u16) -&gt; <span class="prelude-ty">Result</span>&lt;(), Status&gt; {
         <span class="kw">let </span>s: Status = <span class="kw">unsafe </span>{ CFE_SB_SubscribeLocal(msg_id.id, <span class="self">self</span>.id, msg_lim) }.into();
@@ -637,10 +639,10 @@
         s.as_result(|| ())
     }
 
-    <span class="doccomment">/// Removes the current pipe&#39;s subscription to messages with ID `msg_id`.
+    <span class="doccomment">/// Removes the current pipe's subscription to messages with ID `msg_id`.
     ///
     /// Wraps `CFE_SB_Unsubscribe`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFG_SB_Unsubscribe&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFG_SB_Unsubscribe"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>unsubscribe(<span class="kw-2">&amp;mut </span><span class="self">self</span>, msg_id: MsgId) -&gt; <span class="prelude-ty">Result</span>&lt;(), Status&gt; {
         <span class="kw">let </span>s: Status = <span class="kw">unsafe </span>{ CFE_SB_Unsubscribe(msg_id.id, <span class="self">self</span>.id) }.into();
@@ -648,13 +650,13 @@
         s.as_result(|| ())
     }
 
-    <span class="doccomment">/// Removes the current pipe&#39;s subscription to messages with ID `msg_id`,
+    <span class="doccomment">/// Removes the current pipe's subscription to messages with ID `msg_id`,
     /// keeping the unsubscription local to the current CPU.
     ///
     /// This is typically only used by the [SBN](https://github.com/nasa/SBN) application.
     ///
     /// Wraps `CFE_SB_UnsubscribeLocal`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFG_SB_UnsubscribeLocal&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFG_SB_UnsubscribeLocal"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>unsubscribe_local(<span class="kw-2">&amp;mut </span><span class="self">self</span>, msg_id: MsgId) -&gt; <span class="prelude-ty">Result</span>&lt;(), Status&gt; {
         <span class="kw">let </span>s: Status = <span class="kw">unsafe </span>{ CFE_SB_UnsubscribeLocal(msg_id.id, <span class="self">self</span>.id) }.into();
@@ -670,14 +672,14 @@
     /// Uses `time_out` to determine how long to wait for a message if the pipe is empty.
     ///
     /// Passing the message buffer to a closure rather than returning it ensures that
-    /// the buffer&#39;s lifetime constraints are respected.
+    /// the buffer's lifetime constraints are respected.
     ///
     /// Wraps `CFE_SB_ReceiveBuffer`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFG_SB_ReceiveBuffer&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFG_SB_ReceiveBuffer"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>receive_buffer&lt;T, F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, time_out: TimeOut, closure: F) -&gt; T
     <span class="kw">where
-        </span>F: <span class="kw">for</span>&lt;<span class="lifetime">&#39;a</span>&gt; FnOnce(<span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Message, Status&gt;) -&gt; T,
+        </span>F: <span class="kw">for</span>&lt;<span class="lifetime">'a</span>&gt; FnOnce(<span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>Message, Status&gt;) -&gt; T,
     {
         <span class="kw">let </span><span class="kw-2">mut </span>buf: <span class="kw-2">*mut </span>CFE_SB_Buffer_t = core::ptr::null_mut();
 

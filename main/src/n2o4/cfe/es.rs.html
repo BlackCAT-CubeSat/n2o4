@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `n2o4/src/cfe/es.rs`."><title>es.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="n2o4" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (ba7c7a301 2023-11-13)" data-channel="nightly" data-search-js="search-8fbf244ebcf71464.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-f06f02fd918e3bb3.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/cfe/es.rs`."><title>es.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="n2o4" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (11f32b73e 2024-01-31)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
+            <h2>Files</h2></div></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../../n2o4/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -846,87 +848,87 @@
 
 </span><span class="kw">use super</span>::{ResourceId, Status};
 <span class="kw">use </span><span class="kw">crate</span>::osal::OsalError;
+<span class="kw">use </span><span class="kw">crate</span>::sys::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::utils::CStrBuf;
-<span class="kw">use </span>cfs_sys::<span class="kw-2">*</span>;
 <span class="kw">use </span>core::ffi::{c_char, c_void, CStr};
 <span class="kw">use </span>core::marker::PhantomData;
 <span class="kw">use </span>printf_wrap::{PrintfArgument, PrintfFmt};
 
 <span class="doccomment">/// The status (or requested status) of a cFE application.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_RunStatus&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_RunStatus"</span>)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[repr(u32)]
 #[non_exhaustive]
 </span><span class="kw">pub enum </span>RunStatus {
     <span class="doccomment">/// Application is exiting with an error.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_RunStatus_APP_ERROR&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_RunStatus_APP_ERROR"</span>)]
     </span>AppError     = CFE_ES_RunStatus_CFE_ES_RunStatus_APP_ERROR,
 
     <span class="doccomment">/// Application wants to exit normally.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_RunStatus_APP_EXIT&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_RunStatus_APP_EXIT"</span>)]
     </span>AppExit      = CFE_ES_RunStatus_CFE_ES_RunStatus_APP_EXIT,
 
     <span class="doccomment">/// Application should continue to run.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_RunStatus_APP_RUN&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_RunStatus_APP_RUN"</span>)]
     </span>AppRun       = CFE_ES_RunStatus_CFE_ES_RunStatus_APP_RUN,
 
     <span class="doccomment">/// Indication that the Core Application could not initialize.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_RunStatus_CORE_APP_INIT_ERROR&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_RunStatus_CORE_APP_INIT_ERROR"</span>)]
     </span>CoreAppInitError = CFE_ES_RunStatus_CFE_ES_RunStatus_CORE_APP_INIT_ERROR,
 
     <span class="doccomment">/// Indication that the Core Application had a runtime failure.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_RunStatus_CORE_APP_RUNTIME_ERROR&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_RunStatus_CORE_APP_RUNTIME_ERROR"</span>)]
     </span>CoreAppRuntimeError = CFE_ES_RunStatus_CFE_ES_RunStatus_CORE_APP_RUNTIME_ERROR,
 
     <span class="doccomment">/// Indication that the system is requesting that the application stop.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_RunStatus_SYS_DELETE&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_RunStatus_SYS_DELETE"</span>)]
     </span>SysDelete    = CFE_ES_RunStatus_CFE_ES_RunStatus_SYS_DELETE,
 
     <span class="doccomment">/// Application caused an exception.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_RunStatus_SYS_EXCEPTION&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_RunStatus_SYS_EXCEPTION"</span>)]
     </span>SysException = CFE_ES_RunStatus_CFE_ES_RunStatus_SYS_EXCEPTION,
 
     <span class="doccomment">/// The system is requesting a reload of the application.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_RunStatus_SYS_RELOAD&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_RunStatus_SYS_RELOAD"</span>)]
     </span>SysReload    = CFE_ES_RunStatus_CFE_ES_RunStatus_SYS_RELOAD,
 
     <span class="doccomment">/// The system is requesting a restart of the application.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_RunStatus_SYS_RESTART&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_RunStatus_SYS_RESTART"</span>)]
     </span>SysRestart   = CFE_ES_RunStatus_CFE_ES_RunStatus_SYS_RESTART,
 
     <span class="doccomment">/// Reserved value; should not be used.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_RunStatus_UNDEFINED&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_RunStatus_UNDEFINED"</span>)]
     </span>Undefined    = CFE_ES_RunStatus_CFE_ES_RunStatus_UNDEFINED,
 }
 
 <span class="doccomment">/// The current state of the overall cFS system.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_SystemState&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_SystemState"</span>)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[repr(u32)]
 #[non_exhaustive]
 </span><span class="kw">pub enum </span>SystemState {
     <span class="doccomment">/// Single-threaded mode while setting up CFE itself.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_SystemState_EARLY_INIT&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_SystemState_EARLY_INIT"</span>)]
     </span>EarlyInit   = CFE_ES_SystemState_CFE_ES_SystemState_EARLY_INIT,
 
     <span class="doccomment">/// Core apps are starting.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_SystemState_CORE_STARTUP&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_SystemState_CORE_STARTUP"</span>)]
     </span>CoreStartup = CFE_ES_SystemState_CFE_ES_SystemState_CORE_STARTUP,
 
     <span class="doccomment">/// Core is ready, starting external apps/libraries.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_SystemState_CORE_READY&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_SystemState_CORE_READY"</span>)]
     </span>CoreReady   = CFE_ES_SystemState_CFE_ES_SystemState_CORE_READY,
 
     <span class="doccomment">/// Startup apps have all completed early init, but are not necessarily operational yet.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_SystemState_APPS_INIT&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_SystemState_APPS_INIT"</span>)]
     </span>AppsInit    = CFE_ES_SystemState_CFE_ES_SystemState_APPS_INIT,
 
     <span class="doccomment">/// Normal operation mode; all apps are running.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_SystemState_OPERATIONAL&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_SystemState_OPERATIONAL"</span>)]
     </span>Operational = CFE_ES_SystemState_CFE_ES_SystemState_OPERATIONAL,
 
     <span class="doccomment">/// Reserved for future use; all apps would be stopped.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_SystemState_SHUTDOWN&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_SystemState_SHUTDOWN"</span>)]
     </span>Shutdown    = CFE_ES_SystemState_CFE_ES_SystemState_SHUTDOWN,
 }
 
@@ -936,12 +938,12 @@
 #[non_exhaustive]
 </span><span class="kw">pub enum </span>ResetType {
     <span class="doccomment">/// A reset that causes all memory to be cleared.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_PSP_RST_TYPE_POWERON&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_PSP_RST_TYPE_POWERON"</span>)]
     </span>PowerOn   = CFE_PSP_RST_TYPE_POWERON,
 
     <span class="doccomment">/// A reset that attempts to retain volatile disk, critical data store,
     /// and user reserved memory.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_PSP_RST_TYPE_PROCESSOR&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_PSP_RST_TYPE_PROCESSOR"</span>)]
     </span>Processor = CFE_PSP_RST_TYPE_PROCESSOR,
 }
 
@@ -954,21 +956,21 @@
 /// and `1` for an exit.
 ///
 /// Wraps `CFE_ES_PerfLogAdd`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_PerfLogAdd&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_PerfLogAdd"</span>)]
 #[inline]
 </span><span class="kw">pub fn </span>perf_log_add(marker: u32, entry_exit: u32) {
     <span class="kw">unsafe </span>{ CFE_ES_PerfLogAdd(marker, entry_exit) };
 }
 
 <span class="doccomment">/// Shortcut for [`perf_log_add`]`(marker, 0)`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_PerfLogEntry&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_PerfLogEntry"</span>)]
 #[inline]
 </span><span class="kw">pub fn </span>perf_log_entry(marker: u32) {
     perf_log_add(marker, <span class="number">0</span>);
 }
 
 <span class="doccomment">/// Shortcut for [`perf_log_add`]`(marker, 1)`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_PerfLogExit&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_PerfLogExit"</span>)]
 #[inline]
 </span><span class="kw">pub fn </span>perf_log_exit(marker: u32) {
     perf_log_add(marker, <span class="number">1</span>);
@@ -978,12 +980,12 @@
 </span><span class="macro">macro_rules! </span>wtsl_impl {
     (@ <span class="macro-nonterminal">$doc_args</span>:expr, <span class="macro-nonterminal">$name</span>:ident, ( $(<span class="macro-nonterminal">$t</span>:ident),* ), ( $(<span class="macro-nonterminal">$var</span>:ident),* )) =&gt; {
         <span class="attr">#[doc = <span class="macro">concat!</span>(
-            <span class="string">&quot;Writes a message to the cFE System Log using a format string and &quot;</span>,
-            <span class="macro-nonterminal">$doc_args</span>, <span class="string">&quot;.\n&quot;</span>,
-            <span class="string">&quot;\n&quot;</span>,
-            <span class="string">&quot;Wraps `CFE_ES_WriteToSysLog`.\n&quot;</span>,
+            <span class="string">"Writes a message to the cFE System Log using a format string and "</span>,
+            <span class="macro-nonterminal">$doc_args</span>, <span class="string">".\n"</span>,
+            <span class="string">"\n"</span>,
+            <span class="string">"Wraps `CFE_ES_WriteToSysLog`.\n"</span>,
         )]
-        #[doc(alias = <span class="string">&quot;CFE_ES_WriteToSysLog&quot;</span>)]
+        #[doc(alias = <span class="string">"CFE_ES_WriteToSysLog"</span>)]
         #[inline]
         </span><span class="kw">pub fn </span><span class="macro-nonterminal">$name</span>&lt;$(<span class="macro-nonterminal">$t</span>),<span class="kw-2">*</span>&gt;(fmt: PrintfFmt&lt;($(<span class="macro-nonterminal">$t</span>,)<span class="kw-2">*</span>)&gt;, $(<span class="macro-nonterminal">$var</span>: <span class="macro-nonterminal">$t</span>),<span class="kw-2">*</span>) -&gt; Status
             <span class="kw">where </span>$(<span class="macro-nonterminal">$t</span>: PrintfArgument),* {
@@ -994,12 +996,12 @@
         }
     };
     (<span class="macro-nonterminal">$num</span>:expr, <span class="macro-nonterminal">$name</span>:ident, ( $(<span class="macro-nonterminal">$t</span>:ident),* ), ( $(<span class="macro-nonterminal">$var</span>:ident),* )) =&gt; {
-        <span class="macro">wtsl_impl!</span>(@ <span class="macro">concat!</span>(<span class="macro">stringify!</span>(<span class="macro-nonterminal">$num</span>), <span class="string">&quot; format arguments&quot;</span>),
+        <span class="macro">wtsl_impl!</span>(@ <span class="macro">concat!</span>(<span class="macro">stringify!</span>(<span class="macro-nonterminal">$num</span>), <span class="string">" format arguments"</span>),
             <span class="macro-nonterminal">$name</span>, ( $(<span class="macro-nonterminal">$t</span>),* ), ( $(<span class="macro-nonterminal">$var</span>),* )
         );
     };
     (<span class="macro-nonterminal">$name</span>:ident, ( $(<span class="macro-nonterminal">$t</span>:ident),* ), ( $(<span class="macro-nonterminal">$var</span>:ident),* )) =&gt; {
-        <span class="macro">wtsl_impl!</span>(@ <span class="string">&quot;1 format argument&quot;</span>,
+        <span class="macro">wtsl_impl!</span>(@ <span class="string">"1 format argument"</span>,
             <span class="macro-nonterminal">$name</span>, ( $(<span class="macro-nonterminal">$t</span>),* ), ( $(<span class="macro-nonterminal">$var</span>),* )
         );
     };
@@ -1022,7 +1024,7 @@
 /// will not get put into the log message.
 ///
 /// Wraps `CFE_ES_WriteToSysLog`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_WriteToSysLog&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_WriteToSysLog"</span>)]
 #[inline]
 </span><span class="kw">pub fn </span>write_to_syslog_str(msg: <span class="kw-2">&amp;</span>str) -&gt; Status {
     <span class="kw">unsafe </span>{
@@ -1034,12 +1036,12 @@
 <span class="doccomment">/// Immediately resets the cFE core and all cFE applications.
 ///
 /// Wraps `CFE_ES_ResetCFE`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_ResetCFE&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_ResetCFE"</span>)]
 #[inline]
 </span><span class="kw">pub fn </span>reset_cfe(reset_type: ResetType) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw">crate</span>::utils::Unconstructable, Status&gt; {
     <span class="kw">let </span>reset_type = reset_type <span class="kw">as </span>u32;
 
-    <span class="comment">// Upon success, CFE_ES_ResetCFE doesn&#39;t return, so any return value
+    <span class="comment">// Upon success, CFE_ES_ResetCFE doesn't return, so any return value
     // is an error:
     </span><span class="prelude-val">Err</span>(<span class="kw">unsafe </span>{ CFE_ES_ResetCFE(reset_type) }.into())
 }
@@ -1047,13 +1049,13 @@
 <span class="doccomment">/// Exits from the current application.
 ///
 /// Wraps `CFE_ES_ExitApp`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_ExitApp&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_ExitApp"</span>)]
 #[inline]
 </span><span class="kw">pub fn </span>exit_app(exit_status: RunStatus) -&gt; ! {
     <span class="kw">unsafe </span>{ CFE_ES_ExitApp(exit_status <span class="kw">as </span>u32) };
 
-    <span class="comment">// If we get here, something&#39;s gone wrong with cFE:
-    </span><span class="macro">unreachable!</span>(<span class="string">&quot;CFE_ES_ExitApp returned, somehow&quot;</span>);
+    <span class="comment">// If we get here, something's gone wrong with cFE:
+    </span><span class="macro">unreachable!</span>(<span class="string">"CFE_ES_ExitApp returned, somehow"</span>);
 }
 
 <span class="doccomment">/// Checks for exit requests from the cFE system
@@ -1070,7 +1072,7 @@
 /// gracefully shut down.
 ///
 /// Wraps `CFE_ES_RunLoop`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_RunLoop&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_RunLoop"</span>)]
 #[inline]
 </span><span class="kw">pub fn </span>run_loop(run_status: <span class="prelude-ty">Option</span>&lt;RunStatus&gt;) -&gt; bool {
     <span class="kw">let </span><span class="kw-2">mut </span>rs: u32 = run_status.map_or(<span class="number">0</span>, |status| status <span class="kw">as </span>u32);
@@ -1084,7 +1086,7 @@
 <span class="doccomment">/// An identifier for cFE applications.
 ///
 /// Wraps `CFE_ES_AppId_t`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_AppId_t&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_AppId_t"</span>)]
 #[derive(Clone, Copy, Debug)]
 </span><span class="kw">pub struct </span>AppId {
     <span class="kw">pub</span>(<span class="kw">crate</span>) id: CFE_ES_AppId_t,
@@ -1115,7 +1117,7 @@ impl TryFrom&lt;ResourceId&gt; for AppId {
 </span><span class="doccomment">/// Returns (if successful) the application ID for the calling cFE application.
 ///
 /// Wraps `CFE_ES_GetAppID`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_GetAppID&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_GetAppID"</span>)]
 #[inline]
 </span><span class="kw">pub fn </span>get_app_id() -&gt; <span class="prelude-ty">Result</span>&lt;AppId, Status&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>app_id = AppId { id: <span class="number">0 </span>};
@@ -1126,7 +1128,7 @@ impl TryFrom&lt;ResourceId&gt; for AppId {
 <span class="doccomment">/// Restarts a single cFE application.
 ///
 /// Wraps `CFE_ES_RestartApp`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_RestartApp&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_RestartApp"</span>)]
 #[inline]
 </span><span class="kw">pub fn </span>restart_app(app_id: AppId) -&gt; <span class="prelude-ty">Result</span>&lt;(), Status&gt; {
     <span class="kw">let </span>s: Status = <span class="kw">unsafe </span>{ CFE_ES_RestartApp(app_id.id) }.into();
@@ -1136,7 +1138,7 @@ impl TryFrom&lt;ResourceId&gt; for AppId {
 <span class="doccomment">/// Stops a cFE application, then loads and starts it using the specified file.
 ///
 /// Wraps `CFE_ES_ReloadApp`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_ReloadApp&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_ReloadApp"</span>)]
 #[inline]
 </span><span class="kw">pub fn </span>reload_app&lt;S: AsRef&lt;CStr&gt; + <span class="question-mark">?</span>Sized&gt;(app_id: AppId, app_file_name: <span class="kw-2">&amp;</span>S) -&gt; <span class="prelude-ty">Result</span>&lt;(), Status&gt; {
     <span class="kw">let </span>s: Status = <span class="kw">unsafe </span>{ CFE_ES_ReloadApp(app_id.id, app_file_name.as_ref().as_ptr()) }.into();
@@ -1146,7 +1148,7 @@ impl TryFrom&lt;ResourceId&gt; for AppId {
 <span class="doccomment">/// Stops a cFE application, then deletes it from the cFE application table.
 ///
 /// Wraps `CFE_ES_DeleteApp`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_DeleteApp&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_DeleteApp"</span>)]
 #[inline]
 </span><span class="kw">pub fn </span>delete_app(app_id: AppId) -&gt; <span class="prelude-ty">Result</span>&lt;(), Status&gt; {
     <span class="kw">let </span>s: Status = <span class="kw">unsafe </span>{ CFE_ES_DeleteApp(app_id.id) }.into();
@@ -1157,7 +1159,7 @@ impl TryFrom&lt;ResourceId&gt; for AppId {
 /// or a timeout (in milliseconds), whichever comes first.
 ///
 /// Wraps `CFE_ES_WaitForSystemState`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_WaitForSystemState&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_WaitForSystemState"</span>)]
 #[inline]
 </span><span class="kw">pub fn </span>wait_for_system_state(min_system_state: SystemState, timeout_ms: u32) -&gt; <span class="prelude-ty">Result</span>&lt;(), Status&gt; {
     <span class="kw">let </span>s: Status =
@@ -1168,7 +1170,7 @@ impl TryFrom&lt;ResourceId&gt; for AppId {
 <span class="doccomment">/// An identifier for cFE tasks.
 ///
 /// Wraps `CFE_ES_TaskId_t`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_TaskId_t&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_TaskId_t"</span>)]
 #[derive(Clone, Copy, Debug)]
 </span><span class="kw">pub struct </span>TaskId {
     <span class="kw">pub</span>(<span class="kw">crate</span>) id: CFE_ES_TaskId_t,
@@ -1184,7 +1186,7 @@ impl TryFrom&lt;ResourceId&gt; for AppId {
 <span class="doccomment">/// A task priority; used for task scheduling.
 ///
 /// Wraps `CFE_ES_TaskPriority_Atom_t`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_TaskPriority_Atom_t&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_TaskPriority_Atom_t"</span>)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 #[repr(transparent)]
 </span><span class="kw">pub struct </span>TaskPriority {
@@ -1244,16 +1246,16 @@ impl TryFrom&lt;ResourceId&gt; for AppId {
 
 <span class="doccomment">/// Wrapper for a Rust [`FnOnce`] to run said function in a new task.
 ///
-/// Handles the calling of `CFE_ES_ExitChildTask` so you don&#39;t have to!
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_ExitChildTask&quot;</span>)]
-</span><span class="kw">extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>task_main_func&lt;F: FnOnce() + Send + Sized + <span class="lifetime">&#39;static</span>&gt;() {
+/// Handles the calling of `CFE_ES_ExitChildTask` so you don't have to!
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_ExitChildTask"</span>)]
+</span><span class="kw">extern </span><span class="string">"C" </span><span class="kw">fn </span>task_main_func&lt;F: FnOnce() + Send + Sized + <span class="lifetime">'static</span>&gt;() {
     <span class="kw">use </span>core::ptr::read_volatile;
     <span class="kw">use </span>core::sync::atomic;
 
     <span class="kw">let </span>copy_completed_semaphore = <span class="kw">match </span>child_signal_sem() {
         <span class="prelude-val">Ok</span>(sem) =&gt; sem,
         <span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; {
-            <span class="macro">unreachable!</span>(<span class="string">&quot;The semaphore should have been created already!&quot;</span>);
+            <span class="macro">unreachable!</span>(<span class="string">"The semaphore should have been created already!"</span>);
         }
     };
 
@@ -1263,7 +1265,7 @@ impl TryFrom&lt;ResourceId&gt; for AppId {
     <span class="kw">let </span>f: F = <span class="kw">unsafe </span>{ read_volatile(TASK_FUNC_PTR <span class="kw">as </span><span class="kw-2">*const </span>F) };
 
     <span class="comment">// The parent task has been blocking in order to allow us to copy over `f`.
-    // Now that we&#39;ve completed that, we signal for it to continue.
+    // Now that we've completed that, we signal for it to continue.
     </span><span class="kw">let _ </span>= copy_completed_semaphore.give();
 
     <span class="comment">// And, now that all that has been completed:
@@ -1274,19 +1276,19 @@ impl TryFrom&lt;ResourceId&gt; for AppId {
         CFE_ES_ExitChildTask();
     }
 
-    <span class="macro">unreachable!</span>(<span class="string">&quot;CFE_ES_ExitChildTask didn&#39;t stop a child task, somehow&quot;</span>);
+    <span class="macro">unreachable!</span>(<span class="string">"CFE_ES_ExitChildTask didn't stop a child task, somehow"</span>);
 }
 
 <span class="doccomment">/// Tries to create a new child task.
-/// If successful, runs `function` in the child task and returns the child task&#39;s ID.
+/// If successful, runs `function` in the child task and returns the child task's ID.
 ///
 /// The child task will have name `task_name`, run on a stack with `stack_size` bytes,
 /// run with priority `priority`, and have task flags `flags`.
 ///
 /// Wraps `CFE_ES_CreateChildTask` (and `CFE_ES_ExitChildTask` in the child task).
-</span><span class="attr">#[doc(alias(<span class="string">&quot;CFE_ES_CreateChildTask&quot;</span>, <span class="string">&quot;CFE_ES_ExitChildTask&quot;</span>))]
+</span><span class="attr">#[doc(alias(<span class="string">"CFE_ES_CreateChildTask"</span>, <span class="string">"CFE_ES_ExitChildTask"</span>))]
 #[inline]
-</span><span class="kw">pub fn </span>create_child_task&lt;F: FnOnce() + Send + Sized + <span class="lifetime">&#39;static</span>, S: AsRef&lt;CStr&gt; + <span class="question-mark">?</span>Sized&gt;(
+</span><span class="kw">pub fn </span>create_child_task&lt;F: FnOnce() + Send + Sized + <span class="lifetime">'static</span>, S: AsRef&lt;CStr&gt; + <span class="question-mark">?</span>Sized&gt;(
     function: F,
     task_name: <span class="kw-2">&amp;</span>S,
     stack_size: usize,
@@ -1346,7 +1348,7 @@ impl TryFrom&lt;ResourceId&gt; for AppId {
 }
 
 <span class="kw">type </span>AtomicOsalId = &lt;osal_id_t <span class="kw">as </span><span class="kw">crate</span>::utils::AtomicVersion&gt;::Atomic;
-<span class="kw">const </span>BASE32_SYMBOLS: <span class="kw-2">&amp;</span>[u8; <span class="number">32</span>] = <span class="string">b&quot;0123456789abcdfghjklmnpqrstvwxyz&quot;</span>;
+<span class="kw">const </span>BASE32_SYMBOLS: <span class="kw-2">&amp;</span>[u8; <span class="number">32</span>] = <span class="string">b"0123456789abcdfghjklmnpqrstvwxyz"</span>;
 
 <span class="doccomment">/// Creates an atomic variable to hold an OSAL ID for some semaphore type
 /// and a wrapper function for getting a handle to said semaphore.
@@ -1360,18 +1362,18 @@ impl TryFrom&lt;ResourceId&gt; for AppId {
             <span class="kw">use </span>core::sync::atomic::Ordering::{AcqRel, Acquire};
             <span class="kw">type </span>Sem = <span class="macro-nonterminal">$sem_type</span>;
 
-            <span class="comment">// First, check to see if someone&#39;s already created the semaphore in question:
+            <span class="comment">// First, check to see if someone's already created the semaphore in question:
             </span><span class="kw">let </span>old_id = <span class="macro-nonterminal">$atomic_id</span>.load(Acquire);
             <span class="kw">if </span>old_id != X_OS_OBJECT_ID_UNDEFINED {
                 <span class="kw">return </span><span class="prelude-val">Ok</span>(Sem { id: old_id });
             }
 
             <span class="comment">// If not, create it, and write its ID to the atomic variable
-            // (if someone else doesn&#39;t write an ID first, in which case, use *that* ID).
+            // (if someone else doesn't write an ID first, in which case, use *that* ID).
 
             // First off, start work on a name:
-            </span><span class="kw">let </span><span class="kw-2">mut </span>name: [c_char; MAX_NAME_LEN] = [<span class="string">b&#39;\0&#39; </span><span class="kw">as </span>c_char; MAX_NAME_LEN];
-            <span class="string">b&quot;n2o4-&quot;</span>.into_iter().enumerate().for_each(|(i, val)| name[i] = <span class="kw-2">*</span>val <span class="kw">as </span>c_char);
+            </span><span class="kw">let </span><span class="kw-2">mut </span>name: [c_char; MAX_NAME_LEN] = [<span class="string">b'\0' </span><span class="kw">as </span>c_char; MAX_NAME_LEN];
+            <span class="string">b"n2o4-"</span>.into_iter().enumerate().for_each(|(i, val)| name[i] = <span class="kw-2">*</span>val <span class="kw">as </span>c_char);
             <span class="kw">let </span>sp = psm::stack_pointer() <span class="kw">as </span>usize;
             <span class="kw">let </span><span class="kw-2">mut </span>num_iter: usize = <span class="macro-nonterminal">$initial_iter_value</span>;
 
@@ -1422,10 +1424,10 @@ impl TryFrom&lt;ResourceId&gt; for AppId {
 /// at the end of its execution.
 ///
 /// Wraps `CFE_ES_CreateChildTask`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_CreateChildTask&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_CreateChildTask"</span>)]
 #[inline]
 </span><span class="kw">pub fn </span>create_child_task_c&lt;S: AsRef&lt;CStr&gt; + <span class="question-mark">?</span>Sized&gt;(
-    function: <span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn</span>(),
+    function: <span class="kw">unsafe extern </span><span class="string">"C" </span><span class="kw">fn</span>(),
     task_name: <span class="kw-2">&amp;</span>S,
     stack_size: usize,
     priority: TaskPriority,
@@ -1464,7 +1466,7 @@ impl TryFrom&lt;ResourceId&gt; for AppId {
 /// manually call this function.
 ///
 /// Wraps `CFE_ES_ExitChildTask`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_ExitChildTask&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_ExitChildTask"</span>)]
 #[inline]
 </span><span class="kw">pub fn </span>exit_child_task() -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw">crate</span>::utils::Unconstructable, Status&gt; {
     <span class="kw">unsafe </span>{
@@ -1474,14 +1476,14 @@ impl TryFrom&lt;ResourceId&gt; for AppId {
     <span class="prelude-val">Err</span>(Status::ES_BAD_ARGUMENT)
 }
 
-<span class="doccomment">/// Increment ES&#39;s internal counter for the current task.
+<span class="doccomment">/// Increment ES's internal counter for the current task.
 ///
 /// This is done automatically by [`CFE_ES_RunLoop`](`run_loop`),
-/// so this typically doesn&#39;t need to be called in the main application task.
-/// It may be useful to call it in a child task&#39;s main loop.
+/// so this typically doesn't need to be called in the main application task.
+/// It may be useful to call it in a child task's main loop.
 ///
 /// Wraps `CFE_ES_IncrementTaskCounter`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_IncrementTaskCounter&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_IncrementTaskCounter"</span>)]
 #[inline]
 </span><span class="kw">pub fn </span>increment_task_counter() {
     <span class="kw">unsafe </span>{
@@ -1492,9 +1494,9 @@ impl TryFrom&lt;ResourceId&gt; for AppId {
 <span class="doccomment">/// A handle to a block in the Critical Data Store (CDS).
 ///
 /// Wraps `CFE_ES_CDSHandle_t`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_CDSHandle_t&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_CDSHandle_t"</span>)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-</span><span class="kw">pub struct </span>CdsHandle&lt;T: Copy + Sized + <span class="lifetime">&#39;static</span>&gt; {
+</span><span class="kw">pub struct </span>CdsHandle&lt;T: Copy + Sized + <span class="lifetime">'static</span>&gt; {
     handle: CFE_ES_CDSHandle_t,
     _pd:    PhantomData&lt;T&gt;,
 }
@@ -1502,7 +1504,7 @@ impl TryFrom&lt;ResourceId&gt; for AppId {
 <span class="doccomment">/// A buffer size that is longer than any CDS block name.
 </span><span class="kw">const </span>CDS_NAME_BUF_LEN: usize = (CFE_MISSION_ES_CDS_MAX_NAME_LENGTH <span class="kw">as </span>usize) + <span class="number">1</span>;
 
-<span class="kw">impl</span>&lt;T: Copy + Sized + <span class="lifetime">&#39;static</span>&gt; CdsHandle&lt;T&gt; {
+<span class="kw">impl</span>&lt;T: Copy + Sized + <span class="lifetime">'static</span>&gt; CdsHandle&lt;T&gt; {
     <span class="doccomment">/// The backend of [`register`](CdsHandle::register),
     /// [`register_with`](CdsHandle::register_with),
     /// and [`register_with_default`](CdsHandle::register_with_default).
@@ -1555,7 +1557,7 @@ impl TryFrom&lt;ResourceId&gt; for AppId {
     /// On success, a handle for the block is returned.
     /// If the block is created by this call, it is initialized with `initial_value`.
     ///
-    /// Wraps `CFE_ES_RegisterCDS` (and `CFE_ES_CopyToCDS` if the block doesn&#39;t already exist).
+    /// Wraps `CFE_ES_RegisterCDS` (and `CFE_ES_CopyToCDS` if the block doesn't already exist).
     ///
     /// # Safety
     ///
@@ -1563,7 +1565,7 @@ impl TryFrom&lt;ResourceId&gt; for AppId {
     /// The programmer and/or system operator must ensure that by, e.g., either making sure all versions of
     /// the calling application use the same `#[repr(C)]` type, never rebuilding the application and hot-upgrading
     /// it in a running cFS system, etc.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_RegisterCDS&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_RegisterCDS"</span>)]
     #[inline]
     </span><span class="kw">pub unsafe fn </span>register&lt;S: AsRef&lt;CStr&gt; + <span class="question-mark">?</span>Sized&gt;(
         name: <span class="kw-2">&amp;</span>S,
@@ -1578,7 +1580,7 @@ impl TryFrom&lt;ResourceId&gt; for AppId {
     /// On success, a handle for the block is returned.
     /// If the block is created by this call, it is initialized with the result of calling `initial_value_fn`.
     ///
-    /// Wraps `CFE_ES_RegisterCDS` (and `CFE_ES_CopyToCDS` if the block doesn&#39;t already exist).
+    /// Wraps `CFE_ES_RegisterCDS` (and `CFE_ES_CopyToCDS` if the block doesn't already exist).
     ///
     /// # Safety
     ///
@@ -1588,7 +1590,7 @@ impl TryFrom&lt;ResourceId&gt; for AppId {
     /// it in a running cFS system, etc.
     ///
     /// `initial_value_fn` must not panic; otherwise the CDS block will not be properly initialized with a valid value.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_RegisterCDS&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_RegisterCDS"</span>)]
     #[inline]
     </span><span class="kw">pub unsafe fn </span>register_with&lt;S: AsRef&lt;CStr&gt; + <span class="question-mark">?</span>Sized, F: FnOnce() -&gt; T&gt;(
         name: <span class="kw-2">&amp;</span>S,
@@ -1603,7 +1605,7 @@ impl TryFrom&lt;ResourceId&gt; for AppId {
     /// On success, a handle for the block is returned.
     /// If the block is created by this call, it is initialized with the result of calling [`Default::default`].
     ///
-    /// Wraps `CFE_ES_RegisterCDS` (and `CFE_ES_CopyToCDS` if the block doesn&#39;t already exist).
+    /// Wraps `CFE_ES_RegisterCDS` (and `CFE_ES_CopyToCDS` if the block doesn't already exist).
     ///
     /// # Safety
     ///
@@ -1613,7 +1615,7 @@ impl TryFrom&lt;ResourceId&gt; for AppId {
     /// it in a running cFS system, etc.
     ///
     /// `Default::default` must not panic; otherwise the CDS block will not be properly initialized with a valid value.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_RegisterCDS&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_RegisterCDS"</span>)]
     #[inline]
     </span><span class="kw">pub unsafe fn </span>register_with_default&lt;S: AsRef&lt;CStr&gt; + <span class="question-mark">?</span>Sized&gt;(
         name: <span class="kw-2">&amp;</span>S,
@@ -1627,10 +1629,10 @@ impl TryFrom&lt;ResourceId&gt; for AppId {
     <span class="doccomment">/// Retrieves the name of the CDS block.
     ///
     /// Wraps `CFE_ES_GetCDSBlockName`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_GetCDSBlockName&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_GetCDSBlockName"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>block_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw">crate</span>::utils::CStrBuf&lt;CDS_NAME_BUF_LEN&gt;, Status&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>name = [<span class="string">b&#39;\0&#39; </span><span class="kw">as </span>c_char; CDS_NAME_BUF_LEN];
+        <span class="kw">let </span><span class="kw-2">mut </span>name = [<span class="string">b'\0' </span><span class="kw">as </span>c_char; CDS_NAME_BUF_LEN];
 
         <span class="kw">let </span>status: Status =
             <span class="kw">unsafe </span>{ CFE_ES_GetCDSBlockName(name.as_mut_ptr(), <span class="self">self</span>.handle, CDS_NAME_BUF_LEN) }
@@ -1642,7 +1644,7 @@ impl TryFrom&lt;ResourceId&gt; for AppId {
     <span class="doccomment">/// Copies `data_to_copy` into the CDS block.
     ///
     /// Wraps `CFE_ES_CopyToCDS`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_CopyToCDS&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_CopyToCDS"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>copy_to_cds(<span class="kw-2">&amp;</span><span class="self">self</span>, data_to_copy: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;(), Status&gt; {
         <span class="kw">let </span>status: Status =
@@ -1655,7 +1657,7 @@ impl TryFrom&lt;ResourceId&gt; for AppId {
     <span class="doccomment">/// Fetches the contents of the CDS block.
     ///
     /// Wraps `CFE_ES_RestoreFromCDS`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_ES_RestoreFromCDS&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_ES_RestoreFromCDS"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>restore_from_cds(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;T, Status&gt; {
         <span class="kw">use </span>core::mem::MaybeUninit;
@@ -1665,7 +1667,7 @@ impl TryFrom&lt;ResourceId&gt; for AppId {
         <span class="kw">let </span>status: Status =
             <span class="kw">unsafe </span>{ CFE_ES_RestoreFromCDS(value.as_mut_ptr() <span class="kw">as </span><span class="kw-2">*mut </span>c_void, <span class="self">self</span>.handle) }.into();
 
-        <span class="comment">// Safety: the only non-error return value for this is &quot;successful exection&quot;, in which case
+        <span class="comment">// Safety: the only non-error return value for this is "successful exection", in which case
         // a value was copied into `value`.
         </span>status.as_result(|| <span class="kw">unsafe </span>{ value.assume_init() })
     }

@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `n2o4/src/cfe/tbl.rs`."><title>tbl.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="n2o4" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (ba7c7a301 2023-11-13)" data-channel="nightly" data-search-js="search-8fbf244ebcf71464.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-f06f02fd918e3bb3.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/cfe/tbl.rs`."><title>tbl.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="n2o4" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (11f32b73e 2024-01-31)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
+            <h2>Files</h2></div></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../../n2o4/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -843,23 +845,23 @@
 
 </span><span class="kw">use </span><span class="kw">crate</span>::cfe::time::SysTime;
 <span class="kw">use </span><span class="kw">crate</span>::cfe::Status;
+<span class="kw">use </span><span class="kw">crate</span>::sys::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::utils::CStrBuf;
-<span class="kw">use </span>cfs_sys::<span class="kw-2">*</span>;
 <span class="kw">use </span>core::ffi::{c_char, c_void, CStr};
 <span class="kw">use </span>core::marker::PhantomData;
 <span class="kw">use </span>core::ops::{Deref, DerefMut};
 
 <span class="doccomment">/// A convenience trait for referring to which types can be
 /// used as the contents of cFE tables.
-</span><span class="kw">pub trait </span>TableType: Copy + Sync + Sized + <span class="lifetime">&#39;static </span>{}
+</span><span class="kw">pub trait </span>TableType: Copy + Sync + Sized + <span class="lifetime">'static </span>{}
 
 <span class="doccomment">/// Blanket implementation for all eligible types.
-</span><span class="kw">impl</span>&lt;T: Copy + Sync + Sized + <span class="lifetime">&#39;static</span>&gt; TableType <span class="kw">for </span>T {}
+</span><span class="kw">impl</span>&lt;T: Copy + Sync + Sized + <span class="lifetime">'static</span>&gt; TableType <span class="kw">for </span>T {}
 
 <span class="doccomment">/// Returns characteristics of, and information about, the table with name `table_name`.
 ///
 /// Wraps `CFE_TBL_GetInfo`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_TBL_GetInfo&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_TBL_GetInfo"</span>)]
 #[inline]
 </span><span class="kw">pub fn </span>info&lt;S: AsRef&lt;CStr&gt; + <span class="question-mark">?</span>Sized&gt;(table_name: <span class="kw-2">&amp;</span>S) -&gt; <span class="prelude-ty">Result</span>&lt;TblInfo, Status&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>info: CFE_TBL_Info_t = DEFAULT_TBL_INFO;
@@ -872,7 +874,7 @@
 <span class="doccomment">/// A handle to a table.
 ///
 /// Wraps a `CFE_TBL_Handle_t`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_TBL_Handle_t&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_TBL_Handle_t"</span>)]
 </span><span class="kw">pub struct </span>TblHandle&lt;T: TableType&gt; {
     hdl: CFE_TBL_Handle_t,
     _x:  PhantomData&lt;T&gt;,
@@ -883,7 +885,7 @@
     /// returning a handle if successful.
     ///
     /// Wraps `CFE_TBL_Register`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_TBL_Register&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_TBL_Register"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>register&lt;S: AsRef&lt;CStr&gt; + <span class="question-mark">?</span>Sized&gt;(
         tbl_name: <span class="kw-2">&amp;</span>S,
@@ -930,11 +932,11 @@
     /// to `closure`, whose return value becomes the output.
     ///
     /// Wraps `CFE_TBL_GetAddress` and `CFE_TBL_ReleaseAddress`.
-    </span><span class="attr">#[doc(alias(<span class="string">&quot;CFE_TBL_GetAddress&quot;</span>, <span class="string">&quot;CFE_TBL_ReleaseAddress&quot;</span>))]
+    </span><span class="attr">#[doc(alias(<span class="string">"CFE_TBL_GetAddress"</span>, <span class="string">"CFE_TBL_ReleaseAddress"</span>))]
     #[inline]
     </span><span class="kw">pub fn </span>get_ref&lt;F, V&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, closure: F) -&gt; <span class="prelude-ty">Result</span>&lt;V, Status&gt;
     <span class="kw">where
-        </span>F: <span class="kw">for</span>&lt;<span class="lifetime">&#39;a</span>&gt; FnOnce(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>T, bool) -&gt; V,
+        </span>F: <span class="kw">for</span>&lt;<span class="lifetime">'a</span>&gt; FnOnce(<span class="kw-2">&amp;</span><span class="lifetime">'a </span>T, bool) -&gt; V,
     {
         <span class="kw">let </span><span class="kw-2">mut </span>tbl_ptr: <span class="kw-2">*mut </span>c_void = core::ptr::null_mut();
 
@@ -961,9 +963,9 @@
     <span class="doccomment">/// Tries to load the table with data from `source`.
     ///
     /// Wraps `CFE_TBL_Load`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_TBL_Load&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_TBL_Load"</span>)]
     #[inline]
-    </span><span class="kw">pub fn </span>load(<span class="kw-2">&amp;mut </span><span class="self">self</span>, source: TblLoadSource&lt;<span class="lifetime">&#39;_</span>, T&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;(), Status&gt; {
+    </span><span class="kw">pub fn </span>load(<span class="kw-2">&amp;mut </span><span class="self">self</span>, source: TblLoadSource&lt;<span class="lifetime">'_</span>, T&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;(), Status&gt; {
         <span class="kw">use </span>TblLoadSource <span class="kw">as </span>TLS;
 
         <span class="kw">let </span>(src_type, src_data_ptr) = <span class="kw">match </span>source {
@@ -981,13 +983,13 @@
     <span class="doccomment">/// Notifies Table Services that this application
     /// has modified the contents of this table.
     ///
-    /// Generally, applications using this crate won&#39;t need to call this explicitly.
+    /// Generally, applications using this crate won't need to call this explicitly.
     /// The only mutable access to table contents this crate provides is through
     /// [`DumpOnlyTblHandle::get_mut`], which calls `CFE_TBL_Modified` itself after
     /// any modification occurs.
     ///
     /// Wraps `CFE_TBL_Modified`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_TBL_Modified&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_TBL_Modified"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>modified(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), Status&gt; {
         <span class="kw">let </span>status: Status = <span class="kw">unsafe </span>{ CFE_TBL_Modified(<span class="self">self</span>.hdl) }.into();
@@ -1003,7 +1005,7 @@
     /// On success, returns whether a table update occurred.
     ///
     /// Wraps `CFE_TBL_Manage`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_TBL_Manage&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_TBL_Manage"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>manage(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;bool, Status&gt; {
         <span class="kw">let </span>status: Status = <span class="kw">unsafe </span>{ CFE_TBL_Manage(<span class="self">self</span>.hdl) }.into();
@@ -1023,7 +1025,7 @@
     /// Returns whether there was, in fact, an update pending.
     ///
     /// Wraps `CFE_TBL_Update`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_TBL_Update&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_TBL_Update"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>update(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;bool, Status&gt; {
         <span class="kw">let </span>status: Status = <span class="kw">unsafe </span>{ CFE_TBL_Update(<span class="self">self</span>.hdl) }.into();
@@ -1043,7 +1045,7 @@
     /// Returns whether there was, in fact, a validation request pending.
     ///
     /// Wraps `CFE_TBL_Validate`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_TBL_Validate&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_TBL_Validate"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>validate(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;bool, Status&gt; {
         <span class="kw">let </span>status: Status = <span class="kw">unsafe </span>{ CFE_TBL_Validate(<span class="self">self</span>.hdl) }.into();
@@ -1061,7 +1063,7 @@
     /// which includes this bit of maintenance.
     ///
     /// Wraps `CFE_TBL_DumpToBuffer`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_TBL_DumpToBuffer&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_TBL_DumpToBuffer"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>dump_to_buffer(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), Status&gt; {
         <span class="kw">let </span>status: Status = <span class="kw">unsafe </span>{ CFE_TBL_DumpToBuffer(<span class="self">self</span>.hdl) }.into();
@@ -1072,7 +1074,7 @@
     <span class="doccomment">/// Returns one of the pending actions required for the table, if any.
     ///
     /// Wraps `CFE_TBL_GetStatus`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_TBL_GetStatus&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_TBL_GetStatus"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>status(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;PendingAction&gt;, Status&gt; {
         <span class="kw">use </span>PendingAction::<span class="kw-2">*</span>;
@@ -1097,7 +1099,7 @@
     /// Only the application that owns the table in question may successfully call this.
     ///
     /// Wraps `CFE_TBL_NotifyByMessage`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_TBL_NotifyByMessage&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_TBL_NotifyByMessage"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>notify_by_message(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
@@ -1113,7 +1115,7 @@
 
     <span class="doccomment">/// Unregisters the table corresponding to this handle.
     ///
-    /// Note that you generally shouldn&#39;t need to call this
+    /// Note that you generally shouldn't need to call this
     /// for a table that the current application registered, as
     /// cFE automatically unregisters all tables owned by
     /// an application when that application exits.
@@ -1123,7 +1125,7 @@
     /// but this is handled with the [`Drop`] `impl` on [`SharedTblHandle`].
     ///
     /// Wraps `CFE_TBL_Unregister`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_TBL_Unregister&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_TBL_Unregister"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>unregister(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), Status&gt; {
         <span class="kw">let </span>status: Status = <span class="kw">unsafe </span>{ CFE_TBL_Unregister(<span class="self">self</span>.hdl) }.into();
@@ -1147,10 +1149,10 @@
 ///
 /// [^1]: There is some&amp;mdash;non-comprehensive!&amp;mdash;assistance
 /// in [`get_mut`](#method.get_mut).
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_TBL_Handle_t&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_TBL_Handle_t"</span>)]
 </span><span class="kw">pub struct </span>DumpOnlyTblHandle&lt;T: TableType&gt; {
     th:  TblHandle&lt;T&gt;,
-    buf: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span><span class="kw-2">mut </span>T&gt;,
+    buf: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'static </span><span class="kw-2">mut </span>T&gt;,
 }
 
 <span class="kw">impl</span>&lt;T: TableType&gt; DumpOnlyTblHandle&lt;T&gt; {
@@ -1160,11 +1162,11 @@
     ///
     /// Wraps `CFE_TBL_Register`
     /// (and for tables with a user-defined address, `CFE_TBL_Load`).
-    </span><span class="attr">#[doc(alias(<span class="string">&quot;CFE_TBL_Register&quot;</span>, <span class="string">&quot;CFE_TBL_Load&quot;</span>))]
+    </span><span class="attr">#[doc(alias(<span class="string">"CFE_TBL_Register"</span>, <span class="string">"CFE_TBL_Load"</span>))]
     #[inline]
     </span><span class="kw">pub fn </span>register&lt;S: AsRef&lt;CStr&gt; + <span class="question-mark">?</span>Sized&gt;(
         tbl_name: <span class="kw-2">&amp;</span>S,
-        tbl_buffer: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span><span class="kw-2">mut </span>T&gt;,
+        tbl_buffer: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'static </span><span class="kw-2">mut </span>T&gt;,
         validation_fn: <span class="prelude-ty">Option</span>&lt;TableValidationFn&lt;T&gt;&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, Status&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>hdl: CFE_TBL_Handle_t = X_CFE_TBL_BAD_TABLE_HANDLE;
@@ -1206,10 +1208,10 @@
             <span class="kw">let </span>buf_ptr: <span class="kw-2">*mut </span>T =
                 tbl_buffer.as_mut().map_or(core::ptr::null_mut(), |x| (<span class="kw-2">*</span>x) <span class="kw">as </span><span class="kw-2">*mut </span>T);
 
-            <span class="comment">// NOTE: it is safe for the app to use a `&amp;&#39;static mut T` as the address here,
+            <span class="comment">// NOTE: it is safe for the app to use a `&amp;'static mut T` as the address here,
             // as tables with user-defined addresses are dump-only;
             // there may be concurrency issues for any would-be sharers,
-            // but that&#39;s not a problem for the current app.
+            // but that's not a problem for the current app.
 
             </span><span class="kw">let </span>s: Status = <span class="kw">unsafe </span>{
                 CFE_TBL_Load(hdl, CFE_TBL_SrcEnum_CFE_TBL_SRC_ADDRESS, buf_ptr <span class="kw">as </span><span class="kw-2">*mut </span>c_void)
@@ -1227,22 +1229,22 @@
 
     <span class="doccomment">/// Attempts to obtain the current address of the table contents.
     /// If successful, provides `closure` with a mutable reference
-    /// to the data backing the table, returning `closure`&#39;s return value.
+    /// to the data backing the table, returning `closure`'s return value.
     ///
     /// Calls `CFE_TBL_Modified` after `closure` finishes to let Table Services
     /// know the table has been modified.
     ///
-    /// In the case when the table doesn&#39;t have a user-defined address, also
+    /// In the case when the table doesn't have a user-defined address, also
     /// wraps `CFE_TBL_GetAddress` and `CFE_TBL_ReleaseAddress`.
-    </span><span class="attr">#[doc(alias(<span class="string">&quot;CFE_TBL_Modified&quot;</span>, <span class="string">&quot;CFE_TBL_GetAddress&quot;</span>, <span class="string">&quot;CFE_TBL_ReleaseAddress&quot;</span>))]
+    </span><span class="attr">#[doc(alias(<span class="string">"CFE_TBL_Modified"</span>, <span class="string">"CFE_TBL_GetAddress"</span>, <span class="string">"CFE_TBL_ReleaseAddress"</span>))]
     #[inline]
     </span><span class="kw">pub fn </span>get_mut&lt;F, V&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, closure: F) -&gt; <span class="prelude-ty">Result</span>&lt;V, Status&gt;
     <span class="kw">where
-        </span>F: <span class="kw">for</span>&lt;<span class="lifetime">&#39;a</span>&gt; FnOnce(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>T) -&gt; V,
+        </span>F: <span class="kw">for</span>&lt;<span class="lifetime">'a</span>&gt; FnOnce(<span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="kw-2">mut </span>T) -&gt; V,
     {
         <span class="kw">use </span>core::sync::atomic::{fence, Ordering::SeqCst};
 
-        <span class="kw">let </span>buf_ref: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span><span class="kw-2">mut </span>T&gt; = core::mem::replace(<span class="kw-2">&amp;mut </span><span class="self">self</span>.buf, <span class="prelude-val">None</span>);
+        <span class="kw">let </span>buf_ref: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'static </span><span class="kw-2">mut </span>T&gt; = core::mem::replace(<span class="kw-2">&amp;mut </span><span class="self">self</span>.buf, <span class="prelude-val">None</span>);
 
         <span class="kw">let </span>return_val = <span class="kw">if let </span><span class="prelude-val">Some</span>(buf) = buf_ref {
             <span class="kw">let </span>rv = closure(buf);
@@ -1282,17 +1284,17 @@
 
     <span class="doccomment">/// Unregisters the table corresponding to this handle.
     ///
-    /// Note that you generally shouldn&#39;t need to call this,
+    /// Note that you generally shouldn't need to call this,
     /// as cFE automatically unregisters all tables owned by
     /// an application when that application exits.
     ///
     /// In the case of a table with user-defined address,
-    /// this consciously does _not_ return the `&amp;&#39;static mut T`
+    /// this consciously does _not_ return the `&amp;'static mut T`
     /// to the backing data, as other applications may still
     /// have handles to the table.
     ///
     /// Wraps `CFE_TBL_Unregister`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_TBL_Unregister&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_TBL_Unregister"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>unregister(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), Status&gt; {
         <span class="kw">let </span>status: Status = <span class="kw">unsafe </span>{ CFE_TBL_Unregister(<span class="self">self</span>.th.hdl) }.into();
@@ -1320,7 +1322,7 @@
 <span class="doccomment">/// A handle to a table registered by another application.
 ///
 /// Wraps a `CFE_TBL_Handle_t` obtained from `CFE_TBL_Share`.
-</span><span class="attr">#[doc(alias(<span class="string">&quot;CFE_TBL_Handle_t&quot;</span>, <span class="string">&quot;CFE_TBL_Share&quot;</span>))]
+</span><span class="attr">#[doc(alias(<span class="string">"CFE_TBL_Handle_t"</span>, <span class="string">"CFE_TBL_Share"</span>))]
 </span><span class="kw">pub struct </span>SharedTblHandle&lt;T: TableType&gt; {
     th: TblHandle&lt;T&gt;,
 }
@@ -1335,7 +1337,7 @@
     /// The cFE API provides no way to ensure that the table named `tbl_name`
     /// is, in fact, a value of type `T`. This function just assumes that it
     /// is; this fact must be verified by the programmer.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_TBL_Share&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_TBL_Share"</span>)]
     #[inline]
     </span><span class="kw">pub unsafe fn </span>share&lt;S: AsRef&lt;CStr&gt; + <span class="question-mark">?</span>Sized&gt;(tbl_name: <span class="kw-2">&amp;</span>S) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, Status&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>hdl: CFE_TBL_Handle_t = X_CFE_TBL_BAD_TABLE_HANDLE;
@@ -1370,7 +1372,7 @@
 
 <span class="doccomment">/// Wraps `CFE_TBL_Unregister`.
 </span><span class="kw">impl</span>&lt;T: TableType&gt; Drop <span class="kw">for </span>SharedTblHandle&lt;T&gt; {
-    <span class="attr">#[doc(alias = <span class="string">&quot;CFE_TBL_Unregister&quot;</span>)]
+    <span class="attr">#[doc(alias = <span class="string">"CFE_TBL_Unregister"</span>)]
     #[inline]
     </span><span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
         <span class="kw">let _ </span>= <span class="kw">unsafe </span>{ CFE_TBL_Unregister(<span class="self">self</span>.th.hdl) };
@@ -1426,18 +1428,18 @@
     /// This uses less space than [`DoubleBuffered`](Self::DoubleBuffered), but may be blocking.
     ///
     /// Corresponds to `CFE_TBL_OPT_SNGL_BUFFER`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_TBL_OPT_SNGL_BUFFER&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_TBL_OPT_SNGL_BUFFER"</span>)]
     </span>SingleBuffered = CFE_TBL_OPT_SNGL_BUFFER <span class="kw">as </span>u16,
 
     <span class="doccomment">/// Modifications to the table will use a reserved buffer
-    /// specific to this table, swapping &quot;active&quot; and &quot;inactive&quot;
+    /// specific to this table, swapping "active" and "inactive"
     /// buffers when the table update occurs.
     ///
     /// This is non-blocking (unless the table is [critical](TblCriticality::Critical)),
     /// but uses more space than [`SingleBuffered`](Self::SingleBuffered).
     ///
     /// Corresponds to `CFE_TBL_OPT_DBL_BUFFER`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_TBL_OPT_DBL_BUFFER&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_TBL_OPT_DBL_BUFFER"</span>)]
     </span>DoubleBuffered = CFE_TBL_OPT_DBL_BUFFER <span class="kw">as </span>u16,
 }
 
@@ -1450,25 +1452,25 @@
     <span class="doccomment">/// Not critical; no copy of the table will be stored in the CDS.
     ///
     /// Corresponds to `CFE_TBL_OPT_NOT_CRITICAL`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_TBL_OPT_NOT_CRITICAL&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_TBL_OPT_NOT_CRITICAL"</span>)]
     </span>NotCritical = CFE_TBL_OPT_NOT_CRITICAL <span class="kw">as </span>u16,
 
     <span class="doccomment">/// Critical; the contents of the active table buffer
     /// will be stored in the CDS.
     ///
     /// Corresponds to `CFE_TBL_OPT_CRITICAL`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_TBL_OPT_CRITICAL&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_TBL_OPT_CRITICAL"</span>)]
     </span>Critical    = CFE_TBL_OPT_CRITICAL <span class="kw">as </span>u16,
 }
 
 <span class="doccomment">/// A source of table-update data for [`TblHandle::load`].
 </span><span class="attr">#[derive(Clone, Copy, Debug)]
-</span><span class="kw">pub enum </span>TblLoadSource&lt;<span class="lifetime">&#39;a</span>, T&gt; {
+</span><span class="kw">pub enum </span>TblLoadSource&lt;<span class="lifetime">'a</span>, T&gt; {
     <span class="doccomment">/// Update the table to have the contents of the referred-to `T`.
-    </span>Ref(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>T),
+    </span>Ref(<span class="kw-2">&amp;</span><span class="lifetime">'a </span>T),
 
     <span class="doccomment">/// Update the table using the table file at this filename.
-    </span>FileName(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>CStr),
+    </span>FileName(<span class="kw-2">&amp;</span><span class="lifetime">'a </span>CStr),
 }
 
 <span class="doccomment">/// A pending action for a table.
@@ -1489,14 +1491,14 @@
 /// a table.
 ///
 /// Corresponds to `CFE_TBL_Info_t`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_TBL_Info_t&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_TBL_Info_t"</span>)]
 #[derive(Clone, Copy, Debug)]
 </span><span class="kw">pub struct </span>TblInfo {
     <span class="doccomment">/// Size of the table in bytes.
     </span><span class="kw">pub </span>size: usize,
     <span class="doccomment">/// The number of applications with access to the table.
     </span><span class="kw">pub </span>num_users: u32,
-    <span class="doccomment">/// The CRC most recently calculated by Table Services from the table&#39;s contents.
+    <span class="doccomment">/// The CRC most recently calculated by Table Services from the table's contents.
     </span><span class="kw">pub </span>crc: u32,
     <span class="doccomment">/// The time the table was last updated.
     </span><span class="kw">pub </span>last_update_time: SysTime,
@@ -1508,7 +1510,7 @@
     </span><span class="kw">pub </span>table_loaded_once: bool,
     <span class="doccomment">/// Flag indicating whether loads to the table are forbidden.
     </span><span class="kw">pub </span>dump_only: bool,
-    <span class="doccomment">/// Flag indicating whether table as a dedicated &quot;inactive&quot; buffer.
+    <span class="doccomment">/// Flag indicating whether table as a dedicated "inactive" buffer.
     </span><span class="kw">pub </span>double_buffered: bool,
     <span class="doccomment">/// Flag indicating whether the table address was defined by the owning application.
     </span><span class="kw">pub </span>user_def_addr: bool,
@@ -1555,7 +1557,7 @@
     DoubleBuffered: <span class="bool-val">false</span>,
     UserDefAddr: <span class="bool-val">false</span>,
     Critical: <span class="bool-val">false</span>,
-    LastFileLoaded: [<span class="string">b&#39;\0&#39; </span><span class="kw">as </span>c_char; MAX_PATH_LEN],
+    LastFileLoaded: [<span class="string">b'\0' </span><span class="kw">as </span>c_char; MAX_PATH_LEN],
 };
 
 <span class="doccomment">/// A wrapped version of a static `fn` to
@@ -1567,7 +1569,7 @@
 /// which expands to a `const`able `TableValidationFn&lt;$t&gt;`.
 ///
 /// Wraps `CFE_TBL_CallbackFuncPtr_t`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_TBL_CallbackFuncPtr_t&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_TBL_CallbackFuncPtr_t"</span>)]
 #[derive(Clone, Copy, Debug)]
 </span><span class="kw">pub struct </span>TableValidationFn&lt;T: TableType&gt; {
     cfp: CFE_TBL_CallbackFuncPtr_t,
@@ -1584,7 +1586,7 @@
     /// callers must ensure that this is actually the case.
     </span><span class="attr">#[doc(hidden)]
     #[inline]
-    </span><span class="kw">pub const unsafe fn </span>new(vf: <span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn</span>(<span class="kw-2">*mut </span>c_void) -&gt; i32) -&gt; <span class="self">Self </span>{
+    </span><span class="kw">pub const unsafe fn </span>new(vf: <span class="kw">unsafe extern </span><span class="string">"C" </span><span class="kw">fn</span>(<span class="kw-2">*mut </span>c_void) -&gt; i32) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             cfp: <span class="prelude-val">Some</span>(vf),
             _x:  PhantomData,
@@ -1609,7 +1611,7 @@
 
 <span class="doccomment">/// This is only exported for the use of [`table_validation_fn`](crate::table_validation_fn).
 </span><span class="attr">#[doc(hidden)]
-</span><span class="kw">pub const </span>CFE_SUCCESS: i32 = cfs_sys::S_CFE_SUCCESS;
+</span><span class="kw">pub const </span>CFE_SUCCESS: i32 = <span class="kw">crate</span>::sys::S_CFE_SUCCESS;
 
 <span class="doccomment">/// Creates a `const` [`TableValidationFn`]`&lt;$t&gt;` from
 /// static function `$f_wrapped`,
@@ -1634,7 +1636,7 @@
     (<span class="macro-nonterminal">$t</span>:ty, <span class="macro-nonterminal">$f_wrapped</span>:expr) =&gt; {{
         <span class="kw">const </span>F_WRAP: <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="macro-nonterminal">$t</span>) -&gt; ::core::result::Result&lt;(), i32&gt; = <span class="macro-nonterminal">$f_wrapped</span>;
         <span class="kw">const </span>CFE_SUCCESS: i32 = <span class="macro-nonterminal">$crate::cfe::tbl::CFE_SUCCESS</span>;
-        <span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>vf(tbl_ptr: <span class="kw-2">*mut </span>::core::ffi::c_void) -&gt; i32 {
+        <span class="kw">unsafe extern </span><span class="string">"C" </span><span class="kw">fn </span>vf(tbl_ptr: <span class="kw-2">*mut </span>::core::ffi::c_void) -&gt; i32 {
             <span class="kw">use </span>::core::{option::Option, option::Option::<span class="kw-2">*</span>, result::Result::<span class="kw-2">*</span>};
 
             <span class="kw">let </span>tbl_ptr: <span class="kw-2">*mut </span><span class="macro-nonterminal">$t </span>= tbl_ptr <span class="kw">as </span><span class="kw-2">*mut </span><span class="macro-nonterminal">$t</span>;
@@ -1658,7 +1660,7 @@
     (^ <span class="macro-nonterminal">$t</span>:ty, <span class="macro-nonterminal">$f_wrapped</span>:expr) =&gt; {{
         <span class="kw">const </span>F_WRAP: <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="macro-nonterminal">$t</span>) -&gt; ::core::result::Result&lt;(), <span class="macro-nonterminal">$crate::utils::NegativeI32</span>&gt; =
             <span class="macro-nonterminal">$f_wrapped</span>;
-        <span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>vf(tbl_ptr: <span class="kw-2">*mut </span>::core::ffi::c_void) -&gt; i32 {
+        <span class="kw">unsafe extern </span><span class="string">"C" </span><span class="kw">fn </span>vf(tbl_ptr: <span class="kw-2">*mut </span>::core::ffi::c_void) -&gt; i32 {
             <span class="kw">use </span>::core::{option::Option, option::Option::<span class="kw-2">*</span>, result::Result::<span class="kw-2">*</span>};
 
             <span class="kw">let </span>tbl_ptr: <span class="kw-2">*mut </span><span class="macro-nonterminal">$t </span>= tbl_ptr <span class="kw">as </span><span class="kw-2">*mut </span><span class="macro-nonterminal">$t</span>;

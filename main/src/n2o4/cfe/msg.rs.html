@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `n2o4/src/cfe/msg.rs`."><title>msg.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="n2o4" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (ba7c7a301 2023-11-13)" data-channel="nightly" data-search-js="search-8fbf244ebcf71464.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-f06f02fd918e3bb3.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/cfe/msg.rs`."><title>msg.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="n2o4" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (11f32b73e 2024-01-31)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
+            <h2>Files</h2></div></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../../n2o4/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -537,7 +539,7 @@
 
 <span class="kw">use </span><span class="kw">super</span>::sb::MsgId;
 <span class="kw">use </span><span class="kw">super</span>::Status;
-<span class="kw">use </span>cfs_sys::<span class="kw-2">*</span>;
+<span class="kw">use </span><span class="kw">crate</span>::sys::<span class="kw-2">*</span>;
 
 <span class="doccomment">/// Returns the number of items in array field `$field` of `$type`.
 ///
@@ -565,7 +567,7 @@
 }
 
 <span class="doccomment">/// Returns the byte offset from the beginning of structure `$x` to
-/// the beginning its `$type`&#39;s field.
+/// the beginning its `$type`'s field.
 </span><span class="macro">macro_rules! </span>offset_of {
     (<span class="macro-nonterminal">$x</span>:expr, <span class="macro-nonterminal">$field</span>:ident) =&gt; {{
         <span class="kw">let </span>struct_addr = <span class="macro">core::ptr::addr_of!</span>(<span class="kw-2">*</span><span class="macro-nonterminal">$x</span>);
@@ -574,24 +576,24 @@
     }};
 }
 
-<span class="doccomment">/// A [`Message`]&#39;s function code.
+<span class="doccomment">/// A [`Message`]'s function code.
 ///
 /// This is the same as `CFE_MSG_FcnCode_t`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_MSG_FcnCode_t&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_MSG_FcnCode_t"</span>)]
 #[doc(inline)]
-</span><span class="kw">pub use </span>cfs_sys::CFE_MSG_FcnCode_t <span class="kw">as </span>FunctionCode;
+</span><span class="kw">pub use </span><span class="kw">crate</span>::sys::CFE_MSG_FcnCode_t <span class="kw">as </span>FunctionCode;
 
 <span class="doccomment">/// Represents the size of a [`Message`].
 ///
 /// This is the same as `CFE_MSG_Size_t`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_MSG_Size_t&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_MSG_Size_t"</span>)]
 #[doc(inline)]
-</span><span class="kw">pub use </span>cfs_sys::CFE_MSG_Size_t <span class="kw">as </span>Size;
+</span><span class="kw">pub use </span><span class="kw">crate</span>::sys::CFE_MSG_Size_t <span class="kw">as </span>Size;
 
 <span class="doccomment">/// An instance of the common header for cFE software bus messages.
 ///
 /// Wraps `CFE_MSG_Message_t`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_MSG_Message_t&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_MSG_Message_t"</span>)]
 #[repr(transparent)]
 </span><span class="kw">pub struct </span>Message {
     <span class="kw">pub</span>(<span class="kw">super</span>) msg: CFE_MSG_Message_t,
@@ -600,13 +602,13 @@
 <span class="doccomment">/// A command message for use with the cFE software bus.
 ///
 /// Wraps `CFE_MSG_CommandHeader_t`, with a user-specified payload following.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_MSG_CommandHeader_t&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_MSG_CommandHeader_t"</span>)]
 #[repr(C)]
 </span><span class="kw">pub struct </span>Command&lt;T: Copy&gt; {
     <span class="doccomment">/// The command header.
     </span>header: CFE_MSG_CommandHeader_t,
 
-    <span class="doccomment">/// The message&#39;s payload. As messages are copied
+    <span class="doccomment">/// The message's payload. As messages are copied
     /// willy-nilly by cFE, `T` needs to be [`Copy`].
     </span><span class="kw">pub </span>payload: T,
 }
@@ -614,13 +616,13 @@
 <span class="doccomment">/// A telemetry message for use with the cFE software bus.
 ///
 /// Wraps `CFE_MSG_TelemetryHeader_t`, with a user-specified payload following.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_MSG_TelemetryHeader_t&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFE_MSG_TelemetryHeader_t"</span>)]
 #[repr(C)]
 </span><span class="kw">pub struct </span>Telemetry&lt;T: Copy&gt; {
     <span class="doccomment">/// The telemetry header.
     </span>header: CFE_MSG_TelemetryHeader_t,
 
-    <span class="doccomment">/// The message&#39;s payload. As messages are copied
+    <span class="doccomment">/// The message's payload. As messages are copied
     /// willy-nilly by cFE, `T` needs to be [`Copy`].
     </span><span class="kw">pub </span>payload: T,
 }
@@ -636,7 +638,7 @@
     /// secondary header), this is an unsafe operation.
     ///
     /// Wraps `CFE_MSG_Init`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_MSG_Init&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_MSG_Init"</span>)]
     #[inline]
     </span><span class="kw">unsafe fn </span>init(<span class="kw-2">&amp;mut </span><span class="self">self</span>, msg_id: MsgId, size: Size) -&gt; <span class="prelude-ty">Result</span>&lt;(), Status&gt; {
         <span class="kw">let </span>s: Status = CFE_MSG_Init(<span class="kw-2">&amp;mut </span><span class="self">self</span>.msg, msg_id.id, size).into();
@@ -659,10 +661,10 @@
         <span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut *</span>p }
     }
 
-    <span class="doccomment">/// Returns the [`Message`]&#39;s function code (if it has one).
+    <span class="doccomment">/// Returns the [`Message`]'s function code (if it has one).
     ///
     /// Wraps `CFE_MSG_GetFcnCode`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_MSG_GetFcnCode&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_MSG_GetFcnCode"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>fcn_code(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;FunctionCode, Status&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>fc: FunctionCode = <span class="number">0</span>;
@@ -674,7 +676,7 @@
     <span class="doccomment">/// Returns the message ID.
     ///
     /// Wraps `CFE_MSG_GetMsgId`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_MSG_GetMsgId&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_MSG_GetMsgId"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>msgid(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;MsgId, Status&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>mid: MsgId = MsgId::INVALID;
@@ -685,10 +687,10 @@
     }
 
     <span class="doccomment">/// Tries to set the message ID, provided doing so would not change
-    /// the message&#39;s type (e.g., telemetry to command).
+    /// the message's type (e.g., telemetry to command).
     ///
     /// Wraps `CFE_MSG_SetMsgId`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_MSG_SetMsgId&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_MSG_SetMsgId"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>set_msgid(<span class="kw-2">&amp;mut </span><span class="self">self</span>, msg_id: MsgId) -&gt; <span class="prelude-ty">Result</span>&lt;(), Status&gt; {
         <span class="kw">let </span>old_msg_id = <span class="self">self</span>.msgid()<span class="question-mark">?</span>;
@@ -706,7 +708,7 @@
     /// appropriately modifying them, this is an unsafe operation.
     ///
     /// Wraps `CFE_MSG_SetMsgId`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_MSG_SetMsgId&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_MSG_SetMsgId"</span>)]
     #[inline]
     </span><span class="kw">pub unsafe fn </span>set_msgid_unchecked(<span class="kw-2">&amp;mut </span><span class="self">self</span>, msg_id: MsgId) -&gt; <span class="prelude-ty">Result</span>&lt;(), Status&gt; {
         <span class="kw">let </span>s: Status = CFE_MSG_SetMsgId(<span class="kw-2">&amp;mut </span><span class="self">self</span>.msg, msg_id.id).into();
@@ -717,7 +719,7 @@
     <span class="doccomment">/// Returns the total size of the message this [`Message`] is the header for.
     ///
     /// Wraps `CFE_MSG_GetSize`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_MSG_GetSize&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_MSG_GetSize"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Size, Status&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>sz: Size = <span class="number">0</span>;
@@ -728,11 +730,11 @@
 
     <span class="doccomment">/// Sets the total size of the message this [`Message`] is the header for.
     ///
-    /// As this can change what does and doesn&#39;t get copied when a message is
+    /// As this can change what does and doesn't get copied when a message is
     /// transmitted, this is an unsafe operation.
     ///
     /// Wraps `CFE_MSG_SetSize`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_MSG_SetSize&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_MSG_SetSize"</span>)]
     #[inline]
     </span><span class="kw">pub unsafe fn </span>set_size(<span class="kw-2">&amp;mut </span><span class="self">self</span>, sz: Size) -&gt; <span class="prelude-ty">Result</span>&lt;(), Status&gt; {
         <span class="kw">let </span>s: Status = CFE_MSG_SetSize(<span class="kw-2">&amp;mut </span><span class="self">self</span>.msg, sz).into();
@@ -778,7 +780,7 @@
 
     <span class="doccomment">/// Returns the payload of the message as a byte slice.
     ///
-    /// This can be useful when the payload isn&#39;t a C structure.
+    /// This can be useful when the payload isn't a C structure.
     </span><span class="attr">#[inline]
     </span><span class="kw">pub fn </span>payload(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span>[u8], Status&gt; {
         <span class="kw">let </span>size = <span class="self">self</span>.size()<span class="question-mark">? </span><span class="kw">as </span>usize;
@@ -802,10 +804,10 @@
         }
     }
 
-    <span class="doccomment">/// Sets the [`Message`]&#39;s time field to the current spacecraft time.
+    <span class="doccomment">/// Sets the [`Message`]'s time field to the current spacecraft time.
     ///
     /// Wraps `CFE_SB_TimeStampMsg`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_SB_TimeStampMsg&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_SB_TimeStampMsg"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>time_stamp(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
         <span class="kw">unsafe </span>{ CFE_SB_TimeStampMsg(<span class="kw-2">&amp;mut </span><span class="self">self</span>.msg) }
@@ -818,7 +820,7 @@
     /// calling this method.
     ///
     /// Wraps `CFE_SB_TransmitMsg`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFE_SB_TransmitMsg&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFE_SB_TransmitMsg"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>transmit(<span class="kw-2">&amp;mut </span><span class="self">self</span>, increment_sequence_count: bool) -&gt; <span class="prelude-ty">Result</span>&lt;(), Status&gt; {
         <span class="kw">let </span>s: Status =
@@ -842,7 +844,7 @@
     /// along the way.
     ///
     /// Wraps `CFE_MSG_Init`, `CFE_MSG_GetTypeFromMsgId`, and `CFE_MSG_SetFcnCode`.
-    </span><span class="attr">#[doc(alias(<span class="string">&quot;CFE_MSG_Init&quot;</span>, <span class="string">&quot;CFE_MSG_GetTypeFromMsgId&quot;</span>, <span class="string">&quot;CFE_MSG_SetFcnCode&quot;</span>))]
+    </span><span class="attr">#[doc(alias(<span class="string">"CFE_MSG_Init"</span>, <span class="string">"CFE_MSG_GetTypeFromMsgId"</span>, <span class="string">"CFE_MSG_SetFcnCode"</span>))]
     #[inline]
     </span><span class="kw">pub fn </span>new(msg_id: MsgId, fcn_code: FunctionCode, payload: T) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, Status&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>cmd = Command {
@@ -878,10 +880,10 @@
 }
 
 <span class="kw">impl</span>&lt;T: Copy + Sized&gt; Command&lt;T&gt; {
-    <span class="doccomment">/// Sets the message&#39;s function code.
+    <span class="doccomment">/// Sets the message's function code.
     ///
     /// Wraps `CFE_MSG_SetFcnCode`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFG_MSG_SetFcnCode&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFG_MSG_SetFcnCode"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>set_fcn_code(<span class="kw-2">&amp;mut </span><span class="self">self</span>, fcn_code: FunctionCode) -&gt; <span class="prelude-ty">Result</span>&lt;(), Status&gt; {
         <span class="kw">let </span>s: Status = <span class="kw">unsafe </span>{ CFE_MSG_SetFcnCode(<span class="kw-2">&amp;mut </span><span class="self">self</span>.header.Msg, fcn_code) }.into();
@@ -896,10 +898,10 @@
     /// of [`payload`](`Command::payload`).
     ///
     /// After transmission, attempts to set the message size (in the header)
-    /// back to the structure&#39;s full length.
+    /// back to the structure's full length.
     ///
     /// Wraps `CFE_MSG_SetSize` and `CFE_SB_TransmitMsg`.
-    </span><span class="attr">#[doc(alias(<span class="string">&quot;CFE_MSG_SetSize&quot;</span>, <span class="string">&quot;CFE_SB_TransmitMsg&quot;</span>))]
+    </span><span class="attr">#[doc(alias(<span class="string">"CFE_MSG_SetSize"</span>, <span class="string">"CFE_SB_TransmitMsg"</span>))]
     #[inline]
     </span><span class="kw">pub fn </span>transmit_partial(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
@@ -947,7 +949,7 @@
     /// along the way.
     ///
     /// Wraps `CFE_MSG_Init` and `CFE_MSG_GetTypeFromMsgId`.
-    </span><span class="attr">#[doc(alias(<span class="string">&quot;CFE_MSG_Init&quot;</span>, <span class="string">&quot;CFE_MSG_GetTypeFromMsgId&quot;</span>))]
+    </span><span class="attr">#[doc(alias(<span class="string">"CFE_MSG_Init"</span>, <span class="string">"CFE_MSG_GetTypeFromMsgId"</span>))]
     #[inline]
     </span><span class="kw">pub fn </span>new(msg_id: MsgId, payload: T) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, Status&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>tlm = Telemetry {
@@ -986,10 +988,10 @@
     /// of [`payload`](`Telemetry::payload`).
     ///
     /// After transmission, attempts to set the message size (in the header)
-    /// back to the structure&#39;s full length.
+    /// back to the structure's full length.
     ///
     /// Wraps `CFE_MSG_SetSize` and `CFE_SB_TransmitMsg`.
-    </span><span class="attr">#[doc(alias(<span class="string">&quot;CFE_MSG_SetSize&quot;</span>, <span class="string">&quot;CFE_SB_TransmitMsg&quot;</span>))]
+    </span><span class="attr">#[doc(alias(<span class="string">"CFE_MSG_SetSize"</span>, <span class="string">"CFE_SB_TransmitMsg"</span>))]
     #[inline]
     </span><span class="kw">pub fn </span>transmit_partial(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
@@ -1024,21 +1026,21 @@
 }
 
 <span class="doccomment">/// The type of a message.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;CFG_MSG_Type&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"CFG_MSG_Type"</span>)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(u32)]
 #[non_exhaustive]
 </span><span class="kw">pub enum </span>MsgType {
     <span class="doccomment">/// Command message.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFG_MSG_Type_Cmd&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFG_MSG_Type_Cmd"</span>)]
     </span>Cmd     = CFE_MSG_Type_CFE_MSG_Type_Cmd,
 
     <span class="doccomment">/// Telemetry message.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFG_MSG_Type_Tlm&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFG_MSG_Type_Tlm"</span>)]
     </span>Tlm     = CFE_MSG_Type_CFE_MSG_Type_Tlm,
 
     <span class="doccomment">/// Invalid message type.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;CFG_MSG_Type_Invalid&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"CFG_MSG_Type_Invalid"</span>)]
     </span>Invalid = CFE_MSG_Type_CFE_MSG_Type_Invalid,
 }
 

@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `n2o4/src/osal/socket.rs`."><title>socket.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="n2o4" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (ba7c7a301 2023-11-13)" data-channel="nightly" data-search-js="search-8fbf244ebcf71464.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-f06f02fd918e3bb3.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/osal/socket.rs`."><title>socket.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="n2o4" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (11f32b73e 2024-01-31)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
+            <h2>Files</h2></div></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../../n2o4/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -666,7 +668,7 @@
 
 </span><span class="doccomment">//! Types and methods for interacting with network sockets.
 
-</span><span class="kw">use </span>cfs_sys::<span class="kw-2">*</span>;
+</span><span class="kw">use </span><span class="kw">crate</span>::sys::<span class="kw-2">*</span>;
 <span class="kw">use </span>core::cell::Cell;
 <span class="kw">use </span>core::ffi::{c_char, c_void, CStr};
 <span class="kw">use </span>core::marker::PhantomData;
@@ -679,13 +681,13 @@
 <span class="doccomment">/// Marker type for IPv4 addresses and sockets.
 ///
 /// Corresponds to `OS_SocketDomain_INET`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;OS_SocketDomain_INET&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"OS_SocketDomain_INET"</span>)]
 </span><span class="kw">pub struct </span>IPv4 {}
 
 <span class="doccomment">/// Marker type for IPv6 addresses and sockets.
 ///
 /// Corresponds to `OS_SocketDomain_INET6`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;OS_SocketDomain_INET6&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"OS_SocketDomain_INET6"</span>)]
 </span><span class="kw">pub struct </span>IPv6 {}
 
 <span class="doccomment">/// A marker trait for network domains.
@@ -694,7 +696,7 @@
 /// OSAL only supports a fixed set of socket domains.
 ///
 /// Corresponds to `OS_SocketDomain_t`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;OS_SocketDomain_t&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"OS_SocketDomain_t"</span>)]
 </span><span class="kw">pub trait </span>SocketDomain: SocketDomainSealed {}
 
 <span class="kw">impl </span>SocketDomainSealed <span class="kw">for </span>IPv4 {
@@ -712,7 +714,7 @@
 /// For IPv4 and IPv6, this corresponds to UDP.
 ///
 /// Corresponds to `OS_SocketType_DATAGRAM`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;OS_SocketType_DATAGRAM&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"OS_SocketType_DATAGRAM"</span>)]
 </span><span class="kw">pub struct </span>Datagram {}
 
 <span class="doccomment">/// Marker type for connection-oriented, stream-of-bytes sockets.
@@ -720,7 +722,7 @@
 /// For IPv4 and IPv6, this corresponds to TCP.
 ///
 /// Corresponds to `OS_SocketType_STREAM`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;OS_SocketType_STREAM&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"OS_SocketType_STREAM"</span>)]
 </span><span class="kw">pub struct </span>Stream {}
 
 <span class="doccomment">/// A marker trait for socket types.
@@ -729,7 +731,7 @@
 /// OSAL only supports a fixed set of socket types.
 ///
 /// Corresponds to `OS_SocketType_t`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;OS_SocketType_t&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"OS_SocketType_t"</span>)]
 </span><span class="kw">pub trait </span>SocketType: SocketTypeSealed {}
 
 <span class="kw">impl </span>SocketTypeSealed <span class="kw">for </span>Datagram {
@@ -763,7 +765,7 @@
 <span class="doccomment">/// A (network address, port) pair for use by socket-related APIs.
 ///
 /// Wraps `OS_SockAddr_t`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;OS_SockAddr_t&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"OS_SockAddr_t"</span>)]
 #[derive(Clone)]
 </span><span class="kw">pub struct </span>SockAddr&lt;T&gt; {
     inner:   OS_SockAddr_t,
@@ -773,10 +775,10 @@
 <span class="kw">impl</span>&lt;T: SocketDomain&gt; SockAddr&lt;T&gt; {
     <span class="doccomment">/// Tries to initialize a [`SockAddr`] with the given [domain](`SocketDomain`), address, and port.
     ///
-    /// `address` is a network address in string form (e.g., `&quot;192.0.2.5&quot;`, `&quot;2001:db8:0:2::5&quot;`)
+    /// `address` is a network address in string form (e.g., `"192.0.2.5"`, `"2001:db8:0:2::5"`)
     ///
     /// Wraps `OS_SocketAddrInit`, `OS_SocketAddrFromString`, and `OS_SocketAddrSetPort`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_SocketAddrInit&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_SocketAddrInit"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>new&lt;S: AsRef&lt;CStr&gt; + <span class="question-mark">?</span>Sized&gt;(network_address: <span class="kw-2">&amp;</span>S, port: u16) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, OsalError&gt; {
         <span class="kw">let </span>network_address = network_address.as_ref().as_ptr();
@@ -794,26 +796,26 @@
         })
     }
 
-    <span class="doccomment">/// Tries to write the address&#39;s host address to `buf` as a C-style string.
+    <span class="doccomment">/// Tries to write the address's host address to `buf` as a C-style string.
     ///
     /// Wraps `OS_SocketAddrToString`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_SocketAddrToString&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_SocketAddrToString"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>get_host_addr(<span class="kw-2">&amp;</span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>[c_char]) -&gt; <span class="prelude-ty">Result</span>&lt;(), OsalError&gt; {
         <span class="kw">let </span>status = <span class="kw">unsafe </span>{ OS_SocketAddrToString(buf.as_mut_ptr(), buf.len(), <span class="kw-2">&amp;</span><span class="self">self</span>.inner) };
 
-        <span class="comment">// Just in case OSAL doesn&#39;t do this on edge cases, null-terminate:
+        <span class="comment">// Just in case OSAL doesn't do this on edge cases, null-terminate:
         </span><span class="kw">if </span>buf.len() &gt; <span class="number">0 </span>{
-            buf[buf.len() - <span class="number">1</span>] = <span class="string">b&#39;\0&#39; </span><span class="kw">as </span>c_char;
+            buf[buf.len() - <span class="number">1</span>] = <span class="string">b'\0' </span><span class="kw">as </span>c_char;
         }
 
         status.as_osal_status().map(|<span class="kw">_</span>| ())
     }
 
-    <span class="doccomment">/// Tries to set the address&#39;s host address from a C-style string (e.g., `&quot;192.0.2.1&quot;`, `&quot;2001:db8::1&quot;`).
+    <span class="doccomment">/// Tries to set the address's host address from a C-style string (e.g., `"192.0.2.1"`, `"2001:db8::1"`).
     ///
     /// Wraps `OS_SocketAddrFromString`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_SocketAddrFromString&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_SocketAddrFromString"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>set_host_addr&lt;S: AsRef&lt;CStr&gt; + <span class="question-mark">?</span>Sized&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, addr: <span class="kw-2">&amp;</span>S) -&gt; <span class="prelude-ty">Result</span>&lt;(), OsalError&gt; {
         <span class="kw">let </span>addr = addr.as_ref();
@@ -823,10 +825,10 @@
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="doccomment">/// Returns the address&#39;s port number.
+    <span class="doccomment">/// Returns the address's port number.
     ///
     /// Wraps `OS_SocketAddrGetPort`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_SocketAddrGetPort&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_SocketAddrGetPort"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>port(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;u16, OsalError&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>port_num: u16 = <span class="number">0</span>;
@@ -836,10 +838,10 @@
         <span class="prelude-val">Ok</span>(port_num)
     }
 
-    <span class="doccomment">/// Sets the address&#39;s port number.
+    <span class="doccomment">/// Sets the address's port number.
     ///
     /// Wraps `OS_SocketAddrSetPort`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_SocketAddrSetPort&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_SocketAddrSetPort"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>set_port(<span class="kw-2">&amp;mut </span><span class="self">self</span>, port_num: u16) -&gt; <span class="prelude-ty">Result</span>&lt;(), OsalError&gt; {
         <span class="kw">unsafe </span>{ OS_SocketAddrSetPort(<span class="kw-2">&amp;mut </span><span class="self">self</span>.inner, port_num) }.as_osal_status()<span class="question-mark">?</span>;
@@ -852,7 +854,7 @@
 /// [connected to a peer](EarlySocket::connect) or [bound to a local port](EarlySocket::bind).
 ///
 /// Wraps `osal_id_t`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;osal_id_t&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"osal_id_t"</span>)]
 </span><span class="kw">pub struct </span>EarlySocket&lt;D: SocketDomain, T: SocketType&gt; {
     sock_id: osal_id_t,
     phantom: PhantomData&lt;(D, T)&gt;,
@@ -866,7 +868,7 @@
     /// needs to be called.
     ///
     /// Wraps `OS_SocketOpen`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_SocketOpen&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_SocketOpen"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>open() -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, OsalError&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>sock_id: osal_id_t = X_OS_OBJECT_ID_UNDEFINED;
@@ -886,7 +888,7 @@
     /// or indefinitely if `timeout_ms` is `None`.
     ///
     /// Wraps `OS_SocketConnect`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_SocketConnect&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_SocketConnect"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>connect(
         <span class="self">self</span>,
@@ -909,7 +911,7 @@
     <span class="doccomment">/// Binds the socket to the local address `addr`.
     ///
     /// Wraps `OS_SocketBind`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_SocketBind&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_SocketBind"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>bind(<span class="self">self</span>, addr: <span class="kw-2">&amp;</span>SockAddr&lt;D&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Socket&lt;D, T, Bound&gt;, OsalError&gt; {
         <span class="kw">unsafe </span>{ OS_SocketBind(<span class="self">self</span>.sock_id, <span class="kw-2">&amp;</span>addr.inner) }.as_osal_status()<span class="question-mark">?</span>;
@@ -937,7 +939,7 @@
     /// corresponds to a socket, much less one of the correct
     /// [domain](SocketDomain), [type](SocketType), or point in socket lifecycle.
     ///
-    /// It is the programmer&#39;s responsibility to ensure that any OSAL ID passed
+    /// It is the programmer's responsibility to ensure that any OSAL ID passed
     /// to `from_id` corresponds to a socket
     /// with the correct socket domain, type, and state.
     </span><span class="attr">#[inline]
@@ -951,7 +953,7 @@
     <span class="doccomment">/// If successful, returns information about the socket.
     ///
     /// Wraps `OS_SocketGetInfo`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_SocketGetInfo&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_SocketGetInfo"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>info(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;SocketProperties, OsalError&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>props = OS_socket_prop_t {
@@ -989,7 +991,7 @@
 /// of [`SocketDomain`], [`SocketType`], and [`SocketRole`].
 ///
 /// Wraps `osal_id_t`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;osal_id_t&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"osal_id_t"</span>)]
 </span><span class="kw">pub struct </span>Socket&lt;D: SocketDomain, T: SocketType, R: SocketRole&gt; {
     sock_id:   osal_id_t,
     is_cloned: Cell&lt;bool&gt;,
@@ -1029,7 +1031,7 @@
     /// corresponds to a socket, much less one of the correct
     /// [domain](SocketDomain), [type](SocketType), or point in socket lifecycle.
     ///
-    /// It is the programmer&#39;s responsibility to ensure that any OSAL ID passed
+    /// It is the programmer's responsibility to ensure that any OSAL ID passed
     /// to `from_id` corresponds to a socket
     /// with the correct socket domain, type, state, and exclusivity.
     </span><span class="attr">#[inline]
@@ -1041,16 +1043,16 @@
         }
     }
 
-    <span class="doccomment">/// If the [`Socket`] hasn&#39;t been [`Clone`]d, closes the socket.
+    <span class="doccomment">/// If the [`Socket`] hasn't been [`Clone`]d, closes the socket.
     ///
     /// If the socket has been cloned, returns `Err(OS_ERR_OBJECT_IN_USE)`.
     ///
     /// Wraps `OS_close`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_close&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_close"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>close(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), OsalError&gt; {
-        <span class="comment">// Closing isn&#39;t necessarily safe to do
-        // if we&#39;ve cloned the [`Socket`] (use-after-release),
+        <span class="comment">// Closing isn't necessarily safe to do
+        // if we've cloned the [`Socket`] (use-after-release),
         // so we check:
         </span><span class="kw">if </span><span class="self">self</span>.is_cloned.get() == <span class="bool-val">true </span>{
             <span class="kw">return </span><span class="prelude-val">Err</span>(OsalError::OS_ERR_OBJECT_IN_USE);
@@ -1074,13 +1076,13 @@
     /// destroying all references to the [`Socket`]. Any use
     /// of this [`Socket`] (or other [`Socket`] referring to
     /// the same underlying OSAL socket) after calling `close_mut` on it has
-    /// potentially undesirable results&amp;mdash;notably, there&#39;s
+    /// potentially undesirable results&amp;mdash;notably, there's
     /// the possibility of the OSAL ID being reused for a different
     /// socket, leading to unintended use of another OSAL socket.
     /// As such, callers must make sure this [`Socket`]
     /// (and anything else using the same OSAL ID)
     /// is never used after calling `close_mut`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_close&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_close"</span>)]
     #[inline]
     </span><span class="kw">pub unsafe fn </span>close_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), OsalError&gt; {
         <span class="kw">unsafe </span>{ OS_close(<span class="self">self</span>.sock_id) }.as_osal_status()<span class="question-mark">?</span>;
@@ -1091,7 +1093,7 @@
     <span class="doccomment">/// If successful, returns information about the socket.
     ///
     /// Wraps `OS_SocketGetInfo`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_SocketGetInfo&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_SocketGetInfo"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>info(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;SocketProperties, OsalError&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>props = OS_socket_prop_t {
@@ -1115,7 +1117,7 @@
     /// or `0` if at the end of the stream.
     ///
     /// Wraps `OS_read`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_read&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_read"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>read(<span class="kw-2">&amp;</span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;usize, OsalError&gt; {
         <span class="kw">let </span>status = <span class="kw">unsafe </span>{ OS_read(<span class="self">self</span>.sock_id, buf.as_mut_ptr() <span class="kw">as </span><span class="kw-2">*mut </span>c_void, buf.len()) }
@@ -1129,7 +1131,7 @@
     /// Upon success, returns the number of bytes actually written.
     ///
     /// Wraps `OS_write`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_write&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_write"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>write(<span class="kw-2">&amp;</span><span class="self">self</span>, buf: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;usize, OsalError&gt; {
         <span class="kw">let </span>status = <span class="kw">unsafe </span>{ OS_write(<span class="self">self</span>.sock_id, buf.as_ptr() <span class="kw">as </span><span class="kw-2">*const </span>c_void, buf.len()) }
@@ -1143,7 +1145,7 @@
     <span class="doccomment">/// Gracefully shuts down one or both directions of a stream connection.
     ///
     /// Wraps `OS_SocketShutdown`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_SocketShutdown&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_SocketShutdown"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>shutdown(<span class="kw-2">&amp;</span><span class="self">self</span>, mode: SocketShutdownMode) -&gt; <span class="prelude-ty">Result</span>&lt;(), OsalError&gt; {
         <span class="kw">unsafe </span>{ OS_SocketShutdown(<span class="self">self</span>.sock_id, mode <span class="kw">as </span>u32 <span class="kw">as </span>OS_SocketShutdownMode_t) }
@@ -1154,11 +1156,11 @@
 }
 
 <span class="kw">impl</span>&lt;D: SocketDomain&gt; Socket&lt;D, Datagram, Connected&gt; {
-    <span class="doccomment">/// Tries to change the socket&#39;s remote endpoint to `addr`,
+    <span class="doccomment">/// Tries to change the socket's remote endpoint to `addr`,
     /// waiting up to `timeout_ms.min(`[`i32::MAX`]`)` to complete the operation.
     ///
     /// Wraps `OS_SocketConnect`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_SocketConnect&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_SocketConnect"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>connect(<span class="kw-2">&amp;</span><span class="self">self</span>, addr: <span class="kw-2">&amp;</span>SockAddr&lt;D&gt;, timeout_ms: <span class="prelude-ty">Option</span>&lt;u32&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;(), OsalError&gt; {
         <span class="kw">let </span>timeout = <span class="kw">super</span>::as_timeout(timeout_ms);
@@ -1176,10 +1178,10 @@
     /// (or indefinitely if `timeout_ms` is `None`).
     ///
     /// On success, results a socket for the new connection
-    /// and the address of the connection&#39;s remote side.
+    /// and the address of the connection's remote side.
     ///
     /// Wraps `OS_SocketAccept`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_SocketAccept&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_SocketAccept"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>accept(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
@@ -1217,7 +1219,7 @@
     /// On success, returns the number of bytes of `buf` that were actually sent.
     ///
     /// Wraps `OS_SocketSendTo`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_SocketSendTo&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_SocketSendTo"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>send(<span class="kw-2">&amp;</span><span class="self">self</span>, buf: <span class="kw-2">&amp;</span>[u8], remote_addr: <span class="kw-2">&amp;</span>SockAddr&lt;D&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;usize, OsalError&gt; {
         <span class="kw">let </span>status = <span class="kw">unsafe </span>{
@@ -1244,7 +1246,7 @@
     /// and the address of the message sender.
     ///
     /// Wraps `OS_SocketRecvFrom`.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_SocketRecvFrom&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_SocketRecvFrom"</span>)]
     #[inline]
     </span><span class="kw">pub fn </span>recv(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
@@ -1285,31 +1287,31 @@
 <span class="doccomment">/// The possible [shutdown modes](`Socket::shutdown`) for a stream connection.
 ///
 /// Corresponds to `OS_SocketShutdownMode_t`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;OS_SocketShutdownMode_t&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"OS_SocketShutdownMode_t"</span>)]
 #[derive(Clone, Copy, PartialEq, Eq)]
 #[repr(u32)]
 #[non_exhaustive]
 </span><span class="kw">pub enum </span>SocketShutdownMode {
     <span class="doccomment">/// Shut down the read direction of the session.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_SocketShutdownMode_SHUT_READ&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_SocketShutdownMode_SHUT_READ"</span>)]
     </span>Read      = OS_SocketShutdownMode_t_OS_SocketShutdownMode_SHUT_READ <span class="kw">as _</span>,
 
     <span class="doccomment">/// Shut down the write direction of the session.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_SocketShutdownMode_SHUT_WRITE&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_SocketShutdownMode_SHUT_WRITE"</span>)]
     </span>Write     = OS_SocketShutdownMode_t_OS_SocketShutdownMode_SHUT_WRITE <span class="kw">as _</span>,
 
     <span class="doccomment">/// Shut down both directions of the session.
-    </span><span class="attr">#[doc(alias = <span class="string">&quot;OS_SocketShutdownMode_SHUT_READWRITE&quot;</span>)]
+    </span><span class="attr">#[doc(alias = <span class="string">"OS_SocketShutdownMode_SHUT_READWRITE"</span>)]
     </span>ReadWrite = OS_SocketShutdownMode_t_OS_SocketShutdownMode_SHUT_READWRITE <span class="kw">as _</span>,
 }
 
 <span class="doccomment">/// Information about a [`Socket`] or [`EarlySocket`].
 ///
 /// Corresponds to `OS_socket_prop_t`.
-</span><span class="attr">#[doc(alias = <span class="string">&quot;OS_socket_prop_t&quot;</span>)]
+</span><span class="attr">#[doc(alias = <span class="string">"OS_socket_prop_t"</span>)]
 #[derive(Clone, PartialEq, Eq)]
 </span><span class="kw">pub struct </span>SocketProperties {
-    <span class="doccomment">/// The socket&#39;s name.
+    <span class="doccomment">/// The socket's name.
     </span><span class="kw">pub </span>name: CStrBuf&lt;{ OS_MAX_API_NAME <span class="kw">as </span>usize }&gt;,
 
     <span class="doccomment">/// The task which opened the socket.
