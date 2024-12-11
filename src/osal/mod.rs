@@ -11,6 +11,7 @@ pub(crate) use error::I32Ext;
 
 pub(crate) mod error;
 pub mod file;
+pub mod fs;
 pub mod socket;
 pub mod sync;
 pub mod task;
