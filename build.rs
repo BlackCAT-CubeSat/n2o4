@@ -41,7 +41,7 @@ fn main() {
         .ctypes_prefix("::core::ffi")
         .size_t_is_usize(true)
         .generate_comments(false)
-        .parse_callbacks(Box::new(bindgen::CargoCallbacks))
+        .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
         .generate()
         .expect("Unable to generate cFS bindings");
 

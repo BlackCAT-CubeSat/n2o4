@@ -15,5 +15,5 @@ printf-wrap = { version = "^0.2", default-features = false }
 psm = "^0.1.21"
 
 [build-dependencies]
-bindgen = "^0.59.1"
+bindgen = { version = "^0.71.1", default-features = false, features = ["runtime"] }
 cc = "^1.0"
