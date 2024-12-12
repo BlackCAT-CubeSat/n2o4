@@ -21,7 +21,17 @@ pub mod task;
 /// The maximum length of strings for names of many OSAL objects.
 ///
 /// The length includes the null terminator.
+///
+/// Wraps `OS_MAX_API_NAME`.
+#[doc(alias = "OS_MAX_API_NAME")]
 pub const MAX_NAME_LEN: usize = sys::OS_MAX_API_NAME as usize;
+
+/// The maximum allowed length of an OSAL path name,
+/// including directory name, file name, and terminating NUL character.
+///
+/// Wraps `OS_MAX_PATH_LEN`.
+#[doc(alias = "OS_MAX_PATH_LEN")]
+pub const MAX_PATH_LEN: usize = sys::OS_MAX_PATH_LEN as usize;
 
 /// An error code, as returned by many OSAL API functions.
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
