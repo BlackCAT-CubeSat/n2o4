@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["MAX_PATH_LEN"],"fn":["translate_path"]};
+window.SIDEBAR_ITEMS = {"fn":["translate_path"]};
