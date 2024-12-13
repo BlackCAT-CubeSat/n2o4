@@ -282,3 +282,187 @@ pub enum SeekReference {
     #[doc(alias = "OS_SEEK_END")]
     End       = OS_SEEK_END,
 }
+
+/// Information about a file or directory.
+///
+/// Semantically equivalent to `os_fstat_t`.
+#[doc(alias = "os_fstat_t")]
+pub struct FileStat {
+    /// The file's mode bits.
+    ///
+    /// For the individual bits,
+    /// see [`DIR`](Self::DIR), [`READ`](Self::READ),
+    /// [`WRITE`](Self::WRITE), and [`EXEC`](Self::EXEC).
+    pub file_mode_bits: u32,
+
+    /// The time the file was last modified.
+    pub file_time:      super::OSTime,
+
+    /// The size of the file, in bytes.
+    pub file_size:      usize,
+}
+
+impl FileStat {
+    /// Set if the file is a directory.
+    ///
+    /// Wraps `OS_FILESTAT_MODE_DIR`.
+    #[doc(alias = "OS_FILESTAT_MODE_DIR")]
+    pub const DIR: u32 = OS_FILESTAT_MODE_DIR;
+
+    /// Set if the file is readable.
+    ///
+    /// Wraps `OS_FILESTAT_MODE_READ`.
+    #[doc(alias = "OS_FILESTAT_MODE_READ")]
+    pub const READ: u32 = OS_FILESTAT_MODE_READ;
+
+    /// Set if the file is writable.
+    ///
+    /// Wraps `OS_FILESTAT_MODE_WRITE`.
+    #[doc(alias = "OS_FILESTAT_MODE_WRITE")]
+    pub const WRITE: u32 = OS_FILESTAT_MODE_WRITE;
+
+    /// Set if the file is executable.
+    ///
+    /// Wraps `OS_FILESTAT_MODE_EXEC`.
+    #[doc(alias = "OS_FILESTAT_MODE_EXEC")]
+    pub const EXEC: u32 = OS_FILESTAT_MODE_EXEC;
+}
+
+/// Obtains information about the file or directory at `path`.
+///
+/// Wraps `OS_stat`.
+#[doc(alias = "OS_stat")]
+#[inline]
+pub fn stat<S: AsRef<CStr>>(path: &S) -> Result<FileStat, OsalError> {
+    let path = path.as_ref().as_ptr();
+    let mut filestats: os_fstat_t = os_fstat_t {
+        FileModeBits: 0,
+        FileTime:     OS_time_t { ticks: 0 },
+        FileSize:     0,
+    };
+
+    // Safety: path isn't modified, and any possible bit-pattern is a valid
+    // os_fstat_t.
+    unsafe { OS_stat(path, &mut filestats) }.as_osal_status()?;
+
+    Ok(FileStat {
+        file_mode_bits: filestats.FileModeBits,
+        file_time:      OSTime::from_os_time(filestats.FileTime),
+        file_size:      filestats.FileSize,
+    })
+}
+
+/// Removes the file at `path` from the file system.
+///
+/// This function's behavior is system-dependent if the file is open;
+/// for maximum portability, make sure the file is closed before calling `remove`.
+///
+/// Wraps `OS_remove`.
+#[doc(alias = "OS_remove")]
+#[inline]
+pub fn remove<S: AsRef<CStr>>(path: &S) -> Result<(), OsalError> {
+    let path = path.as_ref().as_ptr();
+
+    // Safety: the string pointed to by path lasts longer than this function invocation
+    // and is not modified by the function.
+    unsafe { OS_remove(path) }.as_osal_status()?;
+
+    Ok(())
+}
+
+/// Changes the name of the file originally at `src` to `dest`.
+///
+/// `src` and `dest` must reside on the same file system.
+///
+/// This function's behavior is system-dependent if the file is open;
+/// for maximum portability, make sure the file is closed before calling `rename`.
+///
+/// Wraps `OS_rename`.
+#[doc(alias = "OS_rename")]
+#[inline]
+pub fn rename<S1, S2>(src: &S1, dest: &S2) -> Result<(), OsalError>
+where
+    S1: AsRef<CStr>,
+    S2: AsRef<CStr>,
+{
+    let src = src.as_ref().as_ptr();
+    let dest = dest.as_ref().as_ptr();
+
+    // Safety: the strings pointed to by src and dest
+    // are valid for longer than this function invocation
+    // and are not modified by the function.
+    unsafe { OS_rename(src, dest) }.as_osal_status()?;
+
+    Ok(())
+}
+
+/// Copies the file at `src` to `dest`.
+///
+/// This function's behavior is system-dependent if the file is open;
+/// for maximum portability, make sure the file is closed before calling `cp`.
+///
+/// Wraps `OS_cp`.
+#[doc(alias = "OS_cp")]
+#[inline]
+pub fn cp<S1, S2>(src: &S1, dest: &S2) -> Result<(), OsalError>
+where
+    S1: AsRef<CStr>,
+    S2: AsRef<CStr>,
+{
+    let src = src.as_ref().as_ptr();
+    let dest = dest.as_ref().as_ptr();
+
+    // Safety: the strings pointed to by src and dest
+    // are valid for longer than this function invocation
+    // and are not modified by the function.
+    unsafe { OS_cp(src, dest) }.as_osal_status()?;
+
+    Ok(())
+}
+
+/// Moves the file at `src` to `dest`.
+///
+/// This first attempts to rename the file,
+/// which only works if `src` and `dest` are on the same file system.
+/// Failing that, the function will copy the file, then remove the original.
+///
+/// This function's behavior is system-dependent if the file is open;
+/// for maximum portability, make sure the file is closed before calling `mv`.
+///
+/// Wraps `OS_mv`.
+#[doc(alias = "OS_mv")]
+#[inline]
+pub fn mv<S1, S2>(src: &S1, dest: &S2) -> Result<(), OsalError>
+where
+    S1: AsRef<CStr>,
+    S2: AsRef<CStr>,
+{
+    let src = src.as_ref().as_ptr();
+    let dest = dest.as_ref().as_ptr();
+
+    // Safety: the strings pointed to by src and dest
+    // are valid for longer than this function invocation
+    // and are not modified by the function.
+    unsafe { OS_mv(src, dest) }.as_osal_status()?;
+
+    Ok(())
+}
+
+/// Determines whether the file `filename` is open within OSAL.
+///
+/// Wraps `OS_FileOpenCheck`.
+#[doc(alias = "OS_FileOpenCheck")]
+#[inline]
+pub fn file_open_check<S: AsRef<CStr>>(filename: &S) -> Result<bool, OsalError> {
+    let fname = filename.as_ref().as_ptr();
+
+    // Safety: the string pointed to by fname lasts longer than this function invocation
+    // and is not modified by the function.
+    match unsafe { OS_FileOpenCheck(fname) } {
+        OS_ERROR => Ok(false),
+        status => {
+            status.as_osal_status()?;
+            Ok(true)
+        }
+    }
+}
