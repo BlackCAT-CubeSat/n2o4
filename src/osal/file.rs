@@ -296,10 +296,10 @@ pub struct FileStat {
     pub file_mode_bits: u32,
 
     /// The time the file was last modified.
-    pub file_time:      super::OSTime,
+    pub file_time: super::OSTime,
 
     /// The size of the file, in bytes.
-    pub file_size:      usize,
+    pub file_size: usize,
 }
 
 impl FileStat {

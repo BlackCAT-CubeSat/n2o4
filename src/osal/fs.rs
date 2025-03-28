@@ -3,8 +3,8 @@
 
 //! File system-level APIs.
 
-use super::{I32Ext, OsalError};
 pub use super::MAX_PATH_LEN;
+use super::{I32Ext, OsalError};
 use crate::sys::*;
 use crate::utils::CStrBuf;
 
