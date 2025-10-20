@@ -11,7 +11,7 @@ categories = ["aerospace", "api-bindings", "external-ffi-bindings", "no-std"]
 rust-version = "1.64.0"
 
 [dependencies]
-printf-wrap = { version = "^0.2", default-features = false }
+printf-wrap = { version = "^0.2.2", default-features = false }
 psm = "^0.1.21"
 
 [build-dependencies]
