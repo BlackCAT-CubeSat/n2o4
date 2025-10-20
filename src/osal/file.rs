@@ -296,10 +296,10 @@ pub struct FileStat {
     pub file_mode_bits: u32,
 
     /// The time the file was last modified.
-    pub file_time:      super::OSTime,
+    pub file_time: super::OSTime,
 
     /// The size of the file, in bytes.
-    pub file_size:      usize,
+    pub file_size: usize,
 }
 
 impl FileStat {
@@ -333,7 +333,7 @@ impl FileStat {
 /// Wraps `OS_stat`.
 #[doc(alias = "OS_stat")]
 #[inline]
-pub fn stat<S: AsRef<CStr>>(path: &S) -> Result<FileStat, OsalError> {
+pub fn stat<S: AsRef<CStr> + ?Sized>(path: &S) -> Result<FileStat, OsalError> {
     let path = path.as_ref().as_ptr();
     let mut filestats: os_fstat_t = os_fstat_t {
         FileModeBits: 0,
@@ -360,7 +360,7 @@ pub fn stat<S: AsRef<CStr>>(path: &S) -> Result<FileStat, OsalError> {
 /// Wraps `OS_remove`.
 #[doc(alias = "OS_remove")]
 #[inline]
-pub fn remove<S: AsRef<CStr>>(path: &S) -> Result<(), OsalError> {
+pub fn remove<S: AsRef<CStr> + ?Sized>(path: &S) -> Result<(), OsalError> {
     let path = path.as_ref().as_ptr();
 
     // Safety: the string pointed to by path lasts longer than this function invocation
@@ -382,8 +382,8 @@ pub fn remove<S: AsRef<CStr>>(path: &S) -> Result<(), OsalError> {
 #[inline]
 pub fn rename<S1, S2>(src: &S1, dest: &S2) -> Result<(), OsalError>
 where
-    S1: AsRef<CStr>,
-    S2: AsRef<CStr>,
+    S1: AsRef<CStr> + ?Sized,
+    S2: AsRef<CStr> + ?Sized,
 {
     let src = src.as_ref().as_ptr();
     let dest = dest.as_ref().as_ptr();
@@ -406,8 +406,8 @@ where
 #[inline]
 pub fn cp<S1, S2>(src: &S1, dest: &S2) -> Result<(), OsalError>
 where
-    S1: AsRef<CStr>,
-    S2: AsRef<CStr>,
+    S1: AsRef<CStr> + ?Sized,
+    S2: AsRef<CStr> + ?Sized,
 {
     let src = src.as_ref().as_ptr();
     let dest = dest.as_ref().as_ptr();
@@ -434,8 +434,8 @@ where
 #[inline]
 pub fn mv<S1, S2>(src: &S1, dest: &S2) -> Result<(), OsalError>
 where
-    S1: AsRef<CStr>,
-    S2: AsRef<CStr>,
+    S1: AsRef<CStr> + ?Sized,
+    S2: AsRef<CStr> + ?Sized,
 {
     let src = src.as_ref().as_ptr();
     let dest = dest.as_ref().as_ptr();
@@ -453,7 +453,7 @@ where
 /// Wraps `OS_FileOpenCheck`.
 #[doc(alias = "OS_FileOpenCheck")]
 #[inline]
-pub fn file_open_check<S: AsRef<CStr>>(filename: &S) -> Result<bool, OsalError> {
+pub fn file_open_check<S: AsRef<CStr> + ?Sized>(filename: &S) -> Result<bool, OsalError> {
     let fname = filename.as_ref().as_ptr();
 
     // Safety: the string pointed to by fname lasts longer than this function invocation

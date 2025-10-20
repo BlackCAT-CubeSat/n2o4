@@ -174,6 +174,152 @@ wtsl_impl!(5, write_to_syslog5, (A, B, C, D, E), (a, b, c, d, e));
 wtsl_impl!(6, write_to_syslog6, (A, B, C, D, E, F), (a, b, c, d, e, f));
 wtsl_impl!(7, write_to_syslog7, (A, B, C, D, E, F, G), (a, b, c, d, e, f, g));
 wtsl_impl!(8, write_to_syslog8, (A, B, C, D, E, F, G, H), (a, b, c, d, e, f, g, h));
+wtsl_impl!(9, write_to_syslog9, (A, B, C, D, E, F, G, H, I), (a, b, c, d, e, f, g, h, i));
+wtsl_impl!(10, write_to_syslog10, (A, B, C, D, E, F, G, H, I, J), (a, b, c, d, e, f, g, h, i, j));
+wtsl_impl!(
+    11,
+    write_to_syslog11,
+    (A, B, C, D, E, F, G, H, I, J, K),
+    (a, b, c, d, e, f, g, h, i, j, k)
+);
+wtsl_impl!(
+    12,
+    write_to_syslog12,
+    (A, B, C, D, E, F, G, H, I, J, K, L),
+    (a, b, c, d, e, f, g, h, i, j, k, l)
+);
+wtsl_impl!(
+    13,
+    write_to_syslog13,
+    (A, B, C, D, E, F, G, H, I, J, K, L, M),
+    (a, b, c, d, e, f, g, h, i, j, k, l, m)
+);
+wtsl_impl!(
+    14,
+    write_to_syslog14,
+    (A, B, C, D, E, F, G, H, I, J, K, L, M, N),
+    (a, b, c, d, e, f, g, h, i, j, k, l, m, n)
+);
+wtsl_impl!(
+    15,
+    write_to_syslog15,
+    (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O),
+    (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o)
+);
+wtsl_impl!(
+    16,
+    write_to_syslog16,
+    (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P),
+    (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p)
+);
+wtsl_impl!(
+    17,
+    write_to_syslog17,
+    (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q),
+    (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q)
+);
+wtsl_impl!(
+    18,
+    write_to_syslog18,
+    (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R),
+    (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r)
+);
+wtsl_impl!(
+    19,
+    write_to_syslog19,
+    (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S),
+    (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s)
+);
+wtsl_impl!(
+    20,
+    write_to_syslog20,
+    (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T),
+    (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t)
+);
+wtsl_impl!(
+    21,
+    write_to_syslog21,
+    (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U),
+    (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u)
+);
+wtsl_impl!(
+    22,
+    write_to_syslog22,
+    (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V),
+    (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v)
+);
+wtsl_impl!(
+    23,
+    write_to_syslog23,
+    (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W),
+    (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w)
+);
+wtsl_impl!(
+    24,
+    write_to_syslog24,
+    (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X),
+    (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x)
+);
+wtsl_impl!(
+    25,
+    write_to_syslog25,
+    (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y),
+    (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y)
+);
+wtsl_impl!(
+    26,
+    write_to_syslog26,
+    (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z),
+    (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z)
+);
+wtsl_impl!(
+    27,
+    write_to_syslog27,
+    (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, AA),
+    (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, aa)
+);
+wtsl_impl!(
+    28,
+    write_to_syslog28,
+    (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, AA, BB),
+    (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, aa, bb)
+);
+wtsl_impl!(
+    29,
+    write_to_syslog29,
+    (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, AA, BB, CC),
+    (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, aa, bb, cc)
+);
+wtsl_impl!(
+    30,
+    write_to_syslog30,
+    (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, AA, BB, CC, DD),
+    (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, aa, bb, cc, dd)
+);
+wtsl_impl!(
+    31,
+    write_to_syslog31,
+    (
+        A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, AA, BB, CC,
+        DD, EE
+    ),
+    (
+        a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, aa, bb, cc,
+        dd, ee
+    )
+);
+wtsl_impl!(
+    32,
+    write_to_syslog32,
+    (
+        A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, AA, BB, CC,
+        DD, EE, FF
+    ),
+    (
+        a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, aa, bb, cc,
+        dd, ee, ff
+    )
+);
 
 /// Writes the contents of a [`str`] to the cFE System Log.
 ///

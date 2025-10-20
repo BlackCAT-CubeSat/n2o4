@@ -3,8 +3,8 @@
 
 //! File system-level APIs.
 
-use super::{I32Ext, OsalError};
 pub use super::MAX_PATH_LEN;
+use super::{I32Ext, OsalError};
 use crate::sys::*;
 use crate::utils::CStrBuf;
 
@@ -17,7 +17,7 @@ use core::ffi::{c_char, CStr};
 /// Wraps `OS_TranslatePath`.
 #[doc(alias = "OS_TranslatePath")]
 #[inline]
-pub fn translate_path<S: AsRef<CStr>>(
+pub fn translate_path<S: AsRef<CStr> + ?Sized>(
     virtual_path: &S,
 ) -> Result<CStrBuf<MAX_PATH_LEN>, OsalError> {
     let virtual_path: *const c_char = virtual_path.as_ref().as_ptr();

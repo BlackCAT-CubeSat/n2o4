@@ -24,7 +24,7 @@ impl Task {
     /// Wraps `OS_TaskGetIdByName`.
     #[doc(alias = "OS_TaskGetIdByName")]
     #[inline]
-    pub fn by_name<S: AsRef<CStr>>(task_name: &S) -> Result<Self, OsalError> {
+    pub fn by_name<S: AsRef<CStr> + ?Sized>(task_name: &S) -> Result<Self, OsalError> {
         let task_name = task_name.as_ref().as_ptr();
         let mut id: osal_id_t = X_OS_OBJECT_ID_UNDEFINED;
 

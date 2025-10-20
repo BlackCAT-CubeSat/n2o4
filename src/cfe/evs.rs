@@ -244,6 +244,78 @@ impl EventSender {
                (A, B, C, D, E, F, G), (a, b, c, d, e, f, g));
     send_impl!(8, send_event8, send_event_with_app_id8, send_timed_event8,
                (A, B, C, D, E, F, G, H), (a, b, c, d, e, f, g, h));
+    send_impl!(9, send_event9, send_event_with_app_id9, send_timed_event9,
+               (A, B, C, D, E, F, G, H, I), (a, b, c, d, e, f, g, h, i));
+    send_impl!(10, send_event10, send_event_with_app_id10, send_timed_event10,
+               (A, B, C, D, E, F, G, H, I, J), (a, b, c, d, e, f, g, h, i, j));
+    send_impl!(11, send_event11, send_event_with_app_id11, send_timed_event11,
+               (A, B, C, D, E, F, G, H, I, J, K), (a, b, c, d, e, f, g, h, i, j, k));
+    send_impl!(12, send_event12, send_event_with_app_id12, send_timed_event12,
+               (A, B, C, D, E, F, G, H, I, J, K, L), (a, b, c, d, e, f, g, h, i, j, k, l));
+    send_impl!(13, send_event13, send_event_with_app_id13, send_timed_event13,
+               (A, B, C, D, E, F, G, H, I, J, K, L, M), (a, b, c, d, e, f, g, h, i, j, k, l, m));
+    send_impl!(14, send_event14, send_event_with_app_id14, send_timed_event14,
+               (A, B, C, D, E, F, G, H, I, J, K, L, M, N), (a, b, c, d, e, f, g, h, i, j, k, l, m, n));
+    send_impl!(15, send_event15, send_event_with_app_id15, send_timed_event15,
+               (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O), (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o));
+    send_impl!(16, send_event16, send_event_with_app_id16, send_timed_event16,
+               (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P), (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p));
+    send_impl!(17, send_event17, send_event_with_app_id17, send_timed_event17,
+               (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q), (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q));
+    send_impl!(18, send_event18, send_event_with_app_id18, send_timed_event18,
+               (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R), (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r));
+    send_impl!(19, send_event19, send_event_with_app_id19, send_timed_event19,
+               (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S), (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s));
+    send_impl!(20, send_event20, send_event_with_app_id20, send_timed_event20,
+               (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T), (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t));
+    send_impl!(21, send_event21, send_event_with_app_id21, send_timed_event21,
+               (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U),
+               (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u)
+    );
+    send_impl!(22, send_event22, send_event_with_app_id22, send_timed_event22,
+               (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V),
+               (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v)
+    );
+    send_impl!(23, send_event23, send_event_with_app_id23, send_timed_event23,
+               (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W),
+               (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w)
+    );
+    send_impl!(24, send_event24, send_event_with_app_id24, send_timed_event24,
+               (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X),
+               (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x)
+    );
+    send_impl!(25, send_event25, send_event_with_app_id25, send_timed_event25,
+               (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y),
+               (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y)
+    );
+    send_impl!(26, send_event26, send_event_with_app_id26, send_timed_event26,
+               (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z),
+               (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z)
+    );
+    send_impl!(27, send_event27, send_event_with_app_id27, send_timed_event27,
+               (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, AA),
+               (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, aa)
+    );
+    send_impl!(28, send_event28, send_event_with_app_id28, send_timed_event28,
+               (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, AA, BB),
+               (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, aa, bb)
+    );
+    send_impl!(29, send_event29, send_event_with_app_id29, send_timed_event29,
+               (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, AA, BB, CC),
+               (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, aa, bb, cc)
+    );
+    send_impl!(30, send_event30, send_event_with_app_id30, send_timed_event30,
+               (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, AA, BB, CC, DD),
+               (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, aa, bb, cc, dd)
+    );
+    send_impl!(31, send_event31, send_event_with_app_id31, send_timed_event31,
+               (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, AA, BB, CC, DD, EE),
+               (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, aa, bb, cc, dd, ee)
+    );
+    send_impl!(32, send_event32, send_event_with_app_id32, send_timed_event32,
+               (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, AA, BB, CC, DD, EE, FF),
+               (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, aa, bb, cc, dd, ee, ff)
+    );
 }
 
 impl EventSender {
